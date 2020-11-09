@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">File Manager</string>
+    <string name="multimedia_hint">Multimedia</string>
+    <string name="audios_hint">Music</string>
+    <string name="image_thumbnail_hint">Thumbnail</string>
+
+    <string name="external_storage_denied_rationale_title">No Storage Permission</string>
+    <string name="external_storage_denied_rationale_message">Please grant it for this app to function</string>
+    <string name="permission_grant">GRANT</string>
+    <string name="permission_deny">DENY</string>
+
+    <string name="external_storage_do_not_ask_again_selected_rationale_message">Please grant it from application details settings</string>
+
+</resources>
