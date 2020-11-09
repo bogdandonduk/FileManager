@@ -18,6 +18,7 @@ import pro.filemanager.databinding.FragmentFileBrowserBinding
 import pro.filemanager.docs.DocManager
 import pro.filemanager.images.ImageManager
 import pro.filemanager.videos.VideoManager
+import java.io.File
 
 class FileBrowserFragment() : Fragment() {
 
@@ -36,24 +37,11 @@ class FileBrowserFragment() : Fragment() {
         (requireActivity() as HomeActivity).requestExternalStoragePermission {
 
             ApplicationLoader.ApplicationIOScope.launch {
-                val fileItems: MutableList<FileItem> = if(FileManager.preloadedFiles != null) {
 
-                    FileManager.preloadedFiles!!
-                } else {
-                    if(!FileManager.preloadingInProgress) {
-                        FileManager.preloadFiles(requireContext())
-                        FileManager.preloadedFiles!!
-                    } else {
-                        while(FileManager.preloadingInProgress && FileManager.preloadedFiles == null) {
-                            delay(25)
-                        }
-
-                        FileManager.preloadedFiles!!
-                    }
-                }
+                val files = File(requireArguments().getString("path", FileManager.internalRootPath)).listFiles()
 
                 withContext(Dispatchers.Main) {
-                    initAdapter(fileItems)
+                    initAdapter(files!!)
                 }
 
                 if(ImageManager.preloadedImages == null && !ImageManager.preloadingInProgress){
@@ -88,9 +76,9 @@ class FileBrowserFragment() : Fragment() {
 
     }
 
-    fun initAdapter(fileItems: MutableList<FileItem>) {
+    fun initAdapter(files: Array<File>) {
 
-        binding.fragmentFileBrowserList.adapter = FileBrowserAdapter(requireActivity(), fileItems, layoutInflater)
+        binding.fragmentFileBrowserList.adapter = FileBrowserAdapter(requireActivity(), files, layoutInflater)
 
     }
 

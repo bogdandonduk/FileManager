@@ -69,11 +69,7 @@ class ImageBrowserFragment() : Fragment() {
                     binding.fragmentImageBrowserList.layoutManager = GridLayoutManager(context, UIManager.getImageBrowserSpanNumber(requireActivity()))
                 }
 
-                if(FileManager.preloadedFiles == null && !FileManager.preloadingInProgress) {
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        FileManager.preloadFiles(requireContext())
-                    }
-                } else if(VideoManager.preloadedVideos == null && !VideoManager.preloadingVideosInProgress){
+                if(VideoManager.preloadedVideos == null && !VideoManager.preloadingVideosInProgress){
                     ApplicationLoader.ApplicationIOScope.launch {
                         VideoManager.preloadVideos(requireContext())
                     }

@@ -51,11 +51,7 @@ class DocBrowserFragment() : Fragment() {
                     initAdapter(docItems)
                 }
 
-                if(FileManager.preloadedFiles == null && !FileManager.preloadingInProgress) {
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        FileManager.preloadFiles(requireContext())
-                    }
-                } else if(ImageManager.preloadedImages == null && !ImageManager.preloadingInProgress){
+                if(ImageManager.preloadedImages == null && !ImageManager.preloadingInProgress){
                     ApplicationLoader.ApplicationIOScope.launch {
                         ImageManager.preloadImages(requireContext())
                     }

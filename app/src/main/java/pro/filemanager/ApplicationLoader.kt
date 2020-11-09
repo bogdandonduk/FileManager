@@ -28,7 +28,7 @@ class ApplicationLoader : Application() {
         context = this
 
         ApplicationIOScope.launch {
-            FileManager.preloadFiles(this@ApplicationLoader)
+            FileManager.findExternalRoot(this@ApplicationLoader)
         }
 
         ApplicationIOScope.launch {

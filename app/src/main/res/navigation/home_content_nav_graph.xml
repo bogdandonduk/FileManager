@@ -66,5 +66,8 @@
         <action
             android:id="@+id/action_fileBrowserFragment_self"
             app:destination="@id/fileBrowserFragment" />
+        <argument
+            android:name="path"
+            app:argType="string" />
     </fragment>
 </navigation>

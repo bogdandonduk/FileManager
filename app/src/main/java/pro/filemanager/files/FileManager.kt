@@ -1,82 +1,67 @@
 package pro.filemanager.files
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
 import android.database.Cursor
-import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import pro.filemanager.ApplicationLoader
+import pro.filemanager.R
+import java.io.File
+import java.sql.SQLData
+import java.util.*
 
-class FileManager() {
-    private var cursor: Cursor = ApplicationLoader.context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
-            MediaStore.Files.FileColumns.DATA
-    ), null, null, null)!!
-
-    fun fetch() : MutableList<FileItem> {
-        val items: MutableList<FileItem> = mutableListOf()
-
-        if(cursor.moveToFirst()) {
-
-            while(!cursor.isAfterLast) {
-
-                items.add(
-                        FileItem(cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)))
-                )
-
-                cursor.moveToNext()
-            }
-
-        }
-
-//        findRoots(items)
-
-        return items
-    }
-
-    fun findRoots(fileItems: MutableList<FileItem>) {
-
-        if(!fileItems.isNullOrEmpty()) {
-
-            val possibleRoots: MutableList<String> = mutableListOf()
-
-            possibleRoots.add(fileItems[0].data)
-
-            fileItems.forEach {
-                if(it.data.split('/').size > possibleRoots[0].split('/').size) {
-                    possibleRoots[0] = it.data
-                }
-            }
-        }
-    }
-
-    fun closeCursor() {
-        cursor.close()
-    }
+class FileManager {
 
     companion object {
+        var internalRootPath = Environment.getExternalStorageDirectory().toString()
 
-        var preloadedFiles: MutableList<FileItem>? = null
-        var preloadingInProgress = false
+        var externalRootPath = ""
 
-        @SuppressLint("NewApi")
-        fun preloadFiles(context: Context) {
-            if((Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) || (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                preloadingInProgress = true
+        var isFindingExternalRoot = false
 
-                val fileManager = FileManager()
+        fun findExternalRoot(context: Context) {
+            val cursor: Cursor = context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
+                    MediaStore.Files.FileColumns.DATA
+            ), null, null, null, null)!!
 
-                preloadedFiles = fileManager.fetch()
+            if(cursor.moveToFirst()) {
 
-                fileManager.closeCursor()
+                externalRootPath = ""
 
-                preloadingInProgress = false
+                val rootSplit = internalRootPath.split(File.separator)
+                var rootSearchComplete = false
 
+                isFindingExternalRoot = true
+
+                while(!cursor.isAfterLast) {
+                    val dataSplit = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).split(File.separator)
+
+                    dataSplit.forEachIndexed { i: Int, s: String ->
+                        if (!rootSearchComplete && i < rootSplit.size) {
+                            if (s.toLowerCase(Locale.ROOT) != rootSplit[i].toLowerCase(Locale.ROOT)) {
+                                externalRootPath = externalRootPath + s + File.separator
+                                rootSearchComplete = true
+
+                            } else {
+                                externalRootPath = externalRootPath + s + File.separator
+
+                            }
+                        }
+                    }
+
+                    cursor.moveToNext()
+
+                }
+
+                cursor.close()
+
+                Log.d("TAG", "findExternalRoot: " + externalRootPath)
+
+                isFindingExternalRoot = false
             }
-        }
 
+        }
     }
 
 }
