@@ -19,11 +19,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FileManager">
 
-        <receiver android:name=".core.StartupReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
         <provider
             android:authorities="${applicationId}.fileProvider"
             android:name=".core.FileExposer"

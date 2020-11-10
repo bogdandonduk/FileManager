@@ -25,6 +25,15 @@ class FileBrowserFragment() : Fragment() {
     lateinit var binding: FragmentFileBrowserBinding
     lateinit var navController: NavController
 
+    lateinit var activity: HomeActivity
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        activity = requireActivity() as HomeActivity
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,7 +47,15 @@ class FileBrowserFragment() : Fragment() {
 
             ApplicationLoader.ApplicationIOScope.launch {
 
-                val files = File(requireArguments().getString("path", FileManager.internalRootPath)).listFiles()
+                val path = requireArguments().getString("path", "")
+
+                if(path == FileManager.internalRootPath) {
+                    activity.supportActionBar?.title = activity.resources.getString(R.string.title_internal_storage)
+                } else if(path == FileManager.externalRootPath) {
+                    activity.supportActionBar?.title = activity.resources.getString(R.string.title_external_storage)
+                }
+
+                val files = File(path).listFiles()
 
                 withContext(Dispatchers.Main) {
                     initAdapter(files!!)

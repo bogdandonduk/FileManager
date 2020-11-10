@@ -1,8 +1,7 @@
 package pro.filemanager.images
 
-import android.content.Context
-import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,12 +15,9 @@ import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.audios.AudioManager
-import pro.filemanager.core.KEY_SP_NAME
-import pro.filemanager.core.PermissionWrapper
 import pro.filemanager.core.UIManager
 import pro.filemanager.databinding.FragmentImageBrowserBinding
 import pro.filemanager.docs.DocManager
-import pro.filemanager.files.FileManager
 import pro.filemanager.videos.VideoManager
 
 class ImageBrowserFragment() : Fragment() {
@@ -66,7 +62,11 @@ class ImageBrowserFragment() : Fragment() {
 
                 withContext(Main) {
                     initAdapter(imageItems)
+
                     binding.fragmentImageBrowserList.layoutManager = GridLayoutManager(context, UIManager.getImageBrowserSpanNumber(requireActivity()))
+
+                    if(savedInstanceState?.getParcelable<Parcelable>("rvScrollPosition") != null)
+                        binding.fragmentImageBrowserList.layoutManager?.onRestoreInstanceState(savedInstanceState.getParcelable("rvScrollPosition"))
                 }
 
                 if(VideoManager.preloadedVideos == null && !VideoManager.preloadingVideosInProgress){
@@ -87,6 +87,12 @@ class ImageBrowserFragment() : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putParcelable("rvScrollPosition", binding.fragmentImageBrowserList.layoutManager?.onSaveInstanceState())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

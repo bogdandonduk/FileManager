@@ -2,16 +2,26 @@ package pro.filemanager
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.appcompat.app.ActionBar
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import pro.filemanager.core.PermissionWrapper
+import pro.filemanager.core.UIManager
 import pro.filemanager.databinding.ActivityHomeBinding
 
 class HomeActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityHomeBinding
     lateinit var externalStorageRequestSuccessAction: Runnable
-    val viewsCreatedStateKey: String = "viewsCreated"
+
+    lateinit var navController: NavController
+    lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,25 +29,40 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        navController = (supportFragmentManager.findFragmentById(R.id.homeActivityContentNavHost) as NavHostFragment).navController
+
+        appBarConfiguration = AppBarConfiguration(navController.graph, binding.homeActivityRootDrawerLayout)
+
+        binding.homeActivityNavView.setupWithNavController(navController)
+        setupActionBarWithNavController(navController, appBarConfiguration)
+
         if(savedInstanceState == null) {
 
-            binding.homeActivityRootLayout.alpha = 0f
-            binding.homeActivityRootLayout.scaleX = 0.95f
-            binding.homeActivityRootLayout.scaleY = 0.95f
-            binding.homeActivityRootLayout.visibility = View.GONE
-            binding.homeActivityRootLayout.visibility = View.VISIBLE
-            binding.homeActivityRootLayout.animate().alpha(1f).setDuration(400).start()
-            binding.homeActivityRootLayout.animate().scaleX(1f).setDuration(400).start()
-            binding.homeActivityRootLayout.animate().scaleY(1f).setDuration(400).start()
+            binding.homeActivityRootDrawerLayout.alpha = 0f
+            binding.homeActivityRootDrawerLayout.scaleX = 0.97f
+            binding.homeActivityRootDrawerLayout.scaleY = 0.97f
+            binding.homeActivityRootDrawerLayout.visibility = View.GONE
+            binding.homeActivityRootDrawerLayout.visibility = View.VISIBLE
+            binding.homeActivityRootDrawerLayout.animate().alpha(1f).setDuration(400).start()
+            binding.homeActivityRootDrawerLayout.animate().scaleX(1f).setDuration(400).start()
+            binding.homeActivityRootDrawerLayout.animate().scaleY(1f).setDuration(400).start()
 
         }
+
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController: NavController = findNavController(R.id.homeActivityContentNavHost)
+
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
 
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putBoolean(viewsCreatedStateKey, true)
+        outState.putBoolean(UIManager.KEY_VIEWS_CREATED, true)
+
     }
 
     fun requestExternalStoragePermission(action: Runnable = Runnable {}) {

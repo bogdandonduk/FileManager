@@ -33,27 +33,27 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/fragmentHomeInternalBtn"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="w,1:1.5"
-        app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl50pv"
-        app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl20pv"
-        app:layout_constraintTop_toTopOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/fragmentHomeInternalBtn"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="w,1:1.5"
+            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl50pv"
+            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl20pv"
+            app:layout_constraintTop_toTopOf="parent">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/fragmentHomeExternalBtn"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="w,1:1.5"
-        app:layout_constraintEnd_toEndOf="@+id/fragmentHomeRootLayoutGl80pv"
-        app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl50pv"
-        app:layout_constraintTop_toTopOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/fragmentHomeExternalBtn"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="w,1:1.5"
+            app:layout_constraintEnd_toEndOf="@+id/fragmentHomeRootLayoutGl80pv"
+            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl50pv"
+            app:layout_constraintTop_toTopOf="parent">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
             android:id="@+id/fragmentHomeAudiosBtn"

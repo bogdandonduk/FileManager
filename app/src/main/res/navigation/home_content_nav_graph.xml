@@ -6,7 +6,8 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="pro.filemanager.HomeFragment"
-        android:label="HomeFragment" >
+        android:label="@string/title_multimedia">
+
         <action
             android:id="@+id/action_homeFragment_to_audioBrowserFragment"
             app:destination="@id/audioBrowserFragment"
@@ -46,19 +47,19 @@
     <fragment
         android:id="@+id/audioBrowserFragment"
         android:name="pro.filemanager.audios.AudioBrowserFragment"
-        android:label="AudioBrowserFragment" />
+        android:label="@string/title_audio" />
     <fragment
         android:id="@+id/docBrowserFragment"
         android:name="pro.filemanager.docs.DocBrowserFragment"
-        android:label="DocBrowserFragment" />
+        android:label="@string/title_docs" />
     <fragment
         android:id="@+id/imageBrowserFragment"
         android:name="pro.filemanager.images.ImageBrowserFragment"
-        android:label="ImageBrowserFragment" />
+        android:label="@string/title_images" />
     <fragment
         android:id="@+id/videoBrowserFragment"
         android:name="pro.filemanager.videos.VideoBrowserFragment"
-        android:label="VideoBrowserFragment" />
+        android:label="@string/title_video" />
     <fragment
         android:id="@+id/fileBrowserFragment"
         android:name="pro.filemanager.files.FileBrowserFragment"

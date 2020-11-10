@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/navDrawerMainMenuMenuGroup"
+        android:checkableBehavior="single">
+
+        <item android:id="@+id/audioBrowserFragment" android:title="@string/title_audio" />
+        <item android:id="@+id/videoBrowserFragment" android:title="@string/title_video" />
+        <item android:id="@+id/docBrowserFragment" android:title="@string/title_docs" />
+        <item android:id="@+id/imageBrowserFragment" android:title="@string/title_images" />
+
+    </group>
+</menu>

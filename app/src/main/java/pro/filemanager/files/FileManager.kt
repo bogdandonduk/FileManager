@@ -29,34 +29,28 @@ class FileManager {
 
                 externalRootPath = ""
 
-                val rootSplit = internalRootPath.split(File.separator)
-                var rootSearchComplete = false
-
                 isFindingExternalRoot = true
 
+                var shortestPathLength = 1000000
+
                 while(!cursor.isAfterLast) {
-                    val dataSplit = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).split(File.separator)
+                    val data = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA))
 
-                    dataSplit.forEachIndexed { i: Int, s: String ->
-                        if (!rootSearchComplete && i < rootSplit.size) {
-                            if (s.toLowerCase(Locale.ROOT) != rootSplit[i].toLowerCase(Locale.ROOT)) {
-                                externalRootPath = externalRootPath + s + File.separator
-                                rootSearchComplete = true
+                    if(!data.toLowerCase(Locale.ROOT).contains(internalRootPath.toLowerCase(Locale.ROOT))) {
+                        if(!internalRootPath.toLowerCase(Locale.ROOT).contains(data)) {
+                            val splitData = data.split(File.separator)
 
-                            } else {
-                                externalRootPath = externalRootPath + s + File.separator
-
+                            if(splitData.size < shortestPathLength) {
+                                shortestPathLength = splitData.size
+                                externalRootPath = data
                             }
                         }
                     }
 
                     cursor.moveToNext()
-
                 }
 
                 cursor.close()
-
-                Log.d("TAG", "findExternalRoot: " + externalRootPath)
 
                 isFindingExternalRoot = false
             }
