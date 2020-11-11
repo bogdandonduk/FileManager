@@ -1,10 +1,10 @@
 package pro.filemanager.files
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -19,6 +19,7 @@ import pro.filemanager.docs.DocManager
 import pro.filemanager.images.ImageManager
 import pro.filemanager.videos.VideoManager
 import java.io.File
+import java.lang.Exception
 
 class FileBrowserFragment() : Fragment() {
 
@@ -31,7 +32,6 @@ class FileBrowserFragment() : Fragment() {
         super.onCreate(savedInstanceState)
 
         activity = requireActivity() as HomeActivity
-
     }
 
     override fun onCreateView(
@@ -43,39 +43,36 @@ class FileBrowserFragment() : Fragment() {
 
         binding.fragmentFileBrowserList.layoutManager = LinearLayoutManager(context)
 
-        (requireActivity() as HomeActivity).requestExternalStoragePermission {
+        activity.requestExternalStoragePermission {
 
             ApplicationLoader.ApplicationIOScope.launch {
 
-                val path = requireArguments().getString("path", "")
-
-                if(path == FileManager.internalRootPath) {
-                    activity.supportActionBar?.title = activity.resources.getString(R.string.title_internal_storage)
-                } else if(path == FileManager.externalRootPath) {
-                    activity.supportActionBar?.title = activity.resources.getString(R.string.title_external_storage)
-                }
-
-                val files = File(path).listFiles()
-
                 withContext(Dispatchers.Main) {
-                    initAdapter(files!!)
+                    activity.supportActionBar?.title = requireArguments().getString(FileManager.KEY_ARGUMENT_APP_BAR_TITLE)
+
+                    try {
+                        initAdapter(File(requireArguments().getString(FileManager.KEY_ARGUMENT_PATH)!!).listFiles()!!)
+                    } catch (e: Exception) {
+
+                    }
+
                 }
 
                 if(ImageManager.preloadedImages == null && !ImageManager.preloadingInProgress){
                     ApplicationLoader.ApplicationIOScope.launch {
-                        ImageManager.preloadImages(requireContext())
+                        ImageManager.loadImages(requireContext())
                     }
                 } else if(VideoManager.preloadedVideos == null && !VideoManager.preloadingVideosInProgress) {
                     ApplicationLoader.ApplicationIOScope.launch {
-                        VideoManager.preloadVideos(requireContext())
+                        VideoManager.loadVideos(requireContext())
                     }
                 } else if(DocManager.preloadedDocs == null && !DocManager.preloadingInProgress) {
                     ApplicationLoader.ApplicationIOScope.launch {
-                        DocManager.preloadDocs(requireContext())
+                        DocManager.loadDocs(requireContext())
                     }
                 } else if(AudioManager.preloadedAudios == null && !AudioManager.preloadingInProgress) {
                     ApplicationLoader.ApplicationIOScope.launch {
-                        AudioManager.preloadAudios(requireContext())
+                        AudioManager.loadAudios(requireContext())
                     }
                 }
             }
@@ -95,11 +92,14 @@ class FileBrowserFragment() : Fragment() {
 
     fun initAdapter(files: Array<File>) {
 
-        binding.fragmentFileBrowserList.adapter = FileBrowserAdapter(requireActivity(), files, layoutInflater)
+        binding.fragmentFileBrowserList.adapter = FileBrowserAdapter(requireActivity(), files, layoutInflater, this@FileBrowserFragment)
 
     }
 
-    fun navigate(actionId: Int, bundle: Bundle) {
-        navController.navigate(actionId, bundle)
+    fun navigate(path: String, appBarTitle: String = activity.supportActionBar?.title.toString()) {
+        navController.navigate(R.id.action_fileBrowserFragment_self, bundleOf(
+                FileManager.KEY_ARGUMENT_PATH to path,
+                FileManager.KEY_ARGUMENT_APP_BAR_TITLE to appBarTitle
+        ))
     }
 }

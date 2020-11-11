@@ -7,6 +7,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import pro.filemanager.R
 import pro.filemanager.databinding.LayoutAudioItemBinding
+import pro.filemanager.files.FileManager
 
 class AudioBrowserAdapter(val context: Context, val audioItems: MutableList<AudioItem>, val layoutInflater: LayoutInflater) : RecyclerView.Adapter<AudioBrowserAdapter.AudioItemViewHolder>() {
 
@@ -15,7 +16,7 @@ class AudioBrowserAdapter(val context: Context, val audioItems: MutableList<Audi
 
         init {
             binding.layoutAudioItemRootLayout.setOnClickListener {
-                AudioManager.openInOtherMusicPlayer(context, item.data)
+                FileManager.openFile(context, item.data)
             }
         }
     }

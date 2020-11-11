@@ -30,11 +30,17 @@ class HomeFragment() : Fragment() {
         navController = Navigation.findNavController(binding.root)
 
         binding.fragmentHomeInternalBtn.setOnClickListener {
-            navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf("path" to FileManager.internalRootPath))
+            navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf(
+                    FileManager.KEY_ARGUMENT_PATH to FileManager.internalRootPath,
+                    FileManager.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_internal_storage)
+            ))
         }
 
         binding.fragmentHomeExternalBtn.setOnClickListener {
-            navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf("path" to FileManager.externalRootPath))
+            navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf(
+                    FileManager.KEY_ARGUMENT_PATH to FileManager.externalRootPath,
+                    FileManager.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_external_storage)
+            ))
         }
 
         binding.fragmentHomeAudiosBtn.layoutHomeTileRootLayoutContent.setOnClickListener {

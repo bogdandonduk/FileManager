@@ -12,7 +12,6 @@ import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.databinding.FragmentAudioBrowserBinding
 import pro.filemanager.docs.DocManager
-import pro.filemanager.files.FileManager
 import pro.filemanager.images.ImageManager
 import pro.filemanager.videos.VideoManager
 
@@ -38,7 +37,7 @@ class AudioBrowserFragment() : Fragment() {
 
                 } else {
                     if(!AudioManager.preloadingInProgress) {
-                        AudioManager.preloadAudios(requireContext())
+                        AudioManager.loadAudios(requireContext())
                         AudioManager.preloadedAudios!!
                     } else {
                         while(AudioManager.preloadingInProgress && AudioManager.preloadedAudios == null) {
@@ -56,15 +55,15 @@ class AudioBrowserFragment() : Fragment() {
 
                 if(ImageManager.preloadedImages == null && !ImageManager.preloadingInProgress){
                     ApplicationLoader.ApplicationIOScope.launch {
-                        ImageManager.preloadImages(requireContext())
+                        ImageManager.loadImages(requireContext())
                     }
                 } else if(VideoManager.preloadedVideos == null && !VideoManager.preloadingVideosInProgress) {
                     ApplicationLoader.ApplicationIOScope.launch {
-                        VideoManager.preloadVideos(requireContext())
+                        VideoManager.loadVideos(requireContext())
                     }
                 } else if(DocManager.preloadedDocs == null && !DocManager.preloadingInProgress) {
                     ApplicationLoader.ApplicationIOScope.launch {
-                        DocManager.preloadDocs(requireContext())
+                        DocManager.loadDocs(requireContext())
                     }
                 }
             }

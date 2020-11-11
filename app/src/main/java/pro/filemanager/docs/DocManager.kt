@@ -91,7 +91,7 @@ class DocManager() {
         var preloadingInProgress = false
 
         @SuppressLint("NewApi")
-        fun preloadDocs(context: Context) {
+        fun loadDocs(context: Context) {
             if((Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) || (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
                 preloadingInProgress = true
 
@@ -106,27 +106,6 @@ class DocManager() {
             }
         }
 
-        fun openInOtherDocReader(context: Context, path: String) {
-            val type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(path))
-
-            val uri: Uri =
-                    try {
-                        FileProvider.getUriForFile(context, context.packageName + ".fileProvider", File(path))
-                    } catch (e: Exception) {
-                        Uri.parse(path)
-                    }
-
-            val intent = Intent(Intent.ACTION_VIEW)
-
-            intent.setDataAndType(uri, type)
-            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-
-            if(intent.resolveActivity(context.packageManager) != null) {
-                context.startActivity(intent)
-            } else {
-                // take user to google play for video player
-            }
-        }
     }
 
 }

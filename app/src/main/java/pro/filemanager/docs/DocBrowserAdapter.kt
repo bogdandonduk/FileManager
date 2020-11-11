@@ -7,6 +7,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import pro.filemanager.R
 import pro.filemanager.databinding.LayoutDocItemBinding
+import pro.filemanager.files.FileManager
 
 class DocBrowserAdapter(val context: Context, val docItems: MutableList<DocItem>, val layoutInflater: LayoutInflater) : RecyclerView.Adapter<DocBrowserAdapter.DocItemViewHolder>() {
 
@@ -15,7 +16,7 @@ class DocBrowserAdapter(val context: Context, val docItems: MutableList<DocItem>
 
         init {
             binding.layoutDocItemRootLayout.setOnClickListener {
-                DocManager.openInOtherDocReader(context, item.data)
+                FileManager.openFile(context, item.data)
             }
         }
     }

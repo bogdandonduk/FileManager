@@ -2,6 +2,8 @@ package pro.filemanager
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.ActionBar
 import androidx.navigation.NavController
@@ -22,6 +24,8 @@ class HomeActivity : AppCompatActivity() {
 
     lateinit var navController: NavController
     lateinit var appBarConfiguration: AppBarConfiguration
+
+    var currentOptions: Array<MenuItem>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,8 +55,20 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        return if(currentOptions != null) {
+//            currentOptions.forEach {
+//                menu.add(it)
+//            }
+            true
+        } else {
+            super.onCreateOptionsMenu(menu)
+        }
+
+    }
+
     override fun onSupportNavigateUp(): Boolean {
-        val navController: NavController = findNavController(R.id.homeActivityContentNavHost)
+        val navController = findNavController(R.id.homeActivityContentNavHost)
 
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
 

@@ -11,24 +11,32 @@ import pro.filemanager.databinding.LayoutDocItemBinding
 import pro.filemanager.databinding.LayoutFileItemBinding
 import java.io.File
 
-class FileBrowserAdapter(val context: Context, val files: Array<File>, val layoutInflater: LayoutInflater) : RecyclerView.Adapter<FileBrowserAdapter.FileItemViewHolder>() {
+class FileBrowserAdapter(val context: Context, val files: Array<File>, val layoutInflater: LayoutInflater, val fileBrowserFragment: FileBrowserFragment) : RecyclerView.Adapter<FileBrowserAdapter.FileItemViewHolder>() {
 
-    class FileItemViewHolder(val context: Context, val binding: LayoutFileItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class FileItemViewHolder(val context: Context, val binding: LayoutFileItemBinding, val fileBrowserFragment: FileBrowserFragment) : RecyclerView.ViewHolder(binding.root) {
         lateinit var file: File
 
         init {
-            binding.layoutFileItemRootLayout.setOnClickListener {
-                if(file.isDirectory) {
+            binding.layoutFileItemRootLayout.apply {
+                setOnClickListener {
+                    if(file.isDirectory) {
+                        fileBrowserFragment.navigate(file.absolutePath)
+                    } else {
+                        FileManager.openFile(context, file.absolutePath)
+                    }
+                }
 
-                } else {
+                setOnLongClickListener {
 
+                    true
                 }
             }
+
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileItemViewHolder {
-        return FileItemViewHolder(context, LayoutFileItemBinding.inflate(layoutInflater, parent, false))
+        return FileItemViewHolder(context, LayoutFileItemBinding.inflate(layoutInflater, parent, false), fileBrowserFragment)
     }
 
     override fun onBindViewHolder(holder: FileItemViewHolder, position: Int) {

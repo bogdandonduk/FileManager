@@ -69,7 +69,7 @@ class ImageManager() {
         var preloadingInProgress = false
 
         @SuppressLint("NewApi")
-        fun preloadImages(context: Context) {
+        fun loadImages(context: Context) {
             if((Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) || (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
                 preloadingInProgress = true
 

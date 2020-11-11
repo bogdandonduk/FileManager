@@ -62,8 +62,7 @@
         android:label="@string/title_video" />
     <fragment
         android:id="@+id/fileBrowserFragment"
-        android:name="pro.filemanager.files.FileBrowserFragment"
-        android:label="FileBrowserFragment" >
+        android:name="pro.filemanager.files.FileBrowserFragment">
         <action
             android:id="@+id/action_fileBrowserFragment_self"
             app:destination="@id/fileBrowserFragment" />

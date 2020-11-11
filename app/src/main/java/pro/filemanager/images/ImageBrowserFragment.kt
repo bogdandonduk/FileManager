@@ -49,7 +49,7 @@ class ImageBrowserFragment() : Fragment() {
                     ImageManager.preloadedImages!!
                 } else {
                     if(!ImageManager.preloadingInProgress) {
-                        ImageManager.preloadImages(requireContext())
+                        ImageManager.loadImages(requireContext())
                         ImageManager.preloadedImages!!
                     } else {
                         while(ImageManager.preloadingInProgress && ImageManager.preloadedImages == null) {
@@ -71,15 +71,15 @@ class ImageBrowserFragment() : Fragment() {
 
                 if(VideoManager.preloadedVideos == null && !VideoManager.preloadingVideosInProgress){
                     ApplicationLoader.ApplicationIOScope.launch {
-                        VideoManager.preloadVideos(requireContext())
+                        VideoManager.loadVideos(requireContext())
                     }
                 } else if(DocManager.preloadedDocs == null && !DocManager.preloadingInProgress) {
                     ApplicationLoader.ApplicationIOScope.launch {
-                        DocManager.preloadDocs(requireContext())
+                        DocManager.loadDocs(requireContext())
                     }
                 } else if(AudioManager.preloadedAudios == null && !AudioManager.preloadingInProgress) {
                     ApplicationLoader.ApplicationIOScope.launch {
-                        AudioManager.preloadAudios(requireContext())
+                        AudioManager.loadAudios(requireContext())
                     }
                 }
 

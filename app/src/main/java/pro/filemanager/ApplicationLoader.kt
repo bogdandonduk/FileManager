@@ -2,9 +2,6 @@ package pro.filemanager
 
 import android.app.Application
 import android.content.Context
-import android.os.Environment
-import android.provider.MediaStore
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import pro.filemanager.images.ImageManager
@@ -32,19 +29,19 @@ class ApplicationLoader : Application() {
         }
 
         ApplicationIOScope.launch {
-            ImageManager.preloadImages(this@ApplicationLoader)
+            ImageManager.loadImages(this@ApplicationLoader)
         }
 
         ApplicationIOScope.launch {
-            VideoManager.preloadVideos(this@ApplicationLoader)
+            VideoManager.loadVideos(this@ApplicationLoader)
         }
 
         ApplicationIOScope.launch {
-            DocManager.preloadDocs(this@ApplicationLoader)
+            DocManager.loadDocs(this@ApplicationLoader)
         }
 
         ApplicationIOScope.launch {
-            AudioManager.preloadAudios(this@ApplicationLoader)
+            AudioManager.loadAudios(this@ApplicationLoader)
         }
 
     }
