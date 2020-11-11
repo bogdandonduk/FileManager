@@ -3,21 +3,12 @@ package pro.filemanager.docs
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.database.MergeCursor
-import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import android.webkit.MimeTypeMap
-import androidx.core.content.FileProvider
-import kotlinx.coroutines.Job
 import pro.filemanager.ApplicationLoader
-import pro.filemanager.audios.AudioItem
-import java.io.File
-import java.lang.Exception
 
 class DocManager() {
     private var cursor: MergeCursor = MergeCursor(arrayOf(

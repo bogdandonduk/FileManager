@@ -19,11 +19,35 @@ class FileManager {
         const val KEY_ARGUMENT_PATH = "path"
         const val KEY_ARGUMENT_APP_BAR_TITLE = "appBarTitle"
 
-        var internalRootPath = Environment.getExternalStorageDirectory().toString()
 
         var externalRootPath = ""
 
         var isFindingExternalRoot = false
+
+        fun getInternalRootPath() : String {
+            return if(Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED)
+                    Environment.getExternalStorageDirectory().absolutePath
+                else
+                    throw IllegalStateException("Something wrong with internal storage state")
+        }
+
+        fun getInternalDownMostRootPath() : String {
+
+            var downMostRootPath = ""
+
+            try {
+                getInternalRootPath().split(File.separator).forEach {
+                    if(downMostRootPath.isEmpty()) {
+                        if(it.isNotEmpty())
+                            downMostRootPath = File.separator + it
+                    }
+                }
+            } catch (e: Exception) {
+
+            }
+
+            return downMostRootPath
+        }
 
         fun findExternalRoot(context: Context) {
             val cursor: Cursor = context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
@@ -41,18 +65,22 @@ class FileManager {
                 while(!cursor.isAfterLast) {
                     val data = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA))
 
-                    if(!data.toLowerCase(Locale.ROOT).contains(internalRootPath.toLowerCase(Locale.ROOT))) {
-                        if(!internalRootPath.toLowerCase(Locale.ROOT).contains(data)) {
-                            val splitData = data.split(File.separator)
+                    try {
+                        if(!data.toLowerCase(Locale.ROOT).contains(getInternalRootPath().toLowerCase(Locale.ROOT))) {
+                            if(!getInternalRootPath().toLowerCase(Locale.ROOT).contains(data)) {
+                                val splitData = data.split(File.separator)
 
-                            if(splitData.size < shortestPathLength) {
-                                shortestPathLength = splitData.size
+                                if(splitData.size < shortestPathLength) {
+                                    shortestPathLength = splitData.size
 
-                                if(File(data).isDirectory) {
-                                    externalRootPath = data
+                                    if(File(data).isDirectory) {
+                                        externalRootPath = data
+                                    }
                                 }
                             }
                         }
+                    } catch (e: Exception) {
+
                     }
 
                     cursor.moveToNext()

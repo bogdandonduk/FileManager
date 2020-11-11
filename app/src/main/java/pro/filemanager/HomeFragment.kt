@@ -11,7 +11,7 @@ import androidx.navigation.Navigation
 import pro.filemanager.databinding.FragmentHomeBinding
 import pro.filemanager.files.FileManager
 
-class HomeFragment() : Fragment() {
+class HomeFragment : Fragment() {
 
     lateinit var binding: FragmentHomeBinding
     lateinit var navController: NavController
@@ -30,10 +30,16 @@ class HomeFragment() : Fragment() {
         navController = Navigation.findNavController(binding.root)
 
         binding.fragmentHomeInternalBtn.setOnClickListener {
-            navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf(
-                    FileManager.KEY_ARGUMENT_PATH to FileManager.internalRootPath,
-                    FileManager.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_internal_storage)
-            ))
+
+            try {
+                navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf(
+                        FileManager.KEY_ARGUMENT_PATH to FileManager.getInternalRootPath(),
+                        FileManager.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_internal_storage)
+                ))
+            } catch (e: Exception) {
+
+            }
+
         }
 
         binding.fragmentHomeExternalBtn.setOnClickListener {

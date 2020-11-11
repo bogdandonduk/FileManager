@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.ActionBar
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -43,8 +42,8 @@ class HomeActivity : AppCompatActivity() {
         if(savedInstanceState == null) {
 
             binding.homeActivityRootDrawerLayout.alpha = 0f
-            binding.homeActivityRootDrawerLayout.scaleX = 0.97f
-            binding.homeActivityRootDrawerLayout.scaleY = 0.97f
+            binding.homeActivityRootDrawerLayout.scaleX = 0.95f
+            binding.homeActivityRootDrawerLayout.scaleY = 0.95f
             binding.homeActivityRootDrawerLayout.visibility = View.GONE
             binding.homeActivityRootDrawerLayout.visibility = View.VISIBLE
             binding.homeActivityRootDrawerLayout.animate().alpha(1f).setDuration(400).start()

@@ -1,16 +1,11 @@
 package pro.filemanager.images
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.util.Log
-import android.util.LruCache
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.signature.MediaStoreSignature
 import kotlinx.coroutines.launch
-import pro.filemanager.R
 import pro.filemanager.databinding.LayoutImageItemBinding
 
 class ImageBrowserAdapter(val context: Context, val imageItems: MutableList<ImageItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageBrowserFragment) : RecyclerView.Adapter<ImageBrowserAdapter.ImageItemViewHolder>() {

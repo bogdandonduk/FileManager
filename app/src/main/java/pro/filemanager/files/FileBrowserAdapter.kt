@@ -3,11 +3,7 @@ package pro.filemanager.files
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
-import pro.filemanager.R
-import pro.filemanager.databinding.LayoutDocItemBinding
 import pro.filemanager.databinding.LayoutFileItemBinding
 import java.io.File
 

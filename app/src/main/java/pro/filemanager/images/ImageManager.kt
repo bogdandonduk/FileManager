@@ -5,20 +5,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.database.Cursor
-import android.graphics.Bitmap
 import android.os.Build
-import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
-import android.util.LruCache
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.request.transition.Transition
-import com.bumptech.glide.signature.MediaStoreSignature
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.R
 
