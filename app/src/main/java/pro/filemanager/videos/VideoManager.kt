@@ -61,21 +61,21 @@ class VideoManager() {
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .centerCrop()
 
-        var preloadedVideos: MutableList<VideoItem>? = null
-        var preloadingVideosInProgress = false
+        var loadedVideos: MutableList<VideoItem>? = null
+        var loadingInProgress = false
 
         @SuppressLint("NewApi")
         fun loadVideos(context: Context) {
             if((Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) || (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                preloadingVideosInProgress = true
+                loadingInProgress = true
 
                 val videoManager = VideoManager()
 
-                preloadedVideos = videoManager.fetch()
+                loadedVideos = videoManager.fetch()
 
                 videoManager.closeCursor()
 
-                preloadingVideosInProgress = false
+                loadingInProgress = false
 
             }
         }

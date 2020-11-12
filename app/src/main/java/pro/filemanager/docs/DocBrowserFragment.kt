@@ -11,6 +11,7 @@ import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.audios.AudioManager
 import pro.filemanager.databinding.FragmentDocBrowserBinding
+import pro.filemanager.files.FileManager
 import pro.filemanager.images.ImageManager
 import pro.filemanager.videos.VideoManager
 
@@ -30,19 +31,19 @@ class DocBrowserFragment() : Fragment() {
         (requireActivity() as HomeActivity).requestExternalStoragePermission {
 
             ApplicationLoader.ApplicationIOScope.launch {
-                val docItems: MutableList<DocItem> = if(DocManager.preloadedDocs != null) {
+                val docItems: MutableList<DocItem> = if(DocManager.loadedDocs != null) {
 
-                    DocManager.preloadedDocs!!
+                    DocManager.loadedDocs!!
                 } else {
-                    if(!DocManager.preloadingInProgress) {
+                    if(!DocManager.loadingInProgress) {
                         DocManager.loadDocs(requireContext())
-                        DocManager.preloadedDocs!!
+                        DocManager.loadedDocs!!
                     } else {
-                        while(DocManager.preloadingInProgress && DocManager.preloadedDocs == null) {
+                        while(DocManager.loadingInProgress && DocManager.loadedDocs == null) {
                             delay(25)
                         }
 
-                        DocManager.preloadedDocs!!
+                        DocManager.loadedDocs!!
                     }
                 }
 
@@ -50,29 +51,27 @@ class DocBrowserFragment() : Fragment() {
                     initAdapter(docItems)
                 }
 
-                if(ImageManager.preloadedImages == null && !ImageManager.preloadingInProgress){
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        ImageManager.loadImages(requireContext())
-                    }
-                } else if(VideoManager.preloadedVideos == null && !VideoManager.preloadingVideosInProgress) {
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        VideoManager.loadVideos(requireContext())
-                    }
-                } else if(AudioManager.preloadedAudios == null && !AudioManager.preloadingInProgress) {
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        AudioManager.loadAudios(requireContext())
-                    }
-                }
             }
-
         }
 
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        if(VideoManager.loadedVideos == null && !VideoManager.loadingInProgress){
+            ApplicationLoader.loadVideos()
+        } else if(ImageManager.loadedImages == null && !ImageManager.loadingInProgress) {
+            ApplicationLoader.loadImages()
+        } else if(FileManager.externalRootPath == null && !FileManager.findingExternalRootInProgress) {
+            ApplicationLoader.findExternalRoot()
+        } else if(AudioManager.loadedAudios == null && !AudioManager.loadingInProgress) {
+            ApplicationLoader.loadAudios()
+        }
+    }
+
     fun initAdapter(docItems: MutableList<DocItem>) {
-
         binding.fragmentDocBrowserList.adapter = DocBrowserAdapter(requireActivity(), docItems, layoutInflater)
-
     }
 }

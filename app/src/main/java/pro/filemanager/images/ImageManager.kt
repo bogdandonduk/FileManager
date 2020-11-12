@@ -55,21 +55,21 @@ class ImageManager() {
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .centerCrop()
 
-        var preloadedImages: MutableList<ImageItem>? = null
-        var preloadingInProgress = false
+        var loadedImages: MutableList<ImageItem>? = null
+        var loadingInProgress = false
 
         @SuppressLint("NewApi")
         fun loadImages(context: Context) {
             if((Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) || (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                preloadingInProgress = true
+                loadingInProgress = true
 
                 val imageManager = ImageManager()
 
-                preloadedImages = imageManager.fetch()
+                loadedImages = imageManager.fetch()
 
                 imageManager.closeCursor()
 
-                preloadingInProgress = false
+                loadingInProgress = false
 
             }
         }

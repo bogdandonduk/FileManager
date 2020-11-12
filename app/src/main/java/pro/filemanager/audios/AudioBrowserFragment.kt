@@ -12,6 +12,7 @@ import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.databinding.FragmentAudioBrowserBinding
 import pro.filemanager.docs.DocManager
+import pro.filemanager.files.FileManager
 import pro.filemanager.images.ImageManager
 import pro.filemanager.videos.VideoManager
 
@@ -31,20 +32,20 @@ class AudioBrowserFragment() : Fragment() {
         (requireActivity() as HomeActivity).requestExternalStoragePermission {
 
             ApplicationLoader.ApplicationIOScope.launch {
-                val audioItems: MutableList<AudioItem> = if(AudioManager.preloadedAudios != null) {
+                val audioItems: MutableList<AudioItem> = if(AudioManager.loadedAudios != null) {
 
-                    AudioManager.preloadedAudios!!
+                    AudioManager.loadedAudios!!
 
                 } else {
-                    if(!AudioManager.preloadingInProgress) {
+                    if(!AudioManager.loadingInProgress) {
                         AudioManager.loadAudios(requireContext())
-                        AudioManager.preloadedAudios!!
+                        AudioManager.loadedAudios!!
                     } else {
-                        while(AudioManager.preloadingInProgress && AudioManager.preloadedAudios == null) {
+                        while(AudioManager.loadingInProgress && AudioManager.loadedAudios == null) {
                             delay(25)
                         }
 
-                        AudioManager.preloadedAudios!!
+                        AudioManager.loadedAudios!!
                     }
 
                 }
@@ -53,24 +54,25 @@ class AudioBrowserFragment() : Fragment() {
                     initAdapter(audioItems)
                 }
 
-                if(ImageManager.preloadedImages == null && !ImageManager.preloadingInProgress){
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        ImageManager.loadImages(requireContext())
-                    }
-                } else if(VideoManager.preloadedVideos == null && !VideoManager.preloadingVideosInProgress) {
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        VideoManager.loadVideos(requireContext())
-                    }
-                } else if(DocManager.preloadedDocs == null && !DocManager.preloadingInProgress) {
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        DocManager.loadDocs(requireContext())
-                    }
-                }
             }
 
         }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if(VideoManager.loadedVideos == null && !VideoManager.loadingInProgress){
+            ApplicationLoader.loadVideos()
+        } else if(ImageManager.loadedImages == null && !ImageManager.loadingInProgress) {
+            ApplicationLoader.loadImages()
+        } else if(FileManager.externalRootPath == null && !FileManager.findingExternalRootInProgress) {
+            ApplicationLoader.findExternalRoot()
+        } else if(DocManager.loadedDocs == null && !DocManager.loadingInProgress) {
+            ApplicationLoader.loadDocs()
+        }
     }
 
     fun initAdapter(audioItems: MutableList<AudioItem>) {

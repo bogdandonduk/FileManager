@@ -16,6 +16,7 @@ import pro.filemanager.audios.AudioManager
 import pro.filemanager.core.UIManager
 import pro.filemanager.databinding.FragmentVideoBrowserBinding
 import pro.filemanager.docs.DocManager
+import pro.filemanager.files.FileManager
 import pro.filemanager.images.ImageManager
 
 class VideoBrowserFragment() : Fragment() {
@@ -36,19 +37,19 @@ class VideoBrowserFragment() : Fragment() {
 
         (requireActivity() as HomeActivity).requestExternalStoragePermission {
             ApplicationLoader.ApplicationIOScope.launch {
-                val videoItems: MutableList<VideoItem> = if(VideoManager.preloadedVideos != null) {
+                val videoItems: MutableList<VideoItem> = if(VideoManager.loadedVideos != null) {
 
-                    VideoManager.preloadedVideos!!
+                    VideoManager.loadedVideos!!
                 } else {
-                    if(!VideoManager.preloadingVideosInProgress) {
+                    if(!VideoManager.loadingInProgress) {
                         VideoManager.loadVideos(requireContext())
-                        VideoManager.preloadedVideos!!
+                        VideoManager.loadedVideos!!
                     } else {
-                        while(VideoManager.preloadingVideosInProgress && VideoManager.preloadedVideos == null) {
+                        while(VideoManager.loadingInProgress && VideoManager.loadedVideos == null) {
                             delay(25)
                         }
 
-                        VideoManager.preloadedVideos!!
+                        VideoManager.loadedVideos!!
                     }
                 }
 
@@ -60,25 +61,24 @@ class VideoBrowserFragment() : Fragment() {
                     if(savedInstanceState?.getParcelable<Parcelable>("rvScrollPosition") != null)
                         binding.fragmentVideoBrowserList.layoutManager?.onRestoreInstanceState(savedInstanceState.getParcelable("rvScrollPosition"))
                 }
-
-                if(ImageManager.preloadedImages == null && !ImageManager.preloadingInProgress){
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        ImageManager.loadImages(requireContext())
-                    }
-                } else if(DocManager.preloadedDocs == null && !DocManager.preloadingInProgress) {
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        DocManager.loadDocs(requireContext())
-                    }
-                } else if(AudioManager.preloadedAudios == null && !AudioManager.preloadingInProgress) {
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        AudioManager.loadAudios(requireContext())
-                    }
-                }
-
             }
         }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if(ImageManager.loadedImages == null && !ImageManager.loadingInProgress){
+            ApplicationLoader.loadImages()
+        } else if(AudioManager.loadedAudios == null && !AudioManager.loadingInProgress) {
+            ApplicationLoader.loadAudios()
+        } else if(FileManager.externalRootPath == null && !FileManager.findingExternalRootInProgress) {
+            ApplicationLoader.findExternalRoot()
+        } else if(DocManager.loadedDocs == null && !DocManager.loadingInProgress) {
+            ApplicationLoader.loadDocs()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -65,7 +65,11 @@
         android:name="pro.filemanager.files.FileBrowserFragment">
         <action
             android:id="@+id/action_fileBrowserFragment_self"
-            app:destination="@id/fileBrowserFragment" />
+            app:destination="@id/fileBrowserFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
         <argument
             android:name="path"
             app:argType="string" />

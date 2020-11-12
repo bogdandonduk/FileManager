@@ -6,6 +6,8 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
+import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import java.io.File
@@ -20,9 +22,9 @@ class FileManager {
         const val KEY_ARGUMENT_APP_BAR_TITLE = "appBarTitle"
 
 
-        var externalRootPath = ""
+        var externalRootPath: String? = null
 
-        var isFindingExternalRoot = false
+        var findingExternalRootInProgress = false
 
         fun getInternalRootPath() : String {
             return if(Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED)
@@ -58,7 +60,7 @@ class FileManager {
 
                 externalRootPath = ""
 
-                isFindingExternalRoot = true
+                findingExternalRootInProgress = true
 
                 var shortestPathLength = 1000000
 
@@ -88,30 +90,26 @@ class FileManager {
 
                 cursor.close()
 
-                isFindingExternalRoot = false
+                findingExternalRootInProgress = false
             }
 
         }
 
+        fun initHomeBtnWithExternalRoot(view: View, onClickListener: View.OnClickListener) {
+
+        }
+
         fun openFile(context: Context, path: String) {
-            val type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(path))
-
-            val uri: Uri =
-                    try {
-                        FileProvider.getUriForFile(context, context.packageName + ".fileProvider", File(path))
-                    } catch (e: Exception) {
-                        Uri.parse(path)
-                    }
-
             val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(uri, type)
+                setDataAndType(
+                        FileProvider.getUriForFile(context, context.packageName + ".fileProvider", File(path)),
+                        MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(path).toLowerCase(Locale.ROOT))
+                )
                 flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             }
 
             if(intent.resolveActivity(context.packageManager) != null) {
                 context.startActivity(intent)
-            } else {
-                // take user to google play for video player
             }
         }
 

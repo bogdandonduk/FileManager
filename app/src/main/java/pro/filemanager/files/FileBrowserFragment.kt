@@ -58,22 +58,16 @@ class FileBrowserFragment() : Fragment() {
 
                 }
 
-                if(ImageManager.preloadedImages == null && !ImageManager.preloadingInProgress){
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        ImageManager.loadImages(requireContext())
-                    }
-                } else if(VideoManager.preloadedVideos == null && !VideoManager.preloadingVideosInProgress) {
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        VideoManager.loadVideos(requireContext())
-                    }
-                } else if(DocManager.preloadedDocs == null && !DocManager.preloadingInProgress) {
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        DocManager.loadDocs(requireContext())
-                    }
-                } else if(AudioManager.preloadedAudios == null && !AudioManager.preloadingInProgress) {
-                    ApplicationLoader.ApplicationIOScope.launch {
-                        AudioManager.loadAudios(requireContext())
-                    }
+                if(VideoManager.loadedVideos == null && !VideoManager.loadingInProgress){
+                    ApplicationLoader.loadVideos()
+                } else if(ImageManager.loadedImages == null && !ImageManager.loadingInProgress) {
+                    ApplicationLoader.loadImages()
+                } else if(FileManager.externalRootPath == null && !FileManager.findingExternalRootInProgress) {
+                    ApplicationLoader.findExternalRoot()
+                } else if(DocManager.loadedDocs == null && !DocManager.loadingInProgress) {
+                    ApplicationLoader.loadDocs()
+                } else if(AudioManager.loadedAudios == null && !AudioManager.loadingInProgress) {
+                    ApplicationLoader.loadAudios()
                 }
             }
 

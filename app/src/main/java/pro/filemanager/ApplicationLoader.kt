@@ -22,24 +22,39 @@ class ApplicationLoader : Application() {
 
         val fileSystemObserver: FileSystemObserver = FileSystemObserver(FileManager.getInternalDownMostRootPath(), FileObserver.ALL_EVENTS)
 
-        fun load() {
+        fun loadAll() {
+            loadVideos()
+            loadImages()
+            findExternalRoot()
+            loadDocs()
+            loadAudios()
+        }
 
+        fun loadVideos() {
             ApplicationIOScope.launch {
                 VideoManager.loadVideos(context)
             }
+        }
 
+        fun loadImages() {
             ApplicationIOScope.launch {
                 ImageManager.loadImages(context)
             }
+        }
 
+        fun findExternalRoot() {
             ApplicationIOScope.launch {
                 FileManager.findExternalRoot(context)
             }
+        }
 
+        fun loadDocs() {
             ApplicationIOScope.launch {
                 DocManager.loadDocs(context)
             }
+        }
 
+        fun loadAudios() {
             ApplicationIOScope.launch {
                 AudioManager.loadAudios(context)
             }
@@ -51,7 +66,7 @@ class ApplicationLoader : Application() {
 
         context = this
 
-        load()
+        loadAll()
 
 //        fileSystemObserver.startWatching()
 

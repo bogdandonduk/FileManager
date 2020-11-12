@@ -78,21 +78,21 @@ class DocManager() {
 
     companion object {
 
-        var preloadedDocs: MutableList<DocItem>? = null
-        var preloadingInProgress = false
+        var loadedDocs: MutableList<DocItem>? = null
+        var loadingInProgress = false
 
         @SuppressLint("NewApi")
         fun loadDocs(context: Context) {
             if((Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) || (context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-                preloadingInProgress = true
+                loadingInProgress = true
 
                 val docManager = DocManager()
 
-                preloadedDocs = docManager.fetch()
+                loadedDocs = docManager.fetch()
 
                 docManager.closeCursor()
 
-                preloadingInProgress = false
+                loadingInProgress = false
 
             }
         }
