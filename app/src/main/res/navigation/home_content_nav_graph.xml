@@ -47,7 +47,7 @@
     <fragment
         android:id="@+id/audioBrowserFragment"
         android:name="pro.filemanager.audios.AudioBrowserFragment"
-        android:label="@string/title_audio" />
+        android:label="@string/title_audios" />
     <fragment
         android:id="@+id/docBrowserFragment"
         android:name="pro.filemanager.docs.DocBrowserFragment"
@@ -59,7 +59,7 @@
     <fragment
         android:id="@+id/videoBrowserFragment"
         android:name="pro.filemanager.videos.VideoBrowserFragment"
-        android:label="@string/title_video" />
+        android:label="@string/title_videos" />
     <fragment
         android:id="@+id/fileBrowserFragment"
         android:name="pro.filemanager.files.FileBrowserFragment">

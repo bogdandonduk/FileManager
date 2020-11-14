@@ -1,19 +1,21 @@
 package pro.filemanager
 
-import android.graphics.RectF
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import pro.filemanager.databinding.FragmentHomeBinding
 import pro.filemanager.files.FileManager
-import kotlin.math.abs
 
 class HomeFragment : Fragment() {
 
@@ -28,6 +30,40 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         binding.fragmentHomeRootLayout.visibility = View.INVISIBLE
+
+        binding.fragmentHomeAudiosBtn.layoutHomeTileRootLayoutContent.post {
+
+            binding.fragmentHomeAudiosBtn.layoutHomeTileRootLayoutContent.width.let {
+                val textSize = (it / 20).toFloat()
+
+                binding.fragmentHomeAudiosBtn.layoutHomeTileTitle.textSize = textSize
+                binding.fragmentHomeAudiosBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_audios)
+
+                binding.fragmentHomeVideosBtn.layoutHomeTileTitle.textSize = textSize
+                binding.fragmentHomeVideosBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_videos)
+
+                binding.fragmentHomeDocsBtn.layoutHomeTileTitle.textSize = textSize
+                binding.fragmentHomeDocsBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_docs)
+
+                binding.fragmentHomeAppsBtn.layoutHomeTileTitle.textSize = textSize
+                binding.fragmentHomeAppsBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_apps)
+
+                binding.fragmentHomeImagesBtn.layoutHomeTileTitle.textSize = textSize
+                binding.fragmentHomeImagesBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_images)
+
+                binding.fragmentHomeTransferPcBtn.layoutHomeTileTitle.textSize = textSize
+                binding.fragmentHomeTransferPcBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_transfer_pc)
+
+                binding.fragmentHomeCloudBtn.layoutHomeTileTitle.textSize = textSize
+                binding.fragmentHomeCloudBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_cloud)
+
+                binding.fragmentHomeTransferAppsBtn.layoutHomeTileTitle.textSize = textSize
+                binding.fragmentHomeTransferAppsBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_transfer_apps)
+
+                binding.fragmentHomeNamelessBtn.layoutHomeTileTitle.textSize = textSize
+            }
+
+        }
 
         binding.fragmentHome1percentDeterminer.post {
             binding.fragmentHome1percentDeterminer.width.let {
@@ -51,41 +87,40 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         navController = Navigation.findNavController(binding.root)
 
-        binding.fragmentHomeInternalBtn.setOnClickListener {
-
-            try {
+        CoroutineScope(Main).launch {
+            binding.fragmentHomeInternalBtn.setOnClickListener {
                 navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf(
-                        FileManager.KEY_ARGUMENT_PATH to FileManager.getInternalRootPath(),
-                        FileManager.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_internal_storage)
+                    FileManager.KEY_ARGUMENT_PATH to FileManager.KEY_INTERNAL_STORAGE,
+                    FileManager.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_internal_storage)
                 ))
-            } catch (e: Exception) {
-
             }
 
-        }
-
-        binding.fragmentHomeAudiosBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
-            navController.navigate(R.id.action_homeFragment_to_audioBrowserFragment)
-        }
-
-        binding.fragmentHomeVideosBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
-            navController.navigate(R.id.action_homeFragment_to_videoBrowserFragment)
-        }
-
-        binding.fragmentHomeDocsBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
-            navController.navigate(R.id.action_homeFragment_to_docBrowserFragment)
-        }
-
-        binding.fragmentHomeImagesBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
-            navController.navigate(R.id.action_homeFragment_to_imageBrowserFragment)
-        }
-
-        binding.fragmentHomeExternalBtn.setOnClickListener {
-            navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf(
-                    FileManager.KEY_ARGUMENT_PATH to FileManager.externalRootPath,
+            binding.fragmentHomeExternalBtn.setOnClickListener {
+                navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf(
+                    FileManager.KEY_ARGUMENT_PATH to FileManager.KEY_EXTERNAL_STORAGE,
                     FileManager.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_external_storage)
-            ))
+                ))
+            }
+
+            binding.fragmentHomeAudiosBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
+                navController.navigate(R.id.action_homeFragment_to_audioBrowserFragment)
+            }
+
+            binding.fragmentHomeVideosBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
+                navController.navigate(R.id.action_homeFragment_to_videoBrowserFragment)
+            }
+
+            binding.fragmentHomeDocsBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
+                navController.navigate(R.id.action_homeFragment_to_docBrowserFragment)
+            }
+
+            binding.fragmentHomeImagesBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
+                navController.navigate(R.id.action_homeFragment_to_imageBrowserFragment)
+            }
+
+
         }
+
     }
 
 }

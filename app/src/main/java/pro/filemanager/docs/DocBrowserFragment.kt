@@ -5,19 +5,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
-import pro.filemanager.audios.AudioManager
 import pro.filemanager.databinding.FragmentDocBrowserBinding
-import pro.filemanager.files.FileManager
-import pro.filemanager.images.ImageManager
-import pro.filemanager.videos.VideoManager
+import java.lang.IllegalStateException
 
-class DocBrowserFragment() : Fragment() {
+class DocBrowserFragment : Fragment(), Observer<MutableList<DocItem>> {
 
     lateinit var binding: FragmentDocBrowserBinding
+    lateinit var viewModel: DocBrowserViewModel
+    var mainAdapter: DocBrowserAdapter? = null
+
+    override fun onChanged(t: MutableList<DocItem>?) {
+        mainAdapter?.notifyDataSetChanged()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,47 +38,40 @@ class DocBrowserFragment() : Fragment() {
         (requireActivity() as HomeActivity).requestExternalStoragePermission {
 
             ApplicationLoader.ApplicationIOScope.launch {
-                val docItems: MutableList<DocItem> = if(DocManager.loadedDocs != null) {
+                viewModel = ViewModelProviders.of(this@DocBrowserFragment, DocSimpleManualInjector.provideViewModelFactory()).get(DocBrowserViewModel::class.java)
 
-                    DocManager.loadedDocs!!
-                } else {
-                    if(!DocManager.loadingInProgress) {
-                        DocManager.loadDocs(requireContext())
-                        DocManager.loadedDocs!!
-                    } else {
-                        while(DocManager.loadingInProgress && DocManager.loadedDocs == null) {
-                            delay(25)
-                        }
+                withContext(Main) {
 
-                        DocManager.loadedDocs!!
+                    viewModel.getItemsLive().observe(viewLifecycleOwner, this@DocBrowserFragment)
+
+                    try {
+                        initAdapter(viewModel.getItemsLive().value!!)
+                    } catch(e: IllegalStateException) {
+                        e.printStackTrace()
+
+                        // TODO: MediaStore fetching failed with IllegalStateException.
+                        //  Most likely, it is something out of our hands.
+                        //  Show "Something went wrong" dialog
+
+                    } finally {
+
                     }
                 }
 
-                withContext(Dispatchers.Main) {
-                    initAdapter(docItems)
-                }
-
+                ApplicationLoader.loadVideos()
+                ApplicationLoader.loadImages()
+                ApplicationLoader.loadAudios()
             }
+
         }
 
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun initAdapter(audioItems: MutableList<DocItem>) {
+        mainAdapter = DocBrowserAdapter(requireActivity(), audioItems, layoutInflater)
+        binding.fragmentDocBrowserList.adapter = mainAdapter
 
-        if(VideoManager.loadedVideos == null && !VideoManager.loadingInProgress){
-            ApplicationLoader.loadVideos()
-        } else if(ImageManager.loadedImages == null && !ImageManager.loadingInProgress) {
-            ApplicationLoader.loadImages()
-        } else if(FileManager.externalRootPath == null && !FileManager.findingExternalRootInProgress) {
-            ApplicationLoader.findExternalRoot()
-        } else if(AudioManager.loadedAudios == null && !AudioManager.loadingInProgress) {
-            ApplicationLoader.loadAudios()
-        }
     }
 
-    fun initAdapter(docItems: MutableList<DocItem>) {
-        binding.fragmentDocBrowserList.adapter = DocBrowserAdapter(requireActivity(), docItems, layoutInflater)
-    }
 }

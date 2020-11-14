@@ -9,29 +9,29 @@ import pro.filemanager.R
 import pro.filemanager.databinding.LayoutAudioItemBinding
 import pro.filemanager.files.FileManager
 
-class AudioBrowserAdapter(val context: Context, val audioItems: MutableList<AudioItem>, val layoutInflater: LayoutInflater) : RecyclerView.Adapter<AudioBrowserAdapter.AudioItemViewHolder>() {
+class AudioBrowserAdapter(val context: Context, val layoutInflater: LayoutInflater, val hostFragment: AudioBrowserFragment) : RecyclerView.Adapter<AudioBrowserAdapter.AudioItemViewHolder>() {
 
-    class AudioItemViewHolder(val context: Context, val binding: LayoutAudioItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class AudioItemViewHolder(val context: Context, val binding: LayoutAudioItemBinding, val hostFragment: AudioBrowserFragment) : RecyclerView.ViewHolder(binding.root) {
         lateinit var item: AudioItem
 
         init {
             binding.layoutAudioItemRootLayout.setOnClickListener {
-                FileManager.openFile(context, item.data)
+                hostFragment.viewModel.deleteRow()
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AudioItemViewHolder {
-        return AudioItemViewHolder(context, DataBindingUtil.inflate(layoutInflater, R.layout.layout_audio_item, parent, false))
+        return AudioItemViewHolder(context, DataBindingUtil.inflate(layoutInflater, R.layout.layout_audio_item, parent, false), hostFragment)
     }
 
     override fun onBindViewHolder(holder: AudioItemViewHolder, position: Int) {
 
-        holder.item = audioItems[position]
+        holder.item = hostFragment.itemsLive!!.value!![position]
         holder.binding.audioItem = holder.item
     }
 
     override fun getItemCount(): Int {
-        return audioItems.size
+        return hostFragment.itemsLive!!.value!!.size
     }
 }

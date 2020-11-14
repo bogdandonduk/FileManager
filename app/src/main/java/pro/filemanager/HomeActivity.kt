@@ -24,6 +24,8 @@ class HomeActivity : AppCompatActivity() {
     lateinit var navController: NavController
     lateinit var appBarConfiguration: AppBarConfiguration
 
+    var onBackBehavior: Runnable? = null
+
     var currentOptions: Array<MenuItem>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +40,8 @@ class HomeActivity : AppCompatActivity() {
 
         binding.homeActivityNavView.setupWithNavController(navController)
         setupActionBarWithNavController(navController, appBarConfiguration)
+
+        supportActionBar?.setBackgroundDrawable(resources.getDrawable(R.drawable.bg_app_bar))
 
         if(savedInstanceState == null) {
 
@@ -62,6 +66,17 @@ class HomeActivity : AppCompatActivity() {
             true
         } else {
             super.onCreateOptionsMenu(menu)
+        }
+
+    }
+
+    override fun onBackPressed() {
+
+        if(onBackBehavior != null) {
+            onBackBehavior!!.run()
+            onBackBehavior = null
+        } else {
+            super.onBackPressed()
         }
 
     }

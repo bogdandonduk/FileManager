@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="appBar">#008fba</color>
+    <color name="statusBar">#1d538d</color>
+
+    <color name="homeTile">#33ffffff</color>
+
+    <color name="homeBgGradStart">#87c0bb</color>
+    <color name="homeBgGradEnd">#357fb3</color>
 
 </resources>

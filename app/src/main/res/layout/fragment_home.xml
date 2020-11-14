@@ -13,42 +13,42 @@
         android:paddingBottom="30dp">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/fragmentHomeRootLayoutGl97pv"
+            android:id="@+id/fragmentHomeRootLayoutGl88pv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.97" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/fragmentHomeRootLayoutGl67pv"
+            android:id="@+id/fragmentHomeRootLayoutGl64pv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.67" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/fragmentHomeRootLayoutGl65pv"
+            android:id="@+id/fragmentHomeRootLayoutGl62pv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.65" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/fragmentHomeRootLayoutGl35pv"
+            android:id="@+id/fragmentHomeRootLayoutGl38pv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.35" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/fragmentHomeRootLayoutGl33pv"
+            android:id="@+id/fragmentHomeRootLayoutGl36pv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.33" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/fragmentHomeRootLayoutGl3pv"
+            android:id="@+id/fragmentHomeRootLayoutGl12pv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -89,8 +89,8 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl35pv"
-            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl33pv"
+            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl38pv"
+            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl36pv"
             app:layout_constraintTop_toTopOf="parent" />
 
         <include
@@ -99,9 +99,9 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="w,1.1:1"
-            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl33pv"
+            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl36pv"
             app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl3pv"
+            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl12pv"
             app:layout_constraintTop_toBottomOf="@+id/fragmentHomeInternalBtn" />
 
         <include
@@ -110,8 +110,8 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="w,1.1:1"
-            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl65pv"
-            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl35pv"
+            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl62pv"
+            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl38pv"
             app:layout_constraintTop_toBottomOf="@+id/fragmentHomeInternalBtn" />
 
         <include
@@ -120,8 +120,8 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="w,1.1:1"
-            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl97pv"
-            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl67pv"
+            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl88pv"
+            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl64pv"
             app:layout_constraintTop_toBottomOf="@+id/fragmentHomeInternalBtn" />
 
         <include
@@ -130,8 +130,8 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="w,1.1:1"
-            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl33pv"
-            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl3pv"
+            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl36pv"
+            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl12pv"
             app:layout_constraintTop_toBottomOf="@id/fragmentHomeAudiosBtn" />
 
         <include
@@ -140,8 +140,8 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="w,1.1:1"
-            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl65pv"
-            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl35pv"
+            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl62pv"
+            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl38pv"
             app:layout_constraintTop_toBottomOf="@+id/fragmentHomeVideosBtn" />
 
         <include
@@ -150,8 +150,8 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="w,1.1:1"
-            app:layout_constraintEnd_toStartOf="@id/fragmentHomeRootLayoutGl97pv"
-            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl67pv"
+            app:layout_constraintEnd_toStartOf="@id/fragmentHomeRootLayoutGl88pv"
+            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl64pv"
             app:layout_constraintTop_toBottomOf="@+id/fragmentHomeDocsBtn" />
 
         <include
@@ -160,8 +160,8 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="w,1.1:1"
-            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl33pv"
-            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl3pv"
+            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl36pv"
+            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl12pv"
             app:layout_constraintTop_toBottomOf="@+id/fragmentHomeAppsBtn" />
 
         <include
@@ -170,8 +170,8 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="w,1.1:1"
-            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl65pv"
-            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl35pv"
+            app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl62pv"
+            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl38pv"
             app:layout_constraintTop_toBottomOf="@+id/fragmentHomeImagesBtn" />
 
         <include
@@ -180,8 +180,8 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="w,1.1:1"
-            app:layout_constraintEnd_toStartOf="@id/fragmentHomeRootLayoutGl97pv"
-            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl67pv"
+            app:layout_constraintEnd_toStartOf="@id/fragmentHomeRootLayoutGl88pv"
+            app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl64pv"
             app:layout_constraintTop_toBottomOf="@+id/fragmentHomeTransferPcBtn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

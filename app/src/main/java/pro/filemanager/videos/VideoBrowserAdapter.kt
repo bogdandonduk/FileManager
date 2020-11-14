@@ -33,10 +33,10 @@ class VideoBrowserAdapter(val context: Context, val videoItems: MutableList<Vide
 
             holder.item = videoItems[position]
 
-            VideoManager.glideVideoRequestBuilder
+            VideoRepo.glideRequestBuilder
                     .load(holder.item.data)
                     .override(holder.binding.layoutVideoItemThumbnail.width, holder.binding.layoutVideoItemThumbnail.height)
-                    .signature(MediaStoreSignature(VideoManager.MIME_TYPE, holder.item.dateModified.toLong(), 0))
+                    .signature(MediaStoreSignature(VideoRepo.MIME_TYPE, holder.item.dateModified.toLong(), 0))
                     .into(holder.binding.layoutVideoItemThumbnail)
 
         }

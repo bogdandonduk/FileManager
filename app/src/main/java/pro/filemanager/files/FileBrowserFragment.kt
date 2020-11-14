@@ -1,6 +1,7 @@
 package pro.filemanager.files
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +14,8 @@ import kotlinx.coroutines.*
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
-import pro.filemanager.audios.AudioManager
 import pro.filemanager.databinding.FragmentFileBrowserBinding
-import pro.filemanager.docs.DocManager
-import pro.filemanager.images.ImageManager
-import pro.filemanager.videos.VideoManager
+import pro.filemanager.videos.VideoRepo
 import java.io.File
 import java.lang.Exception
 
@@ -47,28 +45,55 @@ class FileBrowserFragment() : Fragment() {
 
             ApplicationLoader.ApplicationIOScope.launch {
 
+                val path: String = if(requireArguments().getString(FileManager.KEY_ARGUMENT_PATH) == FileManager.KEY_INTERNAL_STORAGE) {
+                    FileManager.getInternalRootPath()
+                } else if(requireArguments().getString(FileManager.KEY_ARGUMENT_PATH) == FileManager.KEY_EXTERNAL_STORAGE) {
+
+                    if(FileManager.externalRootPath != null) {
+
+                        FileManager.externalRootPath!!
+
+                    } else {
+
+                        FileManager.findExternalRoot(requireContext())
+
+                        FileManager.externalRootPath!!
+
+//                        if(!FileManager.findingExternalRootInProgress) {
+//                            FileManager.findExternalRoot(requireContext())
+//
+//                            FileManager.externalRootPath!!
+//                        } else {
+//
+//                            while(FileManager.findingExternalRootInProgress && FileManager.externalRootPath == null) {
+//                                delay(25)
+//                            }
+//
+//                            FileManager.externalRootPath!!
+//                        }
+
+                    }
+                } else {
+                    requireArguments().getString(FileManager.KEY_ARGUMENT_PATH)!!
+                }
+
                 withContext(Dispatchers.Main) {
                     activity.supportActionBar?.title = requireArguments().getString(FileManager.KEY_ARGUMENT_APP_BAR_TITLE)
 
-                    try {
-                        initAdapter(File(requireArguments().getString(FileManager.KEY_ARGUMENT_PATH)!!).listFiles()!!)
-                    } catch (e: Exception) {
+                    binding.fragmentFileBrowserPathTitle.text = path
 
+                    try {
+                        initAdapter(File(path).listFiles()!!)
+                    } catch (e: Exception) {
+                        Log.d("TAG", "onCreateView: NOPE")
                     }
 
                 }
 
-                if(VideoManager.loadedVideos == null && !VideoManager.loadingInProgress){
-                    ApplicationLoader.loadVideos()
-                } else if(ImageManager.loadedImages == null && !ImageManager.loadingInProgress) {
-                    ApplicationLoader.loadImages()
-                } else if(FileManager.externalRootPath == null && !FileManager.findingExternalRootInProgress) {
+                if(FileManager.externalRootPath == null && !FileManager.findingExternalRootInProgress) {
                     ApplicationLoader.findExternalRoot()
-                } else if(DocManager.loadedDocs == null && !DocManager.loadingInProgress) {
-                    ApplicationLoader.loadDocs()
-                } else if(AudioManager.loadedAudios == null && !AudioManager.loadingInProgress) {
-                    ApplicationLoader.loadAudios()
                 }
+
             }
 
         }

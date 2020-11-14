@@ -12,7 +12,7 @@ class UIManager {
 
         const val KEY_VIEWS_CREATED : String = "viewsCreated"
 
-        fun getImageBrowserSpanNumber(activity: Activity) : Int {
+        fun getGridSpanNumber(activity: Activity) : Int {
             return if(activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
                 activity.getSharedPreferences(KEY_SP_NAME, Context.MODE_PRIVATE).getInt(KEY_SP_SPAN_NUMBER_LANDSCAPE_IMAGE_BROWSER, 6)
             else

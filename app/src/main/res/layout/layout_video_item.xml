@@ -8,32 +8,32 @@
     android:padding="1dp">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutVideoItemRootLayoutGl30pv"
+        android:id="@+id/layoutVideoItemRootLayoutGl32pv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.3" />
+        app:layout_constraintGuide_percent="0.32" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutVideoItemRootLayoutGl70pv"
+        android:id="@+id/layoutVideoItemRootLayoutGl68pv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.7" />
+        app:layout_constraintGuide_percent="0.68" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutVideoItemRootLayoutGl30ph"
+        android:id="@+id/layoutVideoItemRootLayoutGl32ph"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.3" />
+        app:layout_constraintGuide_percent="0.32" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutVideoItemRootLayoutGl70ph"
+        android:id="@+id/layoutVideoItemRootLayoutGl68ph"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.7" />
+        app:layout_constraintGuide_percent="0.68" />
 
     <ImageView
         android:id="@+id/layoutVideoItemThumbnail"
@@ -45,5 +45,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/layoutVideoItemIconPlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/layoutVideoItemRootLayoutGl68ph"
+        app:layout_constraintEnd_toStartOf="@+id/layoutVideoItemRootLayoutGl68pv"
+        app:layout_constraintStart_toStartOf="@+id/layoutVideoItemRootLayoutGl32pv"
+        app:layout_constraintTop_toTopOf="@+id/layoutVideoItemRootLayoutGl32ph"
+        app:srcCompat="@drawable/ic_play" />
+
+    <ImageView
+        android:id="@+id/layoutVideoItemIconCheck"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/layoutVideoItemRootLayoutGl68pv"
+        app:layout_constraintTop_toTopOf="@+id/layoutVideoItemRootLayoutGl68ph"
+        tools:srcCompat="@drawable/ic_baseline_check_circle_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

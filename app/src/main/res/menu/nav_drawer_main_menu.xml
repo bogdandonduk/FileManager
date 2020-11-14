@@ -5,8 +5,8 @@
         android:id="@+id/navDrawerMainMenuMenuGroup"
         android:checkableBehavior="single">
 
-        <item android:id="@+id/audioBrowserFragment" android:title="@string/title_audio" />
-        <item android:id="@+id/videoBrowserFragment" android:title="@string/title_video" />
+        <item android:id="@+id/audioBrowserFragment" android:title="@string/title_audios" />
+        <item android:id="@+id/videoBrowserFragment" android:title="@string/title_videos" />
         <item android:id="@+id/docBrowserFragment" android:title="@string/title_docs" />
         <item android:id="@+id/imageBrowserFragment" android:title="@string/title_images" />
 

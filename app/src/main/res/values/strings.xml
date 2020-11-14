@@ -9,13 +9,17 @@
     <string name="title_thumbnail">Thumbnail</string>
 
     <string name="title_multimedia">Multimedia</string>
-    <string name="title_audio">Music</string>
-    <string name="title_video">Video</string>
+    <string name="title_audios">Music</string>
+    <string name="title_videos">Videos</string>
     <string name="title_docs">Documents</string>
     <string name="title_images">Images</string>
+    <string name="title_apps">Apps</string>
+    <string name="title_transfer_pc">PC Transfer</string>
+    <string name="title_cloud">Cloud</string>
+    <string name="title_transfer_apps">Move Apps</string>
 
     <string name="title_internal_storage">Internal Storage</string>
-    <string name="title_external_storage">External Storage</string>
+    <string name="title_external_storage">SD Card</string>
 
     <string name="external_storage_do_not_ask_again_selected_rationale_message">Please grant it from application details settings</string>
 

@@ -1,41 +1,41 @@
 package pro.filemanager.images
 
 import android.os.Bundle
-import android.os.Parcelable
+import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
-import pro.filemanager.audios.AudioManager
 import pro.filemanager.core.UIManager
+import pro.filemanager.core.tools.SelectorTool
 import pro.filemanager.databinding.FragmentImageBrowserBinding
-import pro.filemanager.docs.DocManager
-import pro.filemanager.files.FileManager
-import pro.filemanager.videos.VideoManager
+import java.lang.IllegalStateException
+import java.lang.Runnable
 
-class ImageBrowserFragment() : Fragment() {
+class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
 
     lateinit var binding: FragmentImageBrowserBinding
-    lateinit var navController: NavController
-    lateinit var IOScope: CoroutineScope
-    lateinit var MainScope: CoroutineScope
+    lateinit var viewModel: ImageBrowserViewModel
+    var mainAdapter: ImageBrowserAdapter? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    val IOScope = CoroutineScope(Dispatchers.IO)
+    val MainScope = CoroutineScope(Main)
 
-        IOScope = CoroutineScope(IO)
-        MainScope = CoroutineScope(Main)
-
+    override fun onChanged(t: MutableList<ImageItem>?) {
+        mainAdapter?.notifyDataSetChanged()
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -44,31 +44,37 @@ class ImageBrowserFragment() : Fragment() {
         binding = FragmentImageBrowserBinding.inflate(inflater, container, false)
 
         (requireActivity() as HomeActivity).requestExternalStoragePermission {
+
             ApplicationLoader.ApplicationIOScope.launch {
-                val imageItems: MutableList<ImageItem> = if(ImageManager.loadedImages != null) {
-
-                    ImageManager.loadedImages!!
-                } else {
-                    if(!ImageManager.loadingInProgress) {
-                        ImageManager.loadImages(requireContext())
-                        ImageManager.loadedImages!!
-                    } else {
-                        while(ImageManager.loadingInProgress && ImageManager.loadedImages == null) {
-                            delay(25)
-                        }
-
-                        ImageManager.loadedImages!!
-                    }
-                }
+                viewModel = ViewModelProviders.of(this@ImageBrowserFragment, ImageSimpleManualInjector.provideViewModelFactory()).get(ImageBrowserViewModel::class.java)
 
                 withContext(Main) {
-                    initAdapter(imageItems)
 
-                    binding.fragmentImageBrowserList.layoutManager = GridLayoutManager(context, UIManager.getImageBrowserSpanNumber(requireActivity()))
+                    viewModel.getItemsLive().observe(viewLifecycleOwner, this@ImageBrowserFragment)
 
-                    if(savedInstanceState?.getParcelable<Parcelable>("rvScrollPosition") != null)
-                        binding.fragmentImageBrowserList.layoutManager?.onRestoreInstanceState(savedInstanceState.getParcelable("rvScrollPosition"))
+                    try {
+                        initAdapter(viewModel.getItemsLive().value!!)
+
+                    } catch(e: IllegalStateException) {
+                        e.printStackTrace()
+
+                        // TODO: MediaStore fetching failed with IllegalStateException.
+                        //  Most likely, it is something out of our hands.
+                        //  Show "Something went wrong" dialog
+
+                    } finally {
+
+                    }
+
+                    if(viewModel.selectorTool == null)
+                        viewModel.selectorTool = SelectorTool(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
+
+                    viewModel.selectorTool!!.assignOnBackBehavior()
                 }
+
+                ApplicationLoader.loadVideos()
+                ApplicationLoader.loadDocs()
+                ApplicationLoader.loadAudios()
 
             }
         }
@@ -76,40 +82,25 @@ class ImageBrowserFragment() : Fragment() {
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun initAdapter(audioItems: MutableList<ImageItem>) {
+        binding.fragmentImageBrowserList.layoutManager = GridLayoutManager(context, UIManager.getGridSpanNumber(requireActivity()))
+        (binding.fragmentImageBrowserList.layoutManager as GridLayoutManager).onRestoreInstanceState(viewModel.mainRvScrollPosition)
 
-        if(VideoManager.loadedVideos == null && !VideoManager.loadingInProgress){
-            ApplicationLoader.loadVideos()
-        } else if(AudioManager.loadedAudios == null && !AudioManager.loadingInProgress) {
-            ApplicationLoader.loadAudios()
-        } else if(FileManager.externalRootPath == null && !FileManager.findingExternalRootInProgress) {
-            ApplicationLoader.findExternalRoot()
-        } else if(DocManager.loadedDocs == null && !DocManager.loadingInProgress) {
-            ApplicationLoader.loadDocs()
-        }
+        (binding.fragmentImageBrowserList.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
-    }
+        mainAdapter = ImageBrowserAdapter(requireActivity(), audioItems, layoutInflater, this@ImageBrowserFragment)
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
+        binding.fragmentImageBrowserList.adapter = mainAdapter
 
-        outState.putParcelable("rvScrollPosition", binding.fragmentImageBrowserList.layoutManager?.onSaveInstanceState())
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        navController = Navigation.findNavController(view)
-    }
-
-    fun initAdapter(imageItems: MutableList<ImageItem>) {
-        binding.fragmentImageBrowserList.adapter = ImageBrowserAdapter(requireActivity(), imageItems, layoutInflater, this@ImageBrowserFragment)
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
+        viewModel.mainRvScrollPosition = (binding.fragmentImageBrowserList.layoutManager as GridLayoutManager).onSaveInstanceState()
+
         IOScope.cancel()
         MainScope.cancel()
-
     }
+
 }

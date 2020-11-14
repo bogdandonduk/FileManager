@@ -1,30 +1,34 @@
 package pro.filemanager.videos
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
-import pro.filemanager.audios.AudioManager
 import pro.filemanager.core.UIManager
+import pro.filemanager.databinding.FragmentImageBrowserBinding
 import pro.filemanager.databinding.FragmentVideoBrowserBinding
-import pro.filemanager.docs.DocManager
-import pro.filemanager.files.FileManager
-import pro.filemanager.images.ImageManager
+import java.lang.IllegalStateException
 
-class VideoBrowserFragment() : Fragment() {
+class VideoBrowserFragment : Fragment(), Observer<MutableList<VideoItem>> {
 
     lateinit var binding: FragmentVideoBrowserBinding
+    lateinit var viewModel: VideoBrowserViewModel
+    var mainAdapter: VideoBrowserAdapter? = null
 
-    val IOScope = CoroutineScope(IO)
+    val IOScope = CoroutineScope(Dispatchers.IO)
     val MainScope = CoroutineScope(Main)
+
+    override fun onChanged(t: MutableList<VideoItem>?) {
+        mainAdapter?.notifyDataSetChanged()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,66 +37,55 @@ class VideoBrowserFragment() : Fragment() {
     ): View? {
         binding = FragmentVideoBrowserBinding.inflate(inflater, container, false)
 
-        binding.fragmentVideoBrowserList.layoutManager = GridLayoutManager(context, 4)
-
         (requireActivity() as HomeActivity).requestExternalStoragePermission {
+
             ApplicationLoader.ApplicationIOScope.launch {
-                val videoItems: MutableList<VideoItem> = if(VideoManager.loadedVideos != null) {
+                viewModel = ViewModelProviders.of(this@VideoBrowserFragment, VideoSimpleManualInjector.provideViewModelFactory()).get(VideoBrowserViewModel::class.java)
 
-                    VideoManager.loadedVideos!!
-                } else {
-                    if(!VideoManager.loadingInProgress) {
-                        VideoManager.loadVideos(requireContext())
-                        VideoManager.loadedVideos!!
-                    } else {
-                        while(VideoManager.loadingInProgress && VideoManager.loadedVideos == null) {
-                            delay(25)
-                        }
+                withContext(Main) {
 
-                        VideoManager.loadedVideos!!
+                    viewModel.getItemsLive().observe(viewLifecycleOwner, this@VideoBrowserFragment)
+
+                    try {
+                        initAdapter(viewModel.getItemsLive().value!!)
+
+                    } catch(e: IllegalStateException) {
+                        e.printStackTrace()
+
+                        // TODO: MediaStore fetching failed with IllegalStateException.
+                        //  Most likely, it is something out of our hands.
+                        //  Show "Something went wrong" dialog
+
+                    } finally {
+
                     }
                 }
 
-                withContext(Main) {
-                    initAdapter(videoItems)
+                ApplicationLoader.loadImages()
+                ApplicationLoader.loadDocs()
+                ApplicationLoader.loadAudios()
 
-                    binding.fragmentVideoBrowserList.layoutManager = GridLayoutManager(context, UIManager.getImageBrowserSpanNumber(requireActivity()))
-
-                    if(savedInstanceState?.getParcelable<Parcelable>("rvScrollPosition") != null)
-                        binding.fragmentVideoBrowserList.layoutManager?.onRestoreInstanceState(savedInstanceState.getParcelable("rvScrollPosition"))
-                }
             }
+
         }
 
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun initAdapter(audioItems: MutableList<VideoItem>) {
+        binding.fragmentVideoBrowserList.layoutManager = GridLayoutManager(context, UIManager.getGridSpanNumber(requireActivity()))
+        (binding.fragmentVideoBrowserList.layoutManager as GridLayoutManager).onRestoreInstanceState(viewModel.mainRvScrollPosition)
 
-        if(ImageManager.loadedImages == null && !ImageManager.loadingInProgress){
-            ApplicationLoader.loadImages()
-        } else if(AudioManager.loadedAudios == null && !AudioManager.loadingInProgress) {
-            ApplicationLoader.loadAudios()
-        } else if(FileManager.externalRootPath == null && !FileManager.findingExternalRootInProgress) {
-            ApplicationLoader.findExternalRoot()
-        } else if(DocManager.loadedDocs == null && !DocManager.loadingInProgress) {
-            ApplicationLoader.loadDocs()
-        }
-    }
+        mainAdapter = VideoBrowserAdapter(requireActivity(), audioItems, layoutInflater, this@VideoBrowserFragment)
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
+        binding.fragmentVideoBrowserList.adapter = mainAdapter
 
-        outState.putParcelable("rvScrollPosition", binding.fragmentVideoBrowserList.layoutManager?.onSaveInstanceState())
-    }
-
-    fun initAdapter(videoItems: MutableList<VideoItem>) {
-        binding.fragmentVideoBrowserList.adapter = VideoBrowserAdapter(requireActivity(), videoItems, layoutInflater, this@VideoBrowserFragment)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+
+        viewModel.mainRvScrollPosition = (binding.fragmentVideoBrowserList.layoutManager as GridLayoutManager).onSaveInstanceState()
 
         IOScope.cancel()
         MainScope.cancel()
