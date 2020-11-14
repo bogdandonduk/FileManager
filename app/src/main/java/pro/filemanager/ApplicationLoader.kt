@@ -26,6 +26,7 @@ class ApplicationLoader : Application() {
         fun loadAll() {
             loadVideos()
             loadImages()
+
             findExternalRoot()
             loadDocs()
             loadAudios()
@@ -47,9 +48,11 @@ class ApplicationLoader : Application() {
             }
         }
 
-        fun findExternalRoot() {
-            ApplicationIOScope.launch {
-                FileManager.findExternalRoot(appContext)
+        fun findExternalRoot(context: Context = appContext) {
+            if(PermissionWrapper.checkExternalStoragePermissions(context)) {
+                ApplicationIOScope.launch {
+                    FileManager.findExternalRoot(context)
+                }
             }
         }
 

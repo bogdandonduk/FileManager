@@ -2,6 +2,7 @@ package pro.filemanager
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -74,9 +75,10 @@ class HomeActivity : AppCompatActivity() {
 
         if(onBackBehavior != null) {
             onBackBehavior!!.run()
-            onBackBehavior = null
+
         } else {
             super.onBackPressed()
+
         }
 
     }

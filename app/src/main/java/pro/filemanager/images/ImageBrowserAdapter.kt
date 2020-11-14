@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.signature.MediaStoreSignature
 import kotlinx.coroutines.launch
+import pro.filemanager.HomeActivity
 import pro.filemanager.R
 import pro.filemanager.core.tools.SelectorTool
 import pro.filemanager.databinding.LayoutImageItemBinding
@@ -21,13 +22,15 @@ class ImageBrowserAdapter(val context: Context, val imageItems: MutableList<Imag
         init {
             binding.layoutImageItemRootLayout.apply {
                 setOnClickListener {
-                    hostFragment.viewModel.selectorTool?.handleClickInViewHolder(SelectorTool.CLICK_SHORT, adapterPosition) {
+                    @Suppress("UNCHECKED_CAST")
+                    hostFragment.viewModel.selectorTool?.handleClickInViewHolder(SelectorTool.CLICK_SHORT, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity) {
                         FileManager.openFile(context, item.data)
                     }
                 }
 
                 setOnLongClickListener {
-                    hostFragment.viewModel.selectorTool?.handleClickInViewHolder(SelectorTool.CLICK_LONG, adapterPosition)
+                    @Suppress("UNCHECKED_CAST")
+                    hostFragment.viewModel.selectorTool?.handleClickInViewHolder(SelectorTool.CLICK_LONG, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity)
 
                     true
                 }
@@ -55,7 +58,7 @@ class ImageBrowserAdapter(val context: Context, val imageItems: MutableList<Imag
         }
 
         hostFragment.MainScope.launch {
-            if(hostFragment.viewModel.selectorTool?.selectedPositions!!.contains(position)) {
+            if(hostFragment.viewModel.selectorTool!!.selectedPositions.contains(position)) {
                 holder.binding.layoutImageItemIconCheck.visibility = View.VISIBLE
                 holder.binding.layoutImageItemThumbnail.setColorFilter(Color.argb(120, 0, 0, 0))
 

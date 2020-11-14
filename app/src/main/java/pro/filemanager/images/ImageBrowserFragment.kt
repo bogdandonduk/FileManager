@@ -35,7 +35,6 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
         mainAdapter?.notifyDataSetChanged()
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -64,12 +63,15 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
 
                     } finally {
 
+
                     }
 
-                    if(viewModel.selectorTool == null)
-                        viewModel.selectorTool = SelectorTool(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
+                    if(viewModel.selectorTool == null) {
+                        viewModel.selectorTool = SelectorTool()
+                    }
 
-                    viewModel.selectorTool!!.assignOnBackBehavior()
+                    @Suppress("UNCHECKED_CAST")
+                    viewModel.selectorTool!!.assignOnBackBehavior(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
                 }
 
                 ApplicationLoader.loadVideos()

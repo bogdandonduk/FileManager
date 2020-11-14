@@ -1,83 +1,89 @@
 package pro.filemanager.core.tools
 
+import android.util.Log
 import androidx.annotation.IntDef
 import androidx.recyclerview.widget.RecyclerView
 import pro.filemanager.HomeActivity
 
-class SelectorTool(private var activity: HomeActivity, private var adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>){
+class SelectorTool {
     companion object {
         const val CLICK_SHORT = 1
         const val CLICK_LONG = 2
 
         @IntDef(CLICK_SHORT, CLICK_LONG)
-        @Retention(AnnotationRetention.RUNTIME)
+        @Retention(AnnotationRetention.SOURCE)
         annotation class ClickType
     }
 
     private var selectionMode = false
     val selectedPositions = mutableListOf<Int>()
 
-    private var onBackBehavior = Runnable {
-        val copy = mutableListOf<Int>()
-
-        copy.addAll(selectedPositions)
-
-        selectedPositions.clear()
-        selectionMode = false
-
-        copy.forEach {
-            adapter.notifyItemChanged(it)
-        }
-    }
-
-    fun handleClickInViewHolder(@ClickType clickType: Int, position: Int, offAction: Runnable = Runnable {}) {
+    fun handleClickInViewHolder(@ClickType clickType: Int, position: Int, adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, activity: HomeActivity, offAction: Runnable = Runnable {}) {
         if(clickType == CLICK_SHORT) {
+
             if(!selectionMode)
                 offAction.run()
             else {
-                if(!selectedPositions.contains(position))
+                if(!selectedPositions.contains(position)) {
                     selectedPositions.add(position)
-                else {
+                    adapter.notifyItemChanged(position)
+                } else {
                     selectedPositions.remove(position)
+                    adapter.notifyItemChanged(position)
 
                     if(selectedPositions.isEmpty()) {
                         selectionMode = false
 
-                        assignOnBackBehavior()
+                        assignOnBackBehavior(activity, adapter)
                     }
 
                 }
 
-                adapter.notifyItemChanged(position)
             }
-        } else {
+        } else if(clickType == CLICK_LONG){
             if(!selectionMode) {
                 selectionMode = true
                 selectedPositions.add(position)
 
                 adapter.notifyItemChanged(position)
-
-                assignOnBackBehavior()
+                assignOnBackBehavior(activity, adapter)
             } else {
-                if(!selectedPositions.contains(position))
+                if(!selectedPositions.contains(position)) {
                     selectedPositions.add(position)
-                else {
+                    adapter.notifyItemChanged(position)
+                } else {
                     selectedPositions.remove(position)
+                    adapter.notifyItemChanged(position)
 
                     if(selectedPositions.isEmpty()) {
                         selectionMode = false
 
-                        assignOnBackBehavior()
+                        assignOnBackBehavior(activity, adapter)
                     }
                 }
             }
-
-            adapter.notifyItemChanged(position)
          }
     }
 
-    fun assignOnBackBehavior() {
-        activity.onBackBehavior =
-                if(selectionMode) onBackBehavior else null
+    fun assignOnBackBehavior(activity: HomeActivity, adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
+        activity.onBackBehavior = if(selectionMode) {
+
+            Runnable {
+                val copy = mutableListOf<Int>()
+
+                copy.addAll(selectedPositions)
+
+                selectedPositions.clear()
+                selectionMode = false
+
+                copy.forEach {
+                    adapter.notifyItemChanged(it)
+                }
+
+                activity.onBackBehavior = null
+            }
+        } else {
+            null
+        }
     }
 }
