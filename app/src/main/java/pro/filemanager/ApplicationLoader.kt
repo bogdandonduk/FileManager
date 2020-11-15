@@ -12,7 +12,7 @@ import pro.filemanager.audios.AudioRepo
 import pro.filemanager.core.FileSystemObserver
 import pro.filemanager.core.PermissionWrapper
 import pro.filemanager.docs.DocRepo
-import pro.filemanager.files.FileManager
+import pro.filemanager.files.FileRepo
 
 class ApplicationLoader : Application() {
 
@@ -21,7 +21,7 @@ class ApplicationLoader : Application() {
 
         val ApplicationIOScope = CoroutineScope(IO)
 
-        val fileSystemObserver: FileSystemObserver = FileSystemObserver(FileManager.getInternalDownMostRootPath(), FileObserver.ALL_EVENTS)
+        val fileSystemObserver: FileSystemObserver = FileSystemObserver(FileRepo.getInternalDownMostRootPath(), FileObserver.ALL_EVENTS)
 
         fun loadAll() {
             loadVideos()
@@ -35,7 +35,7 @@ class ApplicationLoader : Application() {
         fun loadVideos(context: Context = appContext) {
             if(PermissionWrapper.checkExternalStoragePermissions(context)) {
                 ApplicationIOScope.launch {
-                    VideoRepo.getInstance().loadLive(context)
+                    VideoRepo.getInstance().loadItems(context)
                 }
             }
         }
@@ -43,7 +43,7 @@ class ApplicationLoader : Application() {
         fun loadImages(context: Context = appContext) {
             if(PermissionWrapper.checkExternalStoragePermissions(context)) {
                 ApplicationIOScope.launch {
-                    ImageRepo.getInstance().loadLive(context)
+                    ImageRepo.getInstance().loadItems(context)
                 }
             }
         }
@@ -51,7 +51,7 @@ class ApplicationLoader : Application() {
         fun findExternalRoot(context: Context = appContext) {
             if(PermissionWrapper.checkExternalStoragePermissions(context)) {
                 ApplicationIOScope.launch {
-                    FileManager.findExternalRoot(context)
+                    FileRepo.findExternalRoot(context)
                 }
             }
         }
@@ -67,7 +67,7 @@ class ApplicationLoader : Application() {
         fun loadAudios(context: Context = appContext) {
             if(PermissionWrapper.checkExternalStoragePermissions(context)) {
                 ApplicationIOScope.launch {
-                    AudioRepo.getInstance().loadLive(context)
+                    AudioRepo.getInstance().loadItems(context)
                 }
             }
         }

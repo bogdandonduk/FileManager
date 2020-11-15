@@ -1,16 +1,21 @@
 package pro.filemanager.audios
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.os.Parcelable
+import androidx.lifecycle.*
 
-class AudioBrowserViewModel(private var audioRepo: AudioRepo) : ViewModel() {
+class AudioBrowserViewModel(var audioRepo: AudioRepo) : ViewModel(), AudioRepo.RepoSubscriber {
 
     private var itemsLive: MutableLiveData<MutableList<AudioItem>>? = null
 
+    var mainRvScrollPosition: Parcelable? = null
+
+    init {
+        audioRepo.subscribe(this)
+    }
+
     private suspend fun initItemsLive() : MutableLiveData<MutableList<AudioItem>> {
         if(itemsLive == null) {
-            itemsLive = audioRepo.loadLive()
+            itemsLive = MutableLiveData(audioRepo.loadItems())
         }
 
         return itemsLive!!
@@ -18,13 +23,14 @@ class AudioBrowserViewModel(private var audioRepo: AudioRepo) : ViewModel() {
 
     suspend fun getItemsLive() = initItemsLive() as LiveData<MutableList<AudioItem>>
 
-    fun deleteRow() {
-        val items: MutableList<AudioItem> = mutableListOf()
+    override fun onUpdate(items: MutableList<AudioItem>) {
 
-        items.addAll(itemsLive!!.value!!)
+        itemsLive?.postValue(items)
+    }
 
-        items.shuffle()
+    override fun onCleared() {
+        super.onCleared()
 
-        itemsLive!!.postValue(items)
+        audioRepo.unsubscribe(this)
     }
 }

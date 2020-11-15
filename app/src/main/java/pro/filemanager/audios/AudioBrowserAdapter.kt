@@ -5,9 +5,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.launch
+import pro.filemanager.ApplicationLoader
+import pro.filemanager.HomeActivity
 import pro.filemanager.R
 import pro.filemanager.databinding.LayoutAudioItemBinding
-import pro.filemanager.files.FileManager
+import pro.filemanager.files.FileCore
 
 class AudioBrowserAdapter(val context: Context, val layoutInflater: LayoutInflater, val hostFragment: AudioBrowserFragment) : RecyclerView.Adapter<AudioBrowserAdapter.AudioItemViewHolder>() {
 
@@ -16,7 +19,9 @@ class AudioBrowserAdapter(val context: Context, val layoutInflater: LayoutInflat
 
         init {
             binding.layoutAudioItemRootLayout.setOnClickListener {
-                hostFragment.viewModel.deleteRow()
+                ApplicationLoader.ApplicationIOScope.launch {
+//                    FileCore.openFileOut(context, item.data)
+                }
             }
         }
     }

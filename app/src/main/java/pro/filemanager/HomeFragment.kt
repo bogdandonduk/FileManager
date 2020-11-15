@@ -1,8 +1,6 @@
 package pro.filemanager
 
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +10,9 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pro.filemanager.databinding.FragmentHomeBinding
-import pro.filemanager.files.FileManager
+import pro.filemanager.files.FileRepo
 
 class HomeFragment : Fragment() {
 
@@ -90,15 +87,15 @@ class HomeFragment : Fragment() {
         CoroutineScope(Main).launch {
             binding.fragmentHomeInternalBtn.setOnClickListener {
                 navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf(
-                    FileManager.KEY_ARGUMENT_PATH to FileManager.KEY_INTERNAL_STORAGE,
-                    FileManager.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_internal_storage)
+                    FileRepo.KEY_ARGUMENT_PATH to FileRepo.KEY_INTERNAL_STORAGE,
+                    FileRepo.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_internal_storage)
                 ))
             }
 
             binding.fragmentHomeExternalBtn.setOnClickListener {
                 navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf(
-                    FileManager.KEY_ARGUMENT_PATH to FileManager.KEY_EXTERNAL_STORAGE,
-                    FileManager.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_external_storage)
+                    FileRepo.KEY_ARGUMENT_PATH to FileRepo.KEY_EXTERNAL_STORAGE,
+                    FileRepo.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_external_storage)
                 ))
             }
 

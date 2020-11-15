@@ -8,32 +8,18 @@
     android:padding="1dp">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutImageItemRootLayoutGl32pv"
+        android:id="@+id/layoutImageItemRootLayoutGl70pv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.32" />
+        app:layout_constraintGuide_percent="0.7" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutImageItemRootLayoutGl68pv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.68" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutImageItemRootLayoutGl32ph"
+        android:id="@+id/layoutImageItemRootLayoutGl70ph"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.32" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutImageItemRootLayoutGl68ph"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.68" />
+        app:layout_constraintGuide_percent="0.7" />
 
     <ImageView
         android:id="@+id/layoutImageItemThumbnail"
@@ -53,8 +39,7 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/layoutImageItemRootLayoutGl68pv"
-        app:layout_constraintTop_toTopOf="@+id/layoutImageItemRootLayoutGl68ph"
-        app:srcCompat="@drawable/ic_baseline_check_circle_24" />
+        app:layout_constraintStart_toStartOf="@+id/layoutImageItemRootLayoutGl70pv"
+        app:layout_constraintTop_toTopOf="@+id/layoutImageItemRootLayoutGl70ph" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

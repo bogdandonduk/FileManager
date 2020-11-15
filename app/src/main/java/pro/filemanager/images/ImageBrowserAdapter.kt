@@ -10,9 +10,10 @@ import com.bumptech.glide.signature.MediaStoreSignature
 import kotlinx.coroutines.launch
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
-import pro.filemanager.core.tools.SelectorTool
+import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.LayoutImageItemBinding
-import pro.filemanager.files.FileManager
+import pro.filemanager.files.FileCore
+import pro.filemanager.files.FileRepo
 
 class ImageBrowserAdapter(val context: Context, val imageItems: MutableList<ImageItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageBrowserFragment) : RecyclerView.Adapter<ImageBrowserAdapter.ImageItemViewHolder>() {
 
@@ -23,14 +24,15 @@ class ImageBrowserAdapter(val context: Context, val imageItems: MutableList<Imag
             binding.layoutImageItemRootLayout.apply {
                 setOnClickListener {
                     @Suppress("UNCHECKED_CAST")
-                    hostFragment.viewModel.selectorTool?.handleClickInViewHolder(SelectorTool.CLICK_SHORT, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity) {
-                        FileManager.openFile(context, item.data)
+                    hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_SHORT, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity) {
+                        FileCore.openFileOut(context, item.data)
+
                     }
                 }
 
                 setOnLongClickListener {
                     @Suppress("UNCHECKED_CAST")
-                    hostFragment.viewModel.selectorTool?.handleClickInViewHolder(SelectorTool.CLICK_LONG, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity)
+                    hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_LONG, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity)
 
                     true
                 }
@@ -44,7 +46,6 @@ class ImageBrowserAdapter(val context: Context, val imageItems: MutableList<Imag
     }
 
     override fun onBindViewHolder(holder: ImageItemViewHolder, position: Int) {
-
         holder.item = imageItems[position]
 
         hostFragment.MainScope.launch {
@@ -55,17 +56,33 @@ class ImageBrowserAdapter(val context: Context, val imageItems: MutableList<Imag
                     .signature(MediaStoreSignature(ImageCore.MIME_TYPE, imageItems[position].dateModified.toLong(), 0))
                     .into(holder.binding.layoutImageItemThumbnail)
 
-        }
+            if(hostFragment.viewModel.selectionTool!!.selectionMode) {
+                if(hostFragment.viewModel.selectionTool!!.selectedPositions.contains(position)) {
+                    holder.binding.layoutImageItemIconCheck.visibility = View.VISIBLE
 
-        hostFragment.MainScope.launch {
-            if(hostFragment.viewModel.selectorTool!!.selectedPositions.contains(position)) {
-                holder.binding.layoutImageItemIconCheck.visibility = View.VISIBLE
-                holder.binding.layoutImageItemThumbnail.setColorFilter(Color.argb(120, 0, 0, 0))
+                    holder.binding.layoutImageItemThumbnail.setColorFilter(Color.argb(120, 0, 0, 0))
 
+                    ImageCore.glideSimpleRequestBuilder
+                            .load(R.drawable.ic_baseline_check_circle_24)
+                            .into(holder.binding.layoutImageItemIconCheck)
+
+                    holder.binding.layoutImageItemIconCheck.scaleX = 0f
+                    holder.binding.layoutImageItemIconCheck.scaleY = 0f
+
+                    holder.binding.layoutImageItemIconCheck.animate().scaleX(1f).setDuration(150).start()
+                    holder.binding.layoutImageItemIconCheck.animate().scaleY(1f).setDuration(150).start()
+
+                } else {
+                    holder.binding.layoutImageItemThumbnail.colorFilter = null
+
+                    holder.binding.layoutImageItemIconCheck.visibility = View.INVISIBLE
+                }
             } else {
-                holder.binding.layoutImageItemIconCheck.visibility = View.INVISIBLE
                 holder.binding.layoutImageItemThumbnail.colorFilter = null
+
+                holder.binding.layoutImageItemIconCheck.visibility = View.INVISIBLE
             }
+
         }
 
     }

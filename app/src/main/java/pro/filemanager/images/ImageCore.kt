@@ -17,4 +17,7 @@ object ImageCore {
         .diskCacheStrategy(DiskCacheStrategy.ALL)
         .centerCrop()
 
+    val glideSimpleRequestBuilder = Glide.with(ApplicationLoader.appContext)
+        .asBitmap()
+        .centerCrop()
 }

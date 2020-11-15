@@ -50,6 +50,7 @@
         android:id="@+id/layoutVideoItemIconPlay"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/layoutVideoItemRootLayoutGl68ph"
         app:layout_constraintEnd_toStartOf="@+id/layoutVideoItemRootLayoutGl68pv"
         app:layout_constraintStart_toStartOf="@+id/layoutVideoItemRootLayoutGl32pv"
@@ -60,10 +61,11 @@
         android:id="@+id/layoutVideoItemIconCheck"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/layoutVideoItemRootLayoutGl68pv"
         app:layout_constraintTop_toTopOf="@+id/layoutVideoItemRootLayoutGl68ph"
-        tools:srcCompat="@drawable/ic_baseline_check_circle_24" />
+        app:srcCompat="@drawable/ic_baseline_check_circle_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

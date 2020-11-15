@@ -1,8 +1,6 @@
 package pro.filemanager.images
 
 import android.os.Bundle
-import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,10 +15,9 @@ import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.core.UIManager
-import pro.filemanager.core.tools.SelectorTool
+import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.FragmentImageBrowserBinding
 import java.lang.IllegalStateException
-import java.lang.Runnable
 
 class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
 
@@ -66,13 +63,13 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
 
                     }
 
-                    if(viewModel.selectorTool == null) {
-                        viewModel.selectorTool = SelectorTool()
-                    }
-
-                    @Suppress("UNCHECKED_CAST")
-                    viewModel.selectorTool!!.assignOnBackBehavior(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
                 }
+
+                if(viewModel.selectionTool == null)
+                    viewModel.selectionTool = SelectionTool()
+
+                @Suppress("UNCHECKED_CAST")
+                viewModel.selectionTool!!.overrideOnBackBehavior(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
 
                 ApplicationLoader.loadVideos()
                 ApplicationLoader.loadDocs()

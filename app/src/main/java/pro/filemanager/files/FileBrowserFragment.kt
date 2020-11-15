@@ -15,7 +15,6 @@ import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
 import pro.filemanager.databinding.FragmentFileBrowserBinding
-import pro.filemanager.videos.VideoRepo
 import java.io.File
 import java.lang.Exception
 
@@ -45,19 +44,19 @@ class FileBrowserFragment() : Fragment() {
 
             ApplicationLoader.ApplicationIOScope.launch {
 
-                val path: String = if(requireArguments().getString(FileManager.KEY_ARGUMENT_PATH) == FileManager.KEY_INTERNAL_STORAGE) {
-                    FileManager.getInternalRootPath()
-                } else if(requireArguments().getString(FileManager.KEY_ARGUMENT_PATH) == FileManager.KEY_EXTERNAL_STORAGE) {
+                val path: String = if(requireArguments().getString(FileRepo.KEY_ARGUMENT_PATH) == FileRepo.KEY_INTERNAL_STORAGE) {
+                    FileRepo.getInternalRootPath()
+                } else if(requireArguments().getString(FileRepo.KEY_ARGUMENT_PATH) == FileRepo.KEY_EXTERNAL_STORAGE) {
 
-                    if(FileManager.externalRootPath != null) {
+                    if(FileRepo.externalRootPath != null) {
 
-                        FileManager.externalRootPath!!
+                        FileRepo.externalRootPath!!
 
                     } else {
 
-                        FileManager.findExternalRoot(requireContext())
+                        FileRepo.findExternalRoot(requireContext())
 
-                        FileManager.externalRootPath!!
+                        FileRepo.externalRootPath!!
 
 //                        if(!FileManager.findingExternalRootInProgress) {
 //                            FileManager.findExternalRoot(requireContext())
@@ -74,11 +73,11 @@ class FileBrowserFragment() : Fragment() {
 
                     }
                 } else {
-                    requireArguments().getString(FileManager.KEY_ARGUMENT_PATH)!!
+                    requireArguments().getString(FileRepo.KEY_ARGUMENT_PATH)!!
                 }
 
                 withContext(Dispatchers.Main) {
-                    activity.supportActionBar?.title = requireArguments().getString(FileManager.KEY_ARGUMENT_APP_BAR_TITLE)
+                    activity.supportActionBar?.title = requireArguments().getString(FileRepo.KEY_ARGUMENT_APP_BAR_TITLE)
 
                     binding.fragmentFileBrowserPathTitle.text = path
 
@@ -90,7 +89,7 @@ class FileBrowserFragment() : Fragment() {
 
                 }
 
-                if(FileManager.externalRootPath == null && !FileManager.findingExternalRootInProgress) {
+                if(FileRepo.externalRootPath == null && !FileRepo.findingExternalRootInProgress) {
                     ApplicationLoader.findExternalRoot()
                 }
 
@@ -117,8 +116,8 @@ class FileBrowserFragment() : Fragment() {
 
     fun navigate(path: String, appBarTitle: String = activity.supportActionBar?.title.toString()) {
         navController.navigate(R.id.action_fileBrowserFragment_self, bundleOf(
-                FileManager.KEY_ARGUMENT_PATH to path,
-                FileManager.KEY_ARGUMENT_APP_BAR_TITLE to appBarTitle
+                FileRepo.KEY_ARGUMENT_PATH to path,
+                FileRepo.KEY_ARGUMENT_APP_BAR_TITLE to appBarTitle
         ))
     }
 }

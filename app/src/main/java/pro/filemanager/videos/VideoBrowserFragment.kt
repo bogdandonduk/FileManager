@@ -8,11 +8,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.core.UIManager
+import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.FragmentImageBrowserBinding
 import pro.filemanager.databinding.FragmentVideoBrowserBinding
 import java.lang.IllegalStateException
@@ -59,12 +62,18 @@ class VideoBrowserFragment : Fragment(), Observer<MutableList<VideoItem>> {
                     } finally {
 
                     }
+
                 }
+
+                if(viewModel.selectionTool == null)
+                    viewModel.selectionTool = SelectionTool()
+
+                @Suppress("UNCHECKED_CAST")
+                viewModel.selectionTool!!.overrideOnBackBehavior(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
 
                 ApplicationLoader.loadImages()
                 ApplicationLoader.loadDocs()
                 ApplicationLoader.loadAudios()
-
             }
 
         }
@@ -75,6 +84,8 @@ class VideoBrowserFragment : Fragment(), Observer<MutableList<VideoItem>> {
     private fun initAdapter(audioItems: MutableList<VideoItem>) {
         binding.fragmentVideoBrowserList.layoutManager = GridLayoutManager(context, UIManager.getGridSpanNumber(requireActivity()))
         (binding.fragmentVideoBrowserList.layoutManager as GridLayoutManager).onRestoreInstanceState(viewModel.mainRvScrollPosition)
+
+        (binding.fragmentVideoBrowserList.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
         mainAdapter = VideoBrowserAdapter(requireActivity(), audioItems, layoutInflater, this@VideoBrowserFragment)
 
