@@ -5,7 +5,8 @@
     android:id="@+id/layoutVideoItemRootLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="1dp">
+    android:paddingLeft="1dp"
+    android:paddingBottom="1dp">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/layoutVideoItemRootLayoutGl32pv"

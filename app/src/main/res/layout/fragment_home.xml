@@ -61,6 +61,14 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5" />
 
+        <include
+            android:id="@+id/fragmentHomeLayoutBaseToolbarInclude"
+            layout="@layout/layout_base_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/fragmentHomeInternalBtn"
@@ -68,8 +76,9 @@
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="w,1:1.5"
             app:layout_constraintEnd_toStartOf="@+id/fragmentHomeRootLayoutGl50pv"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/fragmentHomeLayoutBaseToolbarInclude">
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -79,8 +88,9 @@
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="w,1:1.5"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl50pv"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/fragmentHomeLayoutBaseToolbarInclude">
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -145,7 +155,7 @@
             app:layout_constraintTop_toBottomOf="@+id/fragmentHomeVideosBtn" />
 
         <include
-            android:id="@+id/fragmentHomeTransferPcBtn"
+            android:id="@+id/fragmentHomeApksBtn"
             layout="@layout/layout_home_tile"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -165,7 +175,7 @@
             app:layout_constraintTop_toBottomOf="@+id/fragmentHomeAppsBtn" />
 
         <include
-            android:id="@+id/fragmentHomeTransferAppsBtn"
+            android:id="@+id/fragmentHomeTransferPcBtn"
             layout="@layout/layout_home_tile"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -175,14 +185,14 @@
             app:layout_constraintTop_toBottomOf="@+id/fragmentHomeImagesBtn" />
 
         <include
-            android:id="@+id/fragmentHomeNamelessBtn"
+            android:id="@+id/fragmentHomeTrashBtn"
             layout="@layout/layout_home_tile"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="w,1.1:1"
             app:layout_constraintEnd_toStartOf="@id/fragmentHomeRootLayoutGl88pv"
             app:layout_constraintStart_toStartOf="@+id/fragmentHomeRootLayoutGl64pv"
-            app:layout_constraintTop_toBottomOf="@+id/fragmentHomeTransferPcBtn" />
+            app:layout_constraintTop_toBottomOf="@+id/fragmentHomeApksBtn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

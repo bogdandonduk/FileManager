@@ -1,14 +1,15 @@
 package pro.filemanager.audios
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
-import android.util.Log
 import kotlinx.coroutines.delay
 import pro.filemanager.ApplicationLoader
+import pro.filemanager.core.base.BaseRepo
 import java.lang.IllegalStateException
 
-class AudioRepo private constructor() {
+class AudioRepo private constructor() : BaseRepo {
 
     companion object {
         @Volatile private var instance: AudioRepo? = null
@@ -102,6 +103,7 @@ class AudioRepo private constructor() {
 
     }
 
+    @SuppressLint("Recycle")
     suspend fun reloadItems(context: Context = ApplicationLoader.appContext) : MutableList<AudioItem>  {
         val timeOut = System.currentTimeMillis() + 20000
 

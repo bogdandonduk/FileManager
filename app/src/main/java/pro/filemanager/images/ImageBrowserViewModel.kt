@@ -1,43 +1,27 @@
 package pro.filemanager.images
 
-import android.os.Parcelable
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import pro.filemanager.audios.AudioItem
-import pro.filemanager.core.tools.SelectionTool
+import pro.filemanager.images.albums.ImageAlbumsFragment
+import pro.filemanager.images.gallery.ImageGalleryFragment
 
-class ImageBrowserViewModel(var imageRepo: ImageRepo) : ViewModel(), ImageRepo.RepoSubscriber {
+class ImageBrowserViewModel : ViewModel() {
 
-    private var itemsLive: MutableLiveData<MutableList<ImageItem>>? = null
+    private var pagerFragmentsLive: MutableLiveData<MutableList<Fragment>>? = null
 
-    var mainRvScrollPosition: Parcelable? = null
-
-    init {
-        imageRepo.subscribe(this)
-    }
-
-    private suspend fun initItemsLive() : MutableLiveData<MutableList<ImageItem>> {
-        if(itemsLive == null) {
-            itemsLive = MutableLiveData(imageRepo.loadItems())
+    private fun initPagerFragmentsLive() : MutableLiveData<MutableList<Fragment>> {
+        if(pagerFragmentsLive == null) {
+            pagerFragmentsLive = MutableLiveData(mutableListOf(
+                    ImageGalleryFragment(),
+                    ImageAlbumsFragment()
+            ))
         }
 
-        return itemsLive!!
+        return pagerFragmentsLive!!
     }
 
-    suspend fun getItemsLive() = initItemsLive() as LiveData<MutableList<ImageItem>>
-
-    var selectionTool: SelectionTool? = null
-
-    override fun onUpdate(items: MutableList<ImageItem>) {
-
-        itemsLive?.postValue(items)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-
-        imageRepo.unsubscribe(this)
-    }
+    fun getPagerFragmentsLive() = initPagerFragmentsLive() as LiveData<MutableList<Fragment>>
 
 }

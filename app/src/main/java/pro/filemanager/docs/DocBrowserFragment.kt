@@ -13,17 +13,28 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
+import pro.filemanager.R
+import pro.filemanager.audios.AudioBrowserViewModel
+import pro.filemanager.audios.AudioBrowserViewModelFactory
+import pro.filemanager.core.SimpleInjector
 import pro.filemanager.databinding.FragmentDocBrowserBinding
 import java.lang.IllegalStateException
 
 class DocBrowserFragment : Fragment(), Observer<MutableList<DocItem>> {
 
     lateinit var binding: FragmentDocBrowserBinding
+    lateinit var activity: HomeActivity
     lateinit var viewModel: DocBrowserViewModel
     var mainAdapter: DocBrowserAdapter? = null
 
     override fun onChanged(t: MutableList<DocItem>?) {
         mainAdapter?.notifyDataSetChanged()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        activity = requireActivity() as HomeActivity
     }
 
     override fun onCreateView(
@@ -35,10 +46,10 @@ class DocBrowserFragment : Fragment(), Observer<MutableList<DocItem>> {
 
         binding.fragmentDocBrowserList.layoutManager = LinearLayoutManager(context)
 
-        (requireActivity() as HomeActivity).requestExternalStoragePermission {
+        activity.requestExternalStoragePermission {
 
             ApplicationLoader.ApplicationIOScope.launch {
-                viewModel = ViewModelProviders.of(this@DocBrowserFragment, DocSimpleManualInjector.provideViewModelFactory()).get(DocBrowserViewModel::class.java)
+                viewModel = ViewModelProviders.of(this@DocBrowserFragment, SimpleInjector.provideDocBrowserViewModelFactory()).get(DocBrowserViewModel::class.java)
 
                 withContext(Main) {
 
@@ -60,6 +71,7 @@ class DocBrowserFragment : Fragment(), Observer<MutableList<DocItem>> {
 
                 ApplicationLoader.loadVideos()
                 ApplicationLoader.loadImages()
+                ApplicationLoader.findExternalRoots()
                 ApplicationLoader.loadAudios()
             }
 
@@ -68,8 +80,13 @@ class DocBrowserFragment : Fragment(), Observer<MutableList<DocItem>> {
         return binding.root
     }
 
-    private fun initAdapter(audioItems: MutableList<DocItem>) {
-        mainAdapter = DocBrowserAdapter(requireActivity(), audioItems, layoutInflater)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        activity.setSupportActionBar(binding.fragmentDocBrowserLayoutBaseToolbarInclude.layoutBaseToolbar)
+        activity.supportActionBar?.title = requireContext().resources.getString(R.string.title_docs)
+    }
+
+    private fun initAdapter(docItems: MutableList<DocItem>) {
+        mainAdapter = DocBrowserAdapter(requireActivity(), docItems, layoutInflater)
         binding.fragmentDocBrowserList.adapter = mainAdapter
 
     }

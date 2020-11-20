@@ -8,12 +8,22 @@ import pro.filemanager.R
 object ImageCore {
 
     const val MIME_TYPE = "image/*"
+    const val KEY_ARGUMENT_ALBUM_PARCELABLE = "chosenAlbum"
 
-    val glideRequestBuilder = Glide.with(ApplicationLoader.appContext)
+    val glideBitmapRequestBuilder = Glide.with(ApplicationLoader.appContext)
         .asBitmap()
         .placeholder(R.drawable.placeholder_image_video_item)
+        .error(R.drawable.bg_glide_error)
         .thumbnail(0.5f)
         .dontAnimate()
+        .diskCacheStrategy(DiskCacheStrategy.ALL)
+        .centerCrop()
+
+    val glideGifRequestBuilder = Glide.with(ApplicationLoader.appContext)
+        .asGif()
+        .placeholder(R.drawable.placeholder_image_video_item)
+        .error(R.drawable.bg_glide_error)
+        .thumbnail(0.5f)
         .diskCacheStrategy(DiskCacheStrategy.ALL)
         .centerCrop()
 

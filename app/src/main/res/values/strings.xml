@@ -10,13 +10,18 @@
 
     <string name="title_multimedia">Multimedia</string>
     <string name="title_audios">Music</string>
-    <string name="title_videos">Videos</string>
+    <string name="title_videos">Video</string>
     <string name="title_docs">Documents</string>
+
     <string name="title_images">Images</string>
+    <string name="title_image_gallery">Gallery</string>
+    <string name="title_image_albums">Albums</string>
+
     <string name="title_apps">Apps</string>
     <string name="title_transfer_pc">PC Transfer</string>
     <string name="title_cloud">Cloud</string>
-    <string name="title_transfer_apps">Move Apps</string>
+    <string name="title_apks">APKs</string>
+    <string name="title_trash">Trash</string>
 
     <string name="title_internal_storage">Internal Storage</string>
     <string name="title_external_storage">SD Card</string>

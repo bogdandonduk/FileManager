@@ -13,7 +13,7 @@
         android:id="@+id/homeActivityContentNavHost"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:defaultNavHost="true"
         app:navGraph="@navigation/home_content_nav_graph" />
 
@@ -22,6 +22,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@drawable/bg_home_nav_view"
+        android:fitsSystemWindows="false"
         app:itemTextAppearance="@style/TextAppearance.AppCompat.Medium"
         app:itemTextColor="@android:color/white"
         app:menu="@menu/nav_drawer_main_menu" />

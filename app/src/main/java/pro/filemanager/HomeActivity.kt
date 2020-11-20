@@ -1,5 +1,6 @@
 package pro.filemanager
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +17,8 @@ import androidx.navigation.ui.setupWithNavController
 import pro.filemanager.core.PermissionWrapper
 import pro.filemanager.core.UIManager
 import pro.filemanager.databinding.ActivityHomeBinding
+import pro.filemanager.files.FileCore
+import java.io.File
 
 class HomeActivity : AppCompatActivity() {
 
@@ -23,11 +26,8 @@ class HomeActivity : AppCompatActivity() {
     lateinit var externalStorageRequestSuccessAction: Runnable
 
     lateinit var navController: NavController
-    lateinit var appBarConfiguration: AppBarConfiguration
 
     var onBackBehavior: Runnable? = null
-
-    var currentOptions: Array<MenuItem>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,63 +37,20 @@ class HomeActivity : AppCompatActivity() {
 
         navController = (supportFragmentManager.findFragmentById(R.id.homeActivityContentNavHost) as NavHostFragment).navController
 
-        appBarConfiguration = AppBarConfiguration(navController.graph, binding.homeActivityRootDrawerLayout)
-
         binding.homeActivityNavView.setupWithNavController(navController)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-
-        supportActionBar?.setBackgroundDrawable(resources.getDrawable(R.drawable.bg_app_bar))
-
-        if(savedInstanceState == null) {
-
-            binding.homeActivityRootDrawerLayout.alpha = 0f
-            binding.homeActivityRootDrawerLayout.scaleX = 0.95f
-            binding.homeActivityRootDrawerLayout.scaleY = 0.95f
-            binding.homeActivityRootDrawerLayout.visibility = View.GONE
-            binding.homeActivityRootDrawerLayout.visibility = View.VISIBLE
-            binding.homeActivityRootDrawerLayout.animate().alpha(1f).setDuration(400).start()
-            binding.homeActivityRootDrawerLayout.animate().scaleX(1f).setDuration(400).start()
-            binding.homeActivityRootDrawerLayout.animate().scaleY(1f).setDuration(400).start()
-
-        }
-
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        return if(currentOptions != null) {
-//            currentOptions.forEach {
-//                menu.add(it)
-//            }
-            true
-        } else {
-            super.onCreateOptionsMenu(menu)
-        }
 
     }
 
     override fun onBackPressed() {
-
-        if(onBackBehavior != null) {
-            onBackBehavior!!.run()
-
+        if(binding.homeActivityRootDrawerLayout.isDrawerOpen(binding.homeActivityNavView)) {
+            binding.homeActivityRootDrawerLayout.closeDrawer(binding.homeActivityNavView)
         } else {
-            super.onBackPressed()
-
+            if(onBackBehavior != null) {
+                onBackBehavior!!.run()
+            } else {
+                super.onBackPressed()
+            }
         }
-
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.homeActivityContentNavHost)
-
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        outState.putBoolean(UIManager.KEY_VIEWS_CREATED, true)
 
     }
 
@@ -114,4 +71,10 @@ class HomeActivity : AppCompatActivity() {
             })
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        FileCore.outerIntentInProgress = false
+
+    }
 }

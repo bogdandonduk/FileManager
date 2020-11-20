@@ -13,8 +13,6 @@ import pro.filemanager.R
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.LayoutVideoItemBinding
 import pro.filemanager.files.FileCore
-import pro.filemanager.files.FileRepo
-import pro.filemanager.images.ImageCore
 
 class VideoBrowserAdapter(val context: Context, val videoItems: MutableList<VideoItem>, val layoutInflater: LayoutInflater, val hostFragment: VideoBrowserFragment) : RecyclerView.Adapter<VideoBrowserAdapter.VideoItemViewHolder>() {
 
@@ -27,7 +25,7 @@ class VideoBrowserAdapter(val context: Context, val videoItems: MutableList<Vide
                 setOnClickListener {
                     @Suppress("UNCHECKED_CAST")
                     hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_SHORT, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity) {
-//                        FileCore.openFileOut(this@VideoItemViewHolder.context, item.data)
+                        FileCore.openFileOut(this@VideoItemViewHolder.context, item.data)
                     }
 
                 }

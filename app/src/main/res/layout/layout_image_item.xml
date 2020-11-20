@@ -5,21 +5,22 @@
     android:id="@+id/layoutImageItemRootLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="1dp">
+    android:paddingStart="1dp"
+    android:paddingBottom="1dp">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutImageItemRootLayoutGl70pv"
+        android:id="@+id/layoutImageItemRootLayoutGl75pv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.7" />
+        app:layout_constraintGuide_percent="0.75" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutImageItemRootLayoutGl70ph"
+        android:id="@+id/layoutImageItemRootLayoutGl25ph"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.7" />
+        app:layout_constraintGuide_percent="0.25" />
 
     <ImageView
         android:id="@+id/layoutImageItemThumbnail"
@@ -37,9 +38,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/layoutImageItemRootLayoutGl25ph"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/layoutImageItemRootLayoutGl70pv"
-        app:layout_constraintTop_toTopOf="@+id/layoutImageItemRootLayoutGl70ph" />
+        app:layout_constraintStart_toStartOf="@+id/layoutImageItemRootLayoutGl75pv"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

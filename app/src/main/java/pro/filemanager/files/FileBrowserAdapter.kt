@@ -18,7 +18,7 @@ class FileBrowserAdapter(val context: Context, val files: Array<File>, val layou
                     if(file.isDirectory) {
                         fileBrowserFragment.navigate(file.absolutePath)
                     } else {
-//                        FileCore.openFileOut(this@FileItemViewHolder.context, file.absolutePath)
+                        FileCore.openFileOut(this@FileItemViewHolder.context, file.absolutePath)
                     }
                 }
 

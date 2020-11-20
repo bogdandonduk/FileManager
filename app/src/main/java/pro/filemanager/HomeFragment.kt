@@ -1,9 +1,11 @@
 package pro.filemanager
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -12,12 +14,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import pro.filemanager.databinding.FragmentHomeBinding
-import pro.filemanager.files.FileRepo
+import pro.filemanager.files.FileCore
 
 class HomeFragment : Fragment() {
 
     lateinit var binding: FragmentHomeBinding
     lateinit var navController: NavController
+    lateinit var activity: HomeActivity
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        activity = requireActivity() as HomeActivity
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,16 +58,17 @@ class HomeFragment : Fragment() {
                 binding.fragmentHomeImagesBtn.layoutHomeTileTitle.textSize = textSize
                 binding.fragmentHomeImagesBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_images)
 
-                binding.fragmentHomeTransferPcBtn.layoutHomeTileTitle.textSize = textSize
-                binding.fragmentHomeTransferPcBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_transfer_pc)
+                binding.fragmentHomeApksBtn.layoutHomeTileTitle.textSize = textSize
+                binding.fragmentHomeApksBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_apks)
 
                 binding.fragmentHomeCloudBtn.layoutHomeTileTitle.textSize = textSize
                 binding.fragmentHomeCloudBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_cloud)
 
-                binding.fragmentHomeTransferAppsBtn.layoutHomeTileTitle.textSize = textSize
-                binding.fragmentHomeTransferAppsBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_transfer_apps)
+                binding.fragmentHomeTransferPcBtn.layoutHomeTileTitle.textSize = textSize
+                binding.fragmentHomeTransferPcBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_transfer_pc)
 
-                binding.fragmentHomeNamelessBtn.layoutHomeTileTitle.textSize = textSize
+                binding.fragmentHomeTrashBtn.layoutHomeTileTitle.textSize = textSize
+                binding.fragmentHomeTrashBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_trash)
             }
 
         }
@@ -69,10 +80,10 @@ class HomeFragment : Fragment() {
                 binding.fragmentHomeDocsBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
                 binding.fragmentHomeAppsBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
                 binding.fragmentHomeImagesBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
-                binding.fragmentHomeTransferPcBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
+                binding.fragmentHomeApksBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
                 binding.fragmentHomeCloudBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
-                binding.fragmentHomeTransferAppsBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
-                binding.fragmentHomeNamelessBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
+                binding.fragmentHomeTransferPcBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
+                binding.fragmentHomeTrashBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
             }
 
             binding.fragmentHomeRootLayout.visibility = View.VISIBLE
@@ -84,18 +95,21 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         navController = Navigation.findNavController(binding.root)
 
+        activity.setSupportActionBar(binding.fragmentHomeLayoutBaseToolbarInclude?.layoutBaseToolbar)
+        activity.supportActionBar?.title = requireContext().resources.getString(R.string.title_multimedia)
+
         CoroutineScope(Main).launch {
             binding.fragmentHomeInternalBtn.setOnClickListener {
                 navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf(
-                    FileRepo.KEY_ARGUMENT_PATH to FileRepo.KEY_INTERNAL_STORAGE,
-                    FileRepo.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_internal_storage)
+                    FileCore.KEY_ARGUMENT_PATH to FileCore.KEY_INTERNAL_STORAGE,
+                    FileCore.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_internal_storage)
                 ))
             }
 
             binding.fragmentHomeExternalBtn.setOnClickListener {
                 navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf(
-                    FileRepo.KEY_ARGUMENT_PATH to FileRepo.KEY_EXTERNAL_STORAGE,
-                    FileRepo.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_external_storage)
+                    FileCore.KEY_ARGUMENT_PATH to FileCore.KEY_EXTERNAL_STORAGE,
+                    FileCore.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_external_storage)
                 ))
             }
 
@@ -114,7 +128,6 @@ class HomeFragment : Fragment() {
             binding.fragmentHomeImagesBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
                 navController.navigate(R.id.action_homeFragment_to_imageBrowserFragment)
             }
-
 
         }
 

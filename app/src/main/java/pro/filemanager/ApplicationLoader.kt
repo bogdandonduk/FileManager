@@ -12,7 +12,7 @@ import pro.filemanager.audios.AudioRepo
 import pro.filemanager.core.FileSystemObserver
 import pro.filemanager.core.PermissionWrapper
 import pro.filemanager.docs.DocRepo
-import pro.filemanager.files.FileRepo
+import pro.filemanager.files.FileCore
 
 class ApplicationLoader : Application() {
 
@@ -21,13 +21,13 @@ class ApplicationLoader : Application() {
 
         val ApplicationIOScope = CoroutineScope(IO)
 
-        val fileSystemObserver: FileSystemObserver = FileSystemObserver(FileRepo.getInternalDownMostRootPath(), FileObserver.ALL_EVENTS)
+        val fileSystemObserver: FileSystemObserver = FileSystemObserver(FileCore.getInternalDownMostRootPath(), FileObserver.ALL_EVENTS)
 
         fun loadAll() {
             loadVideos()
             loadImages()
 
-            findExternalRoot()
+            findExternalRoots()
             loadDocs()
             loadAudios()
         }
@@ -43,15 +43,15 @@ class ApplicationLoader : Application() {
         fun loadImages(context: Context = appContext) {
             if(PermissionWrapper.checkExternalStoragePermissions(context)) {
                 ApplicationIOScope.launch {
-                    ImageRepo.getInstance().loadItems(context)
+                    ImageRepo.getInstance().loadAlbums(context, false)
                 }
             }
         }
 
-        fun findExternalRoot(context: Context = appContext) {
+        fun findExternalRoots(context: Context = appContext) {
             if(PermissionWrapper.checkExternalStoragePermissions(context)) {
                 ApplicationIOScope.launch {
-                    FileRepo.findExternalRoot(context)
+                    FileCore.findExternalRoots(context)
                 }
             }
         }
@@ -59,7 +59,7 @@ class ApplicationLoader : Application() {
         fun loadDocs(context: Context = appContext) {
             if(PermissionWrapper.checkExternalStoragePermissions(context)) {
                 ApplicationIOScope.launch {
-                    DocRepo.getInstance().loadLive(context)
+                    DocRepo.getInstance().loadItems(context)
                 }
             }
         }

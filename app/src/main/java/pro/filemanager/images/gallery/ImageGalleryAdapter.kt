@@ -1,4 +1,4 @@
-package pro.filemanager.images
+package pro.filemanager.images.gallery
 
 import android.content.Context
 import android.graphics.Color
@@ -13,11 +13,12 @@ import pro.filemanager.R
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.LayoutImageItemBinding
 import pro.filemanager.files.FileCore
-import pro.filemanager.files.FileRepo
+import pro.filemanager.images.ImageCore
+import pro.filemanager.images.ImageItem
 
-class ImageBrowserAdapter(val context: Context, val imageItems: MutableList<ImageItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageBrowserFragment) : RecyclerView.Adapter<ImageBrowserAdapter.ImageItemViewHolder>() {
+class ImageGalleryAdapter(val context: Context, val imageItems: MutableList<ImageItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageGalleryFragment) : RecyclerView.Adapter<ImageGalleryAdapter.ImageItemViewHolder>() {
 
-    class ImageItemViewHolder(val context: Context, val binding: LayoutImageItemBinding, val hostFragment: ImageBrowserFragment, val adapter: ImageBrowserAdapter) : RecyclerView.ViewHolder(binding.root) {
+    class ImageItemViewHolder(val context: Context, val binding: LayoutImageItemBinding, val hostFragment: ImageGalleryFragment, val adapter: ImageGalleryAdapter) : RecyclerView.ViewHolder(binding.root) {
         lateinit var item: ImageItem
 
         init {
@@ -49,12 +50,19 @@ class ImageBrowserAdapter(val context: Context, val imageItems: MutableList<Imag
         holder.item = imageItems[position]
 
         hostFragment.MainScope.launch {
-
-            ImageCore.glideRequestBuilder
-                    .load(holder.item.data)
-                    .override(holder.binding.layoutImageItemThumbnail.width, holder.binding.layoutImageItemThumbnail.height)
-                    .signature(MediaStoreSignature(ImageCore.MIME_TYPE, imageItems[position].dateModified.toLong(), 0))
-                    .into(holder.binding.layoutImageItemThumbnail)
+            if(!holder.item.data.endsWith(".gif", true)) {
+                ImageCore.glideBitmapRequestBuilder
+                        .load(holder.item.data)
+                        .override(holder.binding.layoutImageItemThumbnail.width, holder.binding.layoutImageItemThumbnail.height)
+                        .signature(MediaStoreSignature(ImageCore.MIME_TYPE, imageItems[position].dateModified.toLong(), 0))
+                        .into(holder.binding.layoutImageItemThumbnail)
+            } else {
+                ImageCore.glideGifRequestBuilder
+                        .load(holder.item.data)
+                        .override(holder.binding.layoutImageItemThumbnail.width, holder.binding.layoutImageItemThumbnail.height)
+                        .signature(MediaStoreSignature(ImageCore.MIME_TYPE, imageItems[position].dateModified.toLong(), 0))
+                        .into(holder.binding.layoutImageItemThumbnail)
+            }
 
             if(hostFragment.viewModel.selectionTool!!.selectionMode) {
                 if(hostFragment.viewModel.selectionTool!!.selectedPositions.contains(position)) {

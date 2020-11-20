@@ -44,57 +44,53 @@ class FileBrowserFragment() : Fragment() {
 
             ApplicationLoader.ApplicationIOScope.launch {
 
-                val path: String = if(requireArguments().getString(FileRepo.KEY_ARGUMENT_PATH) == FileRepo.KEY_INTERNAL_STORAGE) {
-                    FileRepo.getInternalRootPath()
-                } else if(requireArguments().getString(FileRepo.KEY_ARGUMENT_PATH) == FileRepo.KEY_EXTERNAL_STORAGE) {
+                if(requireArguments().getString(FileCore.KEY_ARGUMENT_PATH) == FileCore.KEY_INTERNAL_STORAGE) {
+                    val path = FileCore.getInternalRootPath()
 
-                    if(FileRepo.externalRootPath != null) {
+                    withContext(Dispatchers.Main) {
+                        activity.supportActionBar?.title = requireArguments().getString(FileCore.KEY_ARGUMENT_APP_BAR_TITLE)
 
-                        FileRepo.externalRootPath!!
+                        binding.fragmentFileBrowserPathTitle.text = path
 
-                    } else {
+                        try {
+                            initAdapter(File(path).listFiles()!!)
+                        } catch (e: Exception) {
 
-                        FileRepo.findExternalRoot(requireContext())
+                        }
+                    }
+                } else if(requireArguments().getString(FileCore.KEY_ARGUMENT_PATH) == FileCore.KEY_EXTERNAL_STORAGE) {
+                    Log.d("TAG", "onCreateView: " + FileCore.getInternalDownMostRootPath())
 
-                        FileRepo.externalRootPath!!
+                    try {
+                        val externalPaths: MutableList<String> = FileCore.findExternalRoots(requireContext())
 
-//                        if(!FileManager.findingExternalRootInProgress) {
-//                            FileManager.findExternalRoot(requireContext())
-//
-//                            FileManager.externalRootPath!!
-//                        } else {
-//
-//                            while(FileManager.findingExternalRootInProgress && FileManager.externalRootPath == null) {
-//                                delay(25)
-//                            }
-//
-//                            FileManager.externalRootPath!!
-//                        }
+                        withContext(Dispatchers.Main) {
+                            activity.supportActionBar?.title = requireArguments().getString(FileCore.KEY_ARGUMENT_APP_BAR_TITLE)
+
+                            if(externalPaths.isNotEmpty()) {
+                                if(externalPaths.size == 1) {
+                                    binding.fragmentFileBrowserPathTitle.text = externalPaths[0]
+                                    initAdapter(File(externalPaths[0]).listFiles()!!)
+                                } else if(externalPaths.size > 1) {
+                                    binding.fragmentFileBrowserPathTitle.text = FileCore.getInternalDownMostRootPath()
+                                    val multipleExternals: Array<File> = Array(externalPaths.size) {
+                                        File(externalPaths[it])
+                                    }
+                                    initAdapter(multipleExternals)
+                                }
+                            } else {
+//                              TODO: No SD card found
+                            }
+                        }
+                    } catch (thr: Throwable) {
 
                     }
                 } else {
-                    requireArguments().getString(FileRepo.KEY_ARGUMENT_PATH)!!
+                    binding.fragmentFileBrowserPathTitle.text = requireArguments().getString(FileCore.KEY_ARGUMENT_PATH)
+
+                    initAdapter(File(requireArguments().getString(FileCore.KEY_ARGUMENT_PATH)!!).listFiles()!!)
                 }
-
-                withContext(Dispatchers.Main) {
-                    activity.supportActionBar?.title = requireArguments().getString(FileRepo.KEY_ARGUMENT_APP_BAR_TITLE)
-
-                    binding.fragmentFileBrowserPathTitle.text = path
-
-                    try {
-                        initAdapter(File(path).listFiles()!!)
-                    } catch (e: Exception) {
-                        Log.d("TAG", "onCreateView: NOPE")
-                    }
-
-                }
-
-                if(FileRepo.externalRootPath == null && !FileRepo.findingExternalRootInProgress) {
-                    ApplicationLoader.findExternalRoot()
-                }
-
             }
-
         }
 
         return binding.root
@@ -116,8 +112,8 @@ class FileBrowserFragment() : Fragment() {
 
     fun navigate(path: String, appBarTitle: String = activity.supportActionBar?.title.toString()) {
         navController.navigate(R.id.action_fileBrowserFragment_self, bundleOf(
-                FileRepo.KEY_ARGUMENT_PATH to path,
-                FileRepo.KEY_ARGUMENT_APP_BAR_TITLE to appBarTitle
+                FileCore.KEY_ARGUMENT_PATH to path,
+                FileCore.KEY_ARGUMENT_APP_BAR_TITLE to appBarTitle
         ))
     }
 }

@@ -57,7 +57,8 @@ class VideoRepo private constructor() {
                         MediaStore.Video.VideoColumns.DISPLAY_NAME,
                         MediaStore.Video.VideoColumns.SIZE,
                         MediaStore.Video.VideoColumns.DATE_MODIFIED,
-                ), null, null, null, null)!!
+                        MediaStore.Images.ImageColumns.DATE_ADDED
+                ), null, null, MediaStore.Video.VideoColumns.DATE_ADDED + " DESC", null)!!
 
                 val videoItems: MutableList<VideoItem> = mutableListOf()
 
@@ -68,7 +69,8 @@ class VideoRepo private constructor() {
                                         cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATA)),
                                         cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DISPLAY_NAME)),
                                         cursor.getInt(cursor.getColumnIndex(MediaStore.Video.VideoColumns.SIZE)),
-                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATE_MODIFIED))
+                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATE_MODIFIED)),
+                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATE_ADDED))
                                 )
                         )
 
@@ -101,6 +103,7 @@ class VideoRepo private constructor() {
         }
     }
 
+    @SuppressLint("Recycle")
     suspend fun reloadItems(context: Context = ApplicationLoader.appContext) : MutableList<VideoItem>  {
         val timeOut = System.currentTimeMillis() + 20000
 
@@ -125,7 +128,8 @@ class VideoRepo private constructor() {
                         cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATA)),
                         cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DISPLAY_NAME)),
                         cursor.getInt(cursor.getColumnIndex(MediaStore.Video.VideoColumns.SIZE)),
-                        cursor.getInt(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATE_MODIFIED))
+                        cursor.getInt(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATE_MODIFIED)),
+                        cursor.getInt(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATE_ADDED))
                 ))
 
                 cursor.moveToNext()
