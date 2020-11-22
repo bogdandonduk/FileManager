@@ -5,6 +5,7 @@ import android.content.Intent
 import android.database.Cursor
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.delay
@@ -59,7 +60,6 @@ object FileCore {
     }
 
     fun getInternalDownMostRootPath(): String {
-
         var downMostRootPath = ""
 
         val internalRootPath = getInternalRootPath()

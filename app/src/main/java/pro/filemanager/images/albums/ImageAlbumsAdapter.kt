@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import pro.filemanager.HomeActivity
@@ -14,8 +13,6 @@ import pro.filemanager.R
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.LayoutImageAlbumItemBinding
 import pro.filemanager.images.ImageCore
-import pro.filemanager.images.gallery.ImageGalleryFragment
-import pro.filemanager.images.gallery.ImageGalleryViewModel
 
 class ImageAlbumsAdapter(val context: Context, val imageAlbumItems: MutableList<ImageAlbumItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageAlbumsFragment) : RecyclerView.Adapter<ImageAlbumsAdapter.ImageAlbumItemViewHolder>() {
 
@@ -27,9 +24,9 @@ class ImageAlbumsAdapter(val context: Context, val imageAlbumItems: MutableList<
                 setOnClickListener {
                     @Suppress("UNCHECKED_CAST")
                     hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_SHORT, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity) {
-                        hostFragment.requireActivity().supportFragmentManager.beginTransaction().replace(hostFragment.binding.fragmentImageAlbumsRootLayout.id, ImageGalleryFragment().apply {
-                            arguments = bundleOf(ImageCore.KEY_ARGUMENT_ALBUM_PARCELABLE to item)
-                        }).addToBackStack(null).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).commit()
+                        hostFragment.navController.navigate(R.id.action_imageAlbumsFragment_to_imageBrowserFragment, bundleOf(
+                                ImageCore.KEY_ARGUMENT_ALBUM_PARCELABLE to item
+                        ))
                     }
                 }
 

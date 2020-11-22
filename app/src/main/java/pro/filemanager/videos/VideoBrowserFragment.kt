@@ -54,22 +54,17 @@ class VideoBrowserFragment : Fragment(), Observer<MutableList<VideoItem>> {
                 viewModel = ViewModelProviders.of(this@VideoBrowserFragment, SimpleInjector.provideVideoBrowserViewModelFactory()).get(VideoBrowserViewModel::class.java)
 
                 withContext(Main) {
-
                     viewModel.getItemsLive().observe(viewLifecycleOwner, this@VideoBrowserFragment)
 
                     try {
                         initAdapter(viewModel.getItemsLive().value!!)
-
                     } catch(e: IllegalStateException) {
-                        e.printStackTrace()
 
                         // TODO: MediaStore fetching failed with IllegalStateException.
                         //  Most likely, it is something out of our hands.
                         //  Show "Something went wrong" dialog
 
-                    } finally {
-
-                    }
+                    } finally { }
 
                 }
 
@@ -77,7 +72,7 @@ class VideoBrowserFragment : Fragment(), Observer<MutableList<VideoItem>> {
                     viewModel.selectionTool = SelectionTool()
 
                 @Suppress("UNCHECKED_CAST")
-                viewModel.selectionTool!!.overrideOnBackBehavior(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
+                viewModel.selectionTool!!.initOnBackCallback(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
 
                 ApplicationLoader.loadImages()
                 ApplicationLoader.findExternalRoots()
@@ -97,7 +92,7 @@ class VideoBrowserFragment : Fragment(), Observer<MutableList<VideoItem>> {
 
     private fun initAdapter(videoItems: MutableList<VideoItem>) {
         binding.fragmentVideoBrowserList.layoutManager = GridLayoutManager(context, UIManager.getItemGridSpanNumber(requireActivity()))
-        (binding.fragmentVideoBrowserList.layoutManager as GridLayoutManager).onRestoreInstanceState(viewModel.mainRvScrollPosition)
+        binding.fragmentVideoBrowserList.layoutManager?.onRestoreInstanceState(viewModel.mainRvScrollPosition)
 
         (binding.fragmentVideoBrowserList.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 

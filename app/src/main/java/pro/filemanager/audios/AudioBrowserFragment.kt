@@ -1,17 +1,13 @@
 package pro.filemanager.audios
 
 import android.os.Bundle
+import android.os.Process
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
@@ -19,6 +15,7 @@ import kotlinx.coroutines.withContext
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
+import pro.filemanager.core.PermissionWrapper
 import pro.filemanager.core.SimpleInjector
 import pro.filemanager.databinding.FragmentAudioBrowserBinding
 import java.lang.IllegalStateException
@@ -49,27 +46,23 @@ class AudioBrowserFragment : Fragment(), Observer<MutableList<AudioItem>> {
 
         binding.fragmentAudioBrowserList.layoutManager = LinearLayoutManager(context)
 
-       activity.requestExternalStoragePermission {
+        activity.requestExternalStoragePermission {
 
             ApplicationLoader.ApplicationIOScope.launch {
                 viewModel = ViewModelProviders.of(this@AudioBrowserFragment, SimpleInjector.provideAudioBrowserViewModelFactory()).get(AudioBrowserViewModel::class.java)
 
                 withContext(Main) {
-
                     viewModel.getItemsLive().observe(viewLifecycleOwner, this@AudioBrowserFragment)
 
                     try {
                         initAdapter(viewModel.getItemsLive().value!!)
                     } catch(e: IllegalStateException) {
-                        e.printStackTrace()
 
                         // TODO: MediaStore fetching failed with IllegalStateException.
                         //  Most likely, it is something out of our hands.
                         //  Show "Something went wrong" dialog
 
-                    } finally {
-
-                    }
+                    } finally { }
                 }
 
                 ApplicationLoader.loadVideos()

@@ -41,19 +41,6 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
-    override fun onBackPressed() {
-        if(binding.homeActivityRootDrawerLayout.isDrawerOpen(binding.homeActivityNavView)) {
-            binding.homeActivityRootDrawerLayout.closeDrawer(binding.homeActivityNavView)
-        } else {
-            if(onBackBehavior != null) {
-                onBackBehavior!!.run()
-            } else {
-                super.onBackPressed()
-            }
-        }
-
-    }
-
     fun requestExternalStoragePermission(action: Runnable = Runnable {}) {
         externalStorageRequestSuccessAction = action
         PermissionWrapper.requestExternalStorage(this, externalStorageRequestSuccessAction)

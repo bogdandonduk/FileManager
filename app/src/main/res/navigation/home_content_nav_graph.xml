@@ -23,13 +23,6 @@
             app:popEnterAnim="@anim/fragment_fade_enter"
             app:popExitAnim="@anim/fragment_open_exit" />
         <action
-            android:id="@+id/action_homeFragment_to_imageBrowserFragment"
-            app:destination="@id/imageBrowserFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
-            app:popEnterAnim="@anim/fragment_fade_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
-        <action
             android:id="@+id/action_homeFragment_to_videoBrowserFragment"
             app:destination="@id/videoBrowserFragment"
             app:enterAnim="@anim/fragment_open_enter"
@@ -43,6 +36,13 @@
             app:exitAnim="@anim/fragment_fade_exit"
             app:popEnterAnim="@anim/fragment_fade_enter"
             app:popExitAnim="@anim/fragment_open_exit" />
+        <action
+            android:id="@+id/action_homeFragment_to_imageBrowserFragment"
+            app:destination="@id/imageBrowserFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/fragment_fade_enter"
+            app:popExitAnim="@anim/fragment_open_exit" />
     </fragment>
     <fragment
         android:id="@+id/audioBrowserFragment"
@@ -52,10 +52,6 @@
         android:id="@+id/docBrowserFragment"
         android:name="pro.filemanager.docs.DocBrowserFragment"
         android:label="@string/title_docs" />
-    <fragment
-        android:id="@+id/imageBrowserFragment"
-        android:name="pro.filemanager.images.ImageBrowserFragment"
-        android:label="@string/title_images" />
     <fragment
         android:id="@+id/videoBrowserFragment"
         android:name="pro.filemanager.videos.VideoBrowserFragment"
@@ -73,5 +69,45 @@
         <argument
             android:name="path"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/imageBrowserFragment"
+        android:name="pro.filemanager.images.ImageBrowserFragment"
+        android:label="ImageBrowserFragment" >
+        <argument
+            android:name="Album"
+            app:argType="pro.filemanager.images.albums.ImageAlbumItem" />
+        <action
+            android:id="@+id/action_imageBrowserFragment_to_imageAlbumsFragment"
+            app:destination="@id/imageAlbumsFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/fragment_fade_enter"
+            app:popExitAnim="@anim/fragment_open_exit" />
+        <action
+            android:id="@+id/action_imageBrowserFragment_self"
+            app:destination="@id/imageBrowserFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/fragment_fade_enter"
+            app:popExitAnim="@anim/fragment_open_exit" />
+        <action
+            android:id="@+id/action_imageBrowserFragment_to_homeFragment2"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/imageAlbumsFragment"
+        android:name="pro.filemanager.images.albums.ImageAlbumsFragment"
+        android:label="ImageAlbumsFragment" >
+        <action
+            android:id="@+id/action_imageAlbumsFragment_to_imageBrowserFragment"
+            app:destination="@id/imageBrowserFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/fragment_fade_enter"
+            app:popExitAnim="@anim/fragment_open_exit" />
+        <action
+            android:id="@+id/action_imageAlbumsFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
 </navigation>

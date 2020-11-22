@@ -1,27 +1,50 @@
 package pro.filemanager.images
 
-import androidx.fragment.app.Fragment
+import android.os.Parcelable
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import pro.filemanager.images.albums.ImageAlbumsFragment
-import pro.filemanager.images.gallery.ImageGalleryFragment
+import pro.filemanager.ApplicationLoader
+import pro.filemanager.core.tools.SelectionTool
+import pro.filemanager.images.ImageItem
+import pro.filemanager.images.ImageRepo
+import pro.filemanager.images.albums.ImageAlbumItem
 
-class ImageBrowserViewModel : ViewModel() {
+class ImageBrowserViewModel(val imageRepo: ImageRepo, val albumItem: ImageAlbumItem?) : ViewModel(), ImageRepo.RepoSubscriber {
 
-    private var pagerFragmentsLive: MutableLiveData<MutableList<Fragment>>? = null
+    private var itemsLive: MutableLiveData<MutableList<ImageItem>>? = null
 
-    private fun initPagerFragmentsLive() : MutableLiveData<MutableList<Fragment>> {
-        if(pagerFragmentsLive == null) {
-            pagerFragmentsLive = MutableLiveData(mutableListOf(
-                    ImageGalleryFragment(),
-                    ImageAlbumsFragment()
-            ))
-        }
+    var mainRvScrollPosition: Parcelable? = null
 
-        return pagerFragmentsLive!!
+    init {
+        imageRepo.subscribe(this)
     }
 
-    fun getPagerFragmentsLive() = initPagerFragmentsLive() as LiveData<MutableList<Fragment>>
+    private suspend fun initItemsLive() : MutableLiveData<MutableList<ImageItem>> {
+        if(itemsLive == null) {
+            itemsLive = if(albumItem != null)
+                MutableLiveData(albumItem.containedImages)
+            else
+                MutableLiveData(imageRepo.loadItems(ApplicationLoader.appContext, false))
+        }
+
+        return itemsLive!!
+    }
+
+    suspend fun getItemsLive() = initItemsLive() as LiveData<MutableList<ImageItem>>
+
+    var selectionTool: SelectionTool? = null
+
+    override fun onUpdate(items: MutableList<ImageItem>) {
+
+        itemsLive?.postValue(items)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        imageRepo.unsubscribe(this)
+    }
 
 }

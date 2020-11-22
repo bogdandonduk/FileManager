@@ -6,6 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include
+        android:id="@+id/fragmentFileBrowserLayoutBaseToolbarInclude"
+        layout="@layout/layout_base_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/fragmentFileBrowserPathTitle"
         android:layout_width="0dp"
@@ -19,7 +28,7 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragmentFileBrowserLayoutBaseToolbarInclude"
         tools:text="/storage/emulated/0/" />
 
     <androidx.recyclerview.widget.RecyclerView

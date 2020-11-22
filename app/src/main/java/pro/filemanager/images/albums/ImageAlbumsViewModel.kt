@@ -9,6 +9,7 @@ import pro.filemanager.ApplicationLoader
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.images.ImageItem
 import pro.filemanager.images.ImageRepo
+import pro.filemanager.images.albums.ImageAlbumItem
 
 class ImageAlbumsViewModel(var imageRepo: ImageRepo) : ViewModel(), ImageRepo.RepoSubscriber {
 

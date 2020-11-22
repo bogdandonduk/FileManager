@@ -1,5 +1,6 @@
 package pro.filemanager.core.tools
 
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.IntDef
 import androidx.recyclerview.widget.RecyclerView
 import pro.filemanager.HomeActivity
@@ -16,6 +17,7 @@ class SelectionTool {
 
     var selectionMode = false
     val selectedPositions = mutableListOf<Int>()
+    var onBackCallback: OnBackPressedCallback? = null
 
     fun handleClickInViewHolder(@ClickType clickType: Int, position: Int, adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, activity: HomeActivity, offAction: Runnable = Runnable {}) {
         if(clickType == CLICK_SHORT) {
@@ -31,7 +33,7 @@ class SelectionTool {
                     if(selectedPositions.isEmpty()) {
                         selectionMode = false
 
-                        overrideOnBackBehavior(activity, adapter)
+                        onBackCallback?.isEnabled = false
                     }
                 }
 
@@ -42,7 +44,7 @@ class SelectionTool {
                 selectionMode = true
                 selectedPositions.add(position)
 
-                overrideOnBackBehavior(activity, adapter)
+                onBackCallback?.isEnabled = true
             } else {
                 if(!selectedPositions.contains(position)) {
                     selectedPositions.add(position)
@@ -52,7 +54,7 @@ class SelectionTool {
                     if(selectedPositions.isEmpty()) {
                         selectionMode = false
 
-                        overrideOnBackBehavior(activity, adapter)
+                        onBackCallback?.isEnabled = false
                     }
                 }
             }
@@ -61,10 +63,9 @@ class SelectionTool {
         }
     }
 
-    fun overrideOnBackBehavior(activity: HomeActivity, adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
-        activity.onBackBehavior = if(selectionMode) {
-
-            Runnable {
+    fun initOnBackCallback(activity: HomeActivity, adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
+        onBackCallback = object : OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
                 val copy = mutableListOf<Int>()
 
                 copy.addAll(selectedPositions)
@@ -78,9 +79,6 @@ class SelectionTool {
 
                 activity.onBackBehavior = null
             }
-
-        } else {
-            null
         }
     }
 }
