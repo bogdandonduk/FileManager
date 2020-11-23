@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -20,6 +21,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
+import pro.filemanager.core.KEY_TRANSIENT_PARCELABLE_IMAGE_ALBUMS_MAIN_LIST_RV_STATE
 import pro.filemanager.core.SimpleInjector
 import pro.filemanager.core.UIManager
 import pro.filemanager.core.tools.SelectionTool
@@ -32,7 +34,6 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
     lateinit var navController: NavController
     lateinit var activity: HomeActivity
     lateinit var viewModel: ImageAlbumsViewModel
-    var mainAdapter: ImageAlbumsAdapter? = null
 
     val IOScope = CoroutineScope(IO)
     val MainScope = CoroutineScope(Main)
@@ -40,7 +41,7 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
     lateinit var onBackCallback: OnBackPressedCallback
 
     override fun onChanged(t: MutableList<ImageAlbumItem>?) {
-        mainAdapter?.notifyDataSetChanged()
+        binding.fragmentImageAlbumsList.adapter?.notifyDataSetChanged()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,8 +93,7 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
                     viewModel.selectionTool = SelectionTool()
 
                 @Suppress("UNCHECKED_CAST")
-                viewModel.selectionTool!!.initOnBackCallback(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
-                requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, viewModel.selectionTool!!.onBackCallback!!)
+                viewModel.selectionTool!!.initOnBackCallback(activity, binding.fragmentImageAlbumsList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
             }
         }
 
@@ -122,10 +122,11 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
         binding.fragmentImageAlbumsBottomBarInclude.layoutBottomBarAlbumsTitle.setTypeface(null, Typeface.BOLD)
         binding.fragmentImageAlbumsBottomBarInclude.layoutBottomBarAlbumsTitleIndicator.visibility = View.VISIBLE
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
+        activity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
 
         binding.fragmentImageAlbumsBottomBarInclude.layoutBottomBarGalleryTitleContainer.setOnClickListener {
             onBackCallback.isEnabled = false
+            ApplicationLoader.transientParcelables[KEY_TRANSIENT_PARCELABLE_IMAGE_ALBUMS_MAIN_LIST_RV_STATE] = binding.fragmentImageAlbumsList.layoutManager?.onSaveInstanceState()
             activity.onBackPressed()
         }
 
@@ -133,13 +134,22 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
 
     private fun initAdapter(imageAlbumItems: MutableList<ImageAlbumItem>) {
         binding.fragmentImageAlbumsList.layoutManager = GridLayoutManager(context, UIManager.getAlbumGridSpanNumber(requireActivity()))
-        (binding.fragmentImageAlbumsList.layoutManager as GridLayoutManager).onRestoreInstanceState(viewModel.mainRvScrollPosition)
+        ApplicationLoader.transientParcelables[KEY_TRANSIENT_PARCELABLE_IMAGE_ALBUMS_MAIN_LIST_RV_STATE].let {
+            if(it != null) {
+                binding.fragmentImageAlbumsList.layoutManager?.onRestoreInstanceState(it)
+                ApplicationLoader.transientParcelables.remove(KEY_TRANSIENT_PARCELABLE_IMAGE_ALBUMS_MAIN_LIST_RV_STATE)
+            } else
+                binding.fragmentImageAlbumsList.layoutManager?.onRestoreInstanceState(viewModel.mainListRvState)
+        }
 
-        (binding.fragmentImageAlbumsList.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+        binding.fragmentImageAlbumsList.adapter = ImageAlbumsAdapter(requireActivity(), imageAlbumItems, layoutInflater, this@ImageAlbumsFragment)
+        binding.fragmentImageAlbumsList.adapter?.setHasStableIds(true)
 
-        mainAdapter = ImageAlbumsAdapter(requireActivity(), imageAlbumItems, layoutInflater, this@ImageAlbumsFragment)
-
-        binding.fragmentImageAlbumsList.adapter = mainAdapter
+        binding.fragmentImageAlbumsList.itemAnimator = object : DefaultItemAnimator() {
+            override fun canReuseUpdatedViewHolder(viewHolder: RecyclerView.ViewHolder): Boolean {
+                return true
+            }
+        }
 
         binding.fragmentImageAlbumsList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
@@ -157,7 +167,7 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
     override fun onStop() {
         super.onStop()
 
-        viewModel.mainRvScrollPosition = binding.fragmentImageAlbumsList.layoutManager?.onSaveInstanceState()
+        viewModel.mainListRvState = binding.fragmentImageAlbumsList.layoutManager?.onSaveInstanceState()
 
     }
 

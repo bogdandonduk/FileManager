@@ -42,7 +42,6 @@ class ImageBrowserViewModel(val imageRepo: ImageRepo, val albumItem: ImageAlbumI
     }
 
     override fun onCleared() {
-        super.onCleared()
 
         imageRepo.unsubscribe(this)
     }

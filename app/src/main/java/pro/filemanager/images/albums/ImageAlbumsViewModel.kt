@@ -15,7 +15,7 @@ class ImageAlbumsViewModel(var imageRepo: ImageRepo) : ViewModel(), ImageRepo.Re
 
     private var itemsLive: MutableLiveData<MutableList<ImageAlbumItem>>? = null
 
-    var mainRvScrollPosition: Parcelable? = null
+    var mainListRvState: Parcelable? = null
 
     init {
         imageRepo.subscribe(this)
@@ -36,7 +36,7 @@ class ImageAlbumsViewModel(var imageRepo: ImageRepo) : ViewModel(), ImageRepo.Re
 
     override fun onUpdate(items: MutableList<ImageItem>) {
         ApplicationLoader.ApplicationIOScope.launch {
-            itemsLive?.postValue(imageRepo.loadAlbums(ApplicationLoader.appContext, true))
+            itemsLive?.postValue(imageRepo.loadAlbums(ApplicationLoader.appContext, false))
         }
     }
 

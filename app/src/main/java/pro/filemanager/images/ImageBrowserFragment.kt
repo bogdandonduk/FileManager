@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -33,14 +34,13 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
     lateinit var activity: HomeActivity
     lateinit var navController: NavController
     lateinit var viewModel: ImageBrowserViewModel
-    var mainAdapter: ImageBrowserAdapter? = null
     var albumItem: ImageAlbumItem? = null
 
     val IOScope = CoroutineScope(Dispatchers.IO)
     val MainScope = CoroutineScope(Main)
 
     override fun onChanged(t: MutableList<ImageItem>?) {
-        mainAdapter?.notifyDataSetChanged()
+        binding.fragmentImageBrowserList.adapter?.notifyDataSetChanged()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,19 +79,14 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
                         //  Most likely, it is something out of our hands.
                         //  Show "Something went wrong" dialog
 
-                    } finally {
-
-
                     }
-
                 }
 
                 if(viewModel.selectionTool == null)
                     viewModel.selectionTool = SelectionTool()
 
                 @Suppress("UNCHECKED_CAST")
-                viewModel.selectionTool!!.initOnBackCallback(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
-                requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, viewModel.selectionTool!!.onBackCallback!!)
+                viewModel.selectionTool!!.initOnBackCallback(activity, binding.fragmentImageBrowserList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
             }
         }
 
@@ -146,11 +141,14 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
         binding.fragmentImageBrowserList.layoutManager = GridLayoutManager(context, UIManager.getItemGridSpanNumber(requireActivity()))
         binding.fragmentImageBrowserList.layoutManager?.onRestoreInstanceState(viewModel.mainRvScrollPosition)
 
-        (binding.fragmentImageBrowserList.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+        binding.fragmentImageBrowserList.adapter = ImageBrowserAdapter(requireActivity(), audioItems, layoutInflater, this@ImageBrowserFragment)
+        binding.fragmentImageBrowserList.adapter?.setHasStableIds(true)
 
-        mainAdapter = ImageBrowserAdapter(requireActivity(), audioItems, layoutInflater, this@ImageBrowserFragment)
-
-        binding.fragmentImageBrowserList.adapter = mainAdapter
+        binding.fragmentImageBrowserList.itemAnimator = object : DefaultItemAnimator() {
+            override fun canReuseUpdatedViewHolder(viewHolder: RecyclerView.ViewHolder): Boolean {
+                return true
+            }
+        }
 
         binding.fragmentImageBrowserList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 

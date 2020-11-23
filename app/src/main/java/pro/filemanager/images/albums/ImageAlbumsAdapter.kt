@@ -13,6 +13,7 @@ import pro.filemanager.R
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.LayoutImageAlbumItemBinding
 import pro.filemanager.images.ImageCore
+import pro.filemanager.images.ImageRepo
 
 class ImageAlbumsAdapter(val context: Context, val imageAlbumItems: MutableList<ImageAlbumItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageAlbumsFragment) : RecyclerView.Adapter<ImageAlbumsAdapter.ImageAlbumItemViewHolder>() {
 
@@ -68,32 +69,7 @@ class ImageAlbumsAdapter(val context: Context, val imageAlbumItems: MutableList<
                 holder.binding.layoutImageAlbumItemCount.textSize = (holder.binding.layoutImageAlbumItemCard.width / 40).toFloat()
             }
 
-            if (hostFragment.viewModel.selectionTool!!.selectionMode) {
-                if (hostFragment.viewModel.selectionTool!!.selectedPositions.contains(position)) {
-                    holder.binding.layoutImageAlbumItemIconCheck.visibility = View.VISIBLE
-
-                    holder.binding.layoutImageAlbumItemThumbnail.setColorFilter(Color.argb(120, 0, 0, 0))
-
-                    ImageCore.glideSimpleRequestBuilder
-                            .load(R.drawable.ic_baseline_check_circle_24)
-                            .into(holder.binding.layoutImageAlbumItemIconCheck)
-
-                    holder.binding.layoutImageAlbumItemIconCheck.scaleX = 0f
-                    holder.binding.layoutImageAlbumItemIconCheck.scaleY = 0f
-
-                    holder.binding.layoutImageAlbumItemIconCheck.animate().scaleX(1f).setDuration(150).start()
-                    holder.binding.layoutImageAlbumItemIconCheck.animate().scaleY(1f).setDuration(150).start()
-
-                } else {
-                    holder.binding.layoutImageAlbumItemThumbnail.colorFilter = null
-
-                    holder.binding.layoutImageAlbumItemIconCheck.visibility = View.INVISIBLE
-                }
-            } else {
-                holder.binding.layoutImageAlbumItemThumbnail.colorFilter = null
-
-                holder.binding.layoutImageAlbumItemIconCheck.visibility = View.INVISIBLE
-            }
+            hostFragment.viewModel.selectionTool?.differentiateItem(position, holder.binding.layoutImageAlbumItemThumbnail, holder.binding.layoutImageAlbumItemIconCheck, holder.binding.layoutImageAlbumItemIconUnchecked)
 
         }
 

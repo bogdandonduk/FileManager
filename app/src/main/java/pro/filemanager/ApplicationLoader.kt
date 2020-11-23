@@ -3,6 +3,7 @@ package pro.filemanager
 import android.app.Application
 import android.content.Context
 import android.os.FileObserver
+import android.os.Parcelable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import pro.filemanager.images.ImageRepo
@@ -20,6 +21,8 @@ class ApplicationLoader : Application() {
         lateinit var appContext: Context
 
         val ApplicationIOScope = CoroutineScope(IO)
+
+        val transientParcelables: MutableMap<String, Parcelable?> = mutableMapOf()
 
         val fileSystemObserver: FileSystemObserver = FileSystemObserver(FileCore.getInternalDownMostRootPath(), FileObserver.ALL_EVENTS)
 

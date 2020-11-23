@@ -1,9 +1,16 @@
 package pro.filemanager.core.tools
 
+import android.graphics.Color
+import android.util.Log
+import android.view.View
+import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.IntDef
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import pro.filemanager.HomeActivity
+import pro.filemanager.R
+import pro.filemanager.images.ImageCore
 
 class SelectionTool {
     companion object {
@@ -17,68 +24,113 @@ class SelectionTool {
 
     var selectionMode = false
     val selectedPositions = mutableListOf<Int>()
-    var onBackCallback: OnBackPressedCallback? = null
 
     fun handleClickInViewHolder(@ClickType clickType: Int, position: Int, adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, activity: HomeActivity, offAction: Runnable = Runnable {}) {
         if(clickType == CLICK_SHORT) {
-
             if(!selectionMode)
                 offAction.run()
             else {
                 if(!selectedPositions.contains(position)) {
                     selectedPositions.add(position)
+                    adapter.notifyItemChanged(position)
                 } else {
                     selectedPositions.remove(position)
+                    adapter.notifyItemChanged(position)
 
-                    if(selectedPositions.isEmpty()) {
+                    if(selectedPositions.isNotEmpty()) {
+                        adapter.notifyItemChanged(position)
+                    } else {
                         selectionMode = false
 
-                        onBackCallback?.isEnabled = false
+                        for (i in 0 until adapter.itemCount) {
+                            adapter.notifyItemChanged(i)
+                        }
+
+                        initOnBackCallback(activity, adapter)
                     }
                 }
 
-                adapter.notifyItemChanged(position)
+
             }
         } else if(clickType == CLICK_LONG){
             if(!selectionMode) {
                 selectionMode = true
                 selectedPositions.add(position)
 
-                onBackCallback?.isEnabled = true
+                for (i in 0 until adapter.itemCount) {
+                    adapter.notifyItemChanged(i)
+                }
+
+                initOnBackCallback(activity, adapter)
             } else {
                 if(!selectedPositions.contains(position)) {
                     selectedPositions.add(position)
+                    adapter.notifyItemChanged(position)
                 } else {
                     selectedPositions.remove(position)
 
-                    if(selectedPositions.isEmpty()) {
+                    if(selectedPositions.isNotEmpty()) {
+                        adapter.notifyItemChanged(position)
+                    } else {
                         selectionMode = false
 
-                        onBackCallback?.isEnabled = false
+                        for (i in 0 until adapter.itemCount) {
+                            adapter.notifyItemChanged(i)
+                        }
+
+                        initOnBackCallback(activity, adapter)
                     }
                 }
             }
 
-            adapter.notifyItemChanged(position)
         }
     }
 
     fun initOnBackCallback(activity: HomeActivity, adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
-        onBackCallback = object : OnBackPressedCallback(false) {
-            override fun handleOnBackPressed() {
-                val copy = mutableListOf<Int>()
+         activity.currentOnBackBehavior = if(selectionMode)
+             Runnable {
 
-                copy.addAll(selectedPositions)
+                 selectedPositions.clear()
+                 selectionMode = false
 
-                selectedPositions.clear()
-                selectionMode = false
+                 for (i in 0 until adapter.itemCount) {
+                     adapter.notifyItemChanged(i)
+                 }
 
-                copy.forEach {
-                    adapter.notifyItemChanged(it)
-                }
+                 activity.currentOnBackBehavior = null
+             }
+         else null
+    }
 
-                activity.onBackBehavior = null
+    fun differentiateItem(position: Int, thumbnail: ImageView, checkMark: ImageView, uncheckedMark: ImageView) {
+        if(selectionMode) {
+            if(selectedPositions.contains(position)) {
+                checkMark.visibility = View.VISIBLE
+                uncheckedMark.visibility = View.INVISIBLE
+
+                thumbnail.setColorFilter(Color.argb(120, 0, 0, 0))
+
+                ImageCore.glideSimpleRequestBuilder
+                        .load(R.drawable.ic_baseline_check_circle_24)
+                        .into(checkMark)
+
+                checkMark.scaleX = 0f
+                checkMark.scaleY = 0f
+
+                checkMark.animate().scaleX(1f).setDuration(150).start()
+                checkMark.animate().scaleY(1f).setDuration(150).start()
+
+            } else {
+                thumbnail.colorFilter = null
+
+                checkMark.visibility = View.INVISIBLE
+                uncheckedMark.visibility = View.VISIBLE
             }
+        } else {
+            thumbnail.colorFilter = null
+
+            checkMark.visibility = View.INVISIBLE
+            uncheckedMark.visibility = View.INVISIBLE
         }
     }
 }

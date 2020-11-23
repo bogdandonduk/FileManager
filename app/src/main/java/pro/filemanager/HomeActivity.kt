@@ -27,7 +27,7 @@ class HomeActivity : AppCompatActivity() {
 
     lateinit var navController: NavController
 
-    var onBackBehavior: Runnable? = null
+    var currentOnBackBehavior: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,5 +63,12 @@ class HomeActivity : AppCompatActivity() {
 
         FileCore.outerIntentInProgress = false
 
+    }
+
+    override fun onBackPressed() {
+        if(currentOnBackBehavior != null)
+            currentOnBackBehavior!!.run()
+        else
+            super.onBackPressed()
     }
 }

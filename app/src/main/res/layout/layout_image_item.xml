@@ -50,4 +50,16 @@
         app:layout_constraintStart_toStartOf="@+id/layoutImageItemRootLayoutGl75pv"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/layoutImageItemIconUnchecked"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="2dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/layoutImageItemRootLayoutGl25ph"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/layoutImageItemRootLayoutGl75pv"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/bg_circle_thin" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

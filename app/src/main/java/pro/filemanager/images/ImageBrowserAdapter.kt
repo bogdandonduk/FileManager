@@ -61,32 +61,7 @@ class ImageBrowserAdapter(val context: Context, val imageItems: MutableList<Imag
                         .into(holder.binding.layoutImageItemThumbnail)
             }
 
-            if(hostFragment.viewModel.selectionTool!!.selectionMode) {
-                if(hostFragment.viewModel.selectionTool!!.selectedPositions.contains(position)) {
-                    holder.binding.layoutImageItemIconCheck.visibility = View.VISIBLE
-
-                    holder.binding.layoutImageItemThumbnail.setColorFilter(Color.argb(120, 0, 0, 0))
-
-                    ImageCore.glideSimpleRequestBuilder
-                            .load(R.drawable.ic_baseline_check_circle_24)
-                            .into(holder.binding.layoutImageItemIconCheck)
-
-                    holder.binding.layoutImageItemIconCheck.scaleX = 0f
-                    holder.binding.layoutImageItemIconCheck.scaleY = 0f
-
-                    holder.binding.layoutImageItemIconCheck.animate().scaleX(1f).setDuration(150).start()
-                    holder.binding.layoutImageItemIconCheck.animate().scaleY(1f).setDuration(150).start()
-
-                } else {
-                    holder.binding.layoutImageItemThumbnail.colorFilter = null
-
-                    holder.binding.layoutImageItemIconCheck.visibility = View.INVISIBLE
-                }
-            } else {
-                holder.binding.layoutImageItemThumbnail.colorFilter = null
-
-                holder.binding.layoutImageItemIconCheck.visibility = View.INVISIBLE
-            }
+            hostFragment.viewModel.selectionTool?.differentiateItem(position, holder.binding.layoutImageItemThumbnail, holder.binding.layoutImageItemIconCheck, holder.binding.layoutImageItemIconUnchecked)
 
         }
 

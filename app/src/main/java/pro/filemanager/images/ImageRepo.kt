@@ -142,6 +142,8 @@ class ImageRepo private constructor() {
 
                 loadingAlbumsInProgress = false
 
+                notifySubscribers(loadItems(context, false))
+
                 loadedAlbums!!
             } else {
                 val timeout = System.currentTimeMillis() + 20000
@@ -151,6 +153,7 @@ class ImageRepo private constructor() {
                 }
 
                 if(loadedAlbums != null) {
+                    notifySubscribers(loadItems(context, false))
                     loadedAlbums!!
                 } else {
                     throw IllegalStateException("Something went wrong while splitting image items into albums")
