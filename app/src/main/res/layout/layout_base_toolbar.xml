@@ -5,13 +5,25 @@
     android:id="@+id/layoutBaseToolbarRootLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_app_bar">
+    android:background="@drawable/bg_app_bar"
+    android:translationZ="2dp">
+
+    <include
+        android:id="@+id/layoutSelectionBarInclude"
+        layout="@layout/layout_selection_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/layoutBaseToolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_app_bar"
+        android:elevation="2dp"
         android:minHeight="?attr/actionBarSize"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,9 +35,9 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="@color/tileBtn"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutBaseToolbar">
+        app:layout_constraintStart_toStartOf="parent">
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

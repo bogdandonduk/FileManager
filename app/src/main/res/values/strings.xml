@@ -23,9 +23,13 @@
     <string name="title_apks">APKs</string>
     <string name="title_trash">Trash</string>
 
+    <string name="title_search">Search</string>
+    <string name="title_sort">Sort</string>
+
     <string name="title_internal_storage">Internal Storage</string>
     <string name="title_external_storage">SD Card</string>
 
     <string name="external_storage_do_not_ask_again_selected_rationale_message">Please grant it from application details settings</string>
+    <string name="title_settings">Settings</string>
 
 </resources>

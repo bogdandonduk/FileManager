@@ -23,17 +23,17 @@ class VideoBrowserAdapter(val context: Context, val videoItems: MutableList<Vide
         init {
             binding.layoutVideoItemRootLayout.apply {
                 setOnClickListener {
-                    @Suppress("UNCHECKED_CAST")
-                    hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_SHORT, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity) {
-                        FileCore.openFileOut(this@VideoItemViewHolder.context, item.data)
-                    }
+//                    @Suppress("UNCHECKED_CAST")
+//                    hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_SHORT, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity) {
+//                        FileCore.openFileOut(this@VideoItemViewHolder.context, item.data)
+//                    }
 
                 }
 
                 setOnLongClickListener {
-                    @Suppress("UNCHECKED_CAST")
-                    hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_LONG, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity)
-
+//                    @Suppress("UNCHECKED_CAST")
+//                    hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_LONG, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity)
+//
                     true
                 }
             }
@@ -56,32 +56,7 @@ class VideoBrowserAdapter(val context: Context, val videoItems: MutableList<Vide
                     .signature(MediaStoreSignature(VideoCore.MIME_TYPE, videoItems[position].dateModified.toLong(), 0))
                     .into(holder.binding.layoutVideoItemThumbnail)
 
-            if(hostFragment.viewModel.selectionTool!!.selectionMode) {
-                if(hostFragment.viewModel.selectionTool!!.selectedPositions.contains(position)) {
-                    holder.binding.layoutVideoItemIconCheck.visibility = View.VISIBLE
-
-                    holder.binding.layoutVideoItemThumbnail.setColorFilter(Color.argb(120, 0, 0, 0))
-
-                    VideoCore.glideSimpleRequestBuilder
-                            .load(R.drawable.ic_baseline_check_circle_24)
-                            .into(holder.binding.layoutVideoItemIconCheck)
-
-                    holder.binding.layoutVideoItemIconCheck.scaleX = 0f
-                    holder.binding.layoutVideoItemIconCheck.scaleY = 0f
-
-                    holder.binding.layoutVideoItemIconCheck.animate().scaleX(1f).setDuration(150).start()
-                    holder.binding.layoutVideoItemIconCheck.animate().scaleY(1f).setDuration(150).start()
-
-                } else {
-                    holder.binding.layoutVideoItemThumbnail.colorFilter = null
-
-                    holder.binding.layoutVideoItemIconCheck.visibility = View.INVISIBLE
-                }
-            } else {
-                holder.binding.layoutVideoItemThumbnail.colorFilter = null
-
-                holder.binding.layoutVideoItemIconCheck.visibility = View.INVISIBLE
-            }
+            hostFragment.viewModel.selectionTool?.differentiateItem(position, holder.binding.layoutVideoItemThumbnail, holder.binding.layoutVideoItemIconCheck, holder.binding.layoutVideoItemIconUnchecked)
 
         }
 

@@ -1,42 +1,45 @@
 package pro.filemanager.images.albums
 
+import android.content.Context
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.launch
 import pro.filemanager.ApplicationLoader
+import pro.filemanager.core.tools.SearchTool
 import pro.filemanager.core.tools.SelectionTool
-import pro.filemanager.images.ImageItem
 import pro.filemanager.images.ImageRepo
-import pro.filemanager.images.albums.ImageAlbumItem
 
-class ImageAlbumsViewModel(var imageRepo: ImageRepo) : ViewModel(), ImageRepo.RepoSubscriber {
+class ImageAlbumsViewModel(var imageRepo: ImageRepo) : ViewModel(), ImageRepo.AlbumSubscriber {
 
     private var itemsLive: MutableLiveData<MutableList<ImageAlbumItem>>? = null
+    var selectionTool: SelectionTool? = null
 
     var mainListRvState: Parcelable? = null
+    var currentSearchText: String? = null
 
     init {
         imageRepo.subscribe(this)
-
     }
 
-    private suspend fun initAlbumsLive() : MutableLiveData<MutableList<ImageAlbumItem>> {
-        if(itemsLive == null) {
-            itemsLive = MutableLiveData(imageRepo.loadAlbums(ApplicationLoader.appContext, false))
+    private suspend fun initAlbumsLive(context: Context, forceLoad: Boolean = false) : MutableLiveData<MutableList<ImageAlbumItem>> {
+        if(!forceLoad) {
+            if(itemsLive == null) {
+                itemsLive = MutableLiveData(imageRepo.loadAlbums(imageRepo.loadItems(context, false),false))
+            }
+        } else {
+            itemsLive = MutableLiveData(imageRepo.loadAlbums(imageRepo.loadItems(context, false),false))
         }
 
         return itemsLive!!
     }
 
-    suspend fun getAlbumsLive() = initAlbumsLive() as LiveData<MutableList<ImageAlbumItem>>
+    suspend fun getAlbumsLive() = initAlbumsLive(ApplicationLoader.appContext) as LiveData<MutableList<ImageAlbumItem>>
 
-    var selectionTool: SelectionTool? = null
-
-    override fun onUpdate(items: MutableList<ImageItem>) {
+    override fun onUpdate(items: MutableList<ImageAlbumItem>) {
         ApplicationLoader.ApplicationIOScope.launch {
-            itemsLive?.postValue(imageRepo.loadAlbums(ApplicationLoader.appContext, false))
+            itemsLive?.postValue(items)
         }
     }
 
@@ -46,4 +49,17 @@ class ImageAlbumsViewModel(var imageRepo: ImageRepo) : ViewModel(), ImageRepo.Re
         imageRepo.unsubscribe(this)
     }
 
+    fun search(context: Context, text: String?) {
+        ApplicationLoader.ApplicationIOScope.launch {
+            if(text != null) {
+                mainListRvState = null
+                currentSearchText = text
+                itemsLive?.postValue(SearchTool.searchImageAlbumItems(text, imageRepo.loadAlbums(imageRepo.loadItems(context, false), false)))
+            } else {
+                mainListRvState = null
+
+                initAlbumsLive(context, true)
+            }
+        }
+    }
 }

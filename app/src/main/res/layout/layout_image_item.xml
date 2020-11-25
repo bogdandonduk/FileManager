@@ -54,12 +54,63 @@
         android:id="@+id/layoutImageItemIconUnchecked"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="2dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/layoutImageItemRootLayoutGl25ph"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/layoutImageItemRootLayoutGl75pv"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/bg_circle_thin" />
+        app:srcCompat="@drawable/ic_baseline_donut_large_24" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutImageItemTitleContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/itemTitle"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/layoutImageItemRootLayoutGl80ph">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutImageItemTitleContainerGl10pv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.1" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutImageItemTitleContainerGl90pv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.9" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutImageItemTitleMidContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/layoutImageItemTitleContainerGl90pv"
+            app:layout_constraintStart_toStartOf="@+id/layoutImageItemTitleContainerGl10pv"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/layoutImageItemTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Filename" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

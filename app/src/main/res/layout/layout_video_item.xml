@@ -9,6 +9,20 @@
     android:paddingBottom="1dp">
 
     <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/layoutVideoItemRootLayoutGl25ph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/layoutVideoItemRootLayoutGl75pv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75" />
+
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/layoutVideoItemRootLayoutGl32pv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -35,6 +49,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.68" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/layoutVideoItemRootLayoutGl85ph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.8" />
 
     <ImageView
         android:id="@+id/layoutVideoItemThumbnail"
@@ -63,10 +84,73 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/layoutVideoItemRootLayoutGl25ph"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/layoutVideoItemRootLayoutGl75pv"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_check_circle_24" />
+
+    <ImageView
+        android:id="@+id/layoutVideoItemIconUnchecked"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/layoutVideoItemRootLayoutGl25ph"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/layoutVideoItemRootLayoutGl75pv"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_donut_large_24" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutVideoItemTitleContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/itemTitle"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/layoutVideoItemRootLayoutGl68pv"
-        app:layout_constraintTop_toTopOf="@+id/layoutVideoItemRootLayoutGl68ph"
-        app:srcCompat="@drawable/ic_baseline_check_circle_24" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/layoutVideoItemRootLayoutGl85ph">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutVideoItemTitleContainerGl10pv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.1" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutVideoItemTitleContainerGl90pv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.9" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutImageItemTitleMidContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/layoutVideoItemTitleContainerGl90pv"
+            app:layout_constraintStart_toStartOf="@+id/layoutVideoItemTitleContainerGl10pv"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/layoutVideoItemTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Filename" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

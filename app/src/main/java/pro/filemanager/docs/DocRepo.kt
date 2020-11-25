@@ -2,8 +2,10 @@ package pro.filemanager.docs
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.database.Cursor
 import android.database.MergeCursor
 import android.provider.MediaStore
+import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.delay
@@ -23,7 +25,6 @@ class DocRepo private constructor() {
                 instance!!
             }
         }
-
     }
 
     @Volatile private var subscribers: MutableList<RepoSubscriber> = mutableListOf()
@@ -56,64 +57,41 @@ class DocRepo private constructor() {
             if(!loadingInProgress) {
                 loadingInProgress = true
 
-                val cursor = MergeCursor(arrayOf(
-                    context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
+                val cursor: Cursor = context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
                         MediaStore.Files.FileColumns.DATA,
                         MediaStore.Files.FileColumns.DISPLAY_NAME,
-                        MediaStore.Files.FileColumns.SIZE
-                    ), MediaStore.Files.FileColumns.MIME_TYPE + "=?",
-                        arrayOf(
-                            MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf")
-                        ), null, null)!!,
-                    context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
-                        MediaStore.Files.FileColumns.DATA,
-                        MediaStore.Files.FileColumns.DISPLAY_NAME,
-                        MediaStore.Files.FileColumns.SIZE
-                    ), MediaStore.Files.FileColumns.MIME_TYPE + "=?",
-                        arrayOf(
-                            MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc")
-                        ), null, null)!!,
-                    context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
-                        MediaStore.Files.FileColumns.DATA,
-                        MediaStore.Files.FileColumns.DISPLAY_NAME,
-                        MediaStore.Files.FileColumns.SIZE
-                    ), MediaStore.Files.FileColumns.MIME_TYPE + "=?",
-                        arrayOf(
-                            MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx")
-                        ), null, null)!!,
-                    context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
-                        MediaStore.Files.FileColumns.DATA,
-                        MediaStore.Files.FileColumns.DISPLAY_NAME,
-                        MediaStore.Files.FileColumns.SIZE
-                    ), MediaStore.Files.FileColumns.MIME_TYPE + "=?",
-                        arrayOf(
-                            MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt")
-                        ), null, null)!!,
-                    context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
-                        MediaStore.Files.FileColumns.DATA,
-                        MediaStore.Files.FileColumns.DISPLAY_NAME,
-                        MediaStore.Files.FileColumns.SIZE
-                    ), MediaStore.Files.FileColumns.MIME_TYPE + "=?",
-                        arrayOf(
-                            MimeTypeMap.getSingleton().getMimeTypeFromExtension("xml")
-                        ), null, null)!!
-                ))
+                        MediaStore.Files.FileColumns.SIZE,
+                        MediaStore.Files.FileColumns.DATE_ADDED,
+                ), null, null, MediaStore.Files.FileColumns.DATE_ADDED + " DESC", null)!!
 
                 val docItems: MutableList<DocItem> = mutableListOf()
 
                 if(cursor.moveToFirst()) {
                     while(!cursor.isAfterLast) {
-                        docItems.add(
-                            DocItem(
-                                cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)),
-                                cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME)),
-                                cursor.getInt(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE))
-                            )
-                        )
+                        if(
+                           cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).endsWith(".pdf", true ) ||
+                           cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).endsWith(".doc", true ) ||
+                           cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).endsWith(".docx", true ) ||
+                           cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).endsWith(".xls", true ) ||
+                           cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).endsWith(".xlsx", true ) ||
+                           cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).endsWith(".ppt", true ) ||
+                           cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).endsWith(".pptx", true ) ||
+                           cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).endsWith(".txt", true ) ||
+                           cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).endsWith(".html", true ) ||
+                           cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).endsWith(".xml", true ) ||
+                           cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).endsWith(".json", true )
+                        ) {
+                                docItems.add(
+                                        DocItem(
+                                                cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)),
+                                                cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME)),
+                                                cursor.getInt(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE))
+                                        )
+                                )
+                        }
 
                         cursor.moveToNext()
                     }
-
                 }
 
                 cursor.close()
@@ -149,64 +127,29 @@ class DocRepo private constructor() {
 
         loadingInProgress = true
 
-        val cursor = MergeCursor(arrayOf(
-                context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
-                        MediaStore.Files.FileColumns.DATA,
-                        MediaStore.Files.FileColumns.DISPLAY_NAME,
-                        MediaStore.Files.FileColumns.SIZE
-                ), MediaStore.Files.FileColumns.MIME_TYPE + "=?",
-                        arrayOf(
-                                MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf")
-                        ), null, null)!!,
-                context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
-                        MediaStore.Files.FileColumns.DATA,
-                        MediaStore.Files.FileColumns.DISPLAY_NAME,
-                        MediaStore.Files.FileColumns.SIZE
-                ), MediaStore.Files.FileColumns.MIME_TYPE + "=?",
-                        arrayOf(
-                                MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc")
-                        ), null, null)!!,
-                context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
-                        MediaStore.Files.FileColumns.DATA,
-                        MediaStore.Files.FileColumns.DISPLAY_NAME,
-                        MediaStore.Files.FileColumns.SIZE
-                ), MediaStore.Files.FileColumns.MIME_TYPE + "=?",
-                        arrayOf(
-                                MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx")
-                        ), null, null)!!,
-                context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
-                        MediaStore.Files.FileColumns.DATA,
-                        MediaStore.Files.FileColumns.DISPLAY_NAME,
-                        MediaStore.Files.FileColumns.SIZE
-                ), MediaStore.Files.FileColumns.MIME_TYPE + "=?",
-                        arrayOf(
-                                MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt")
-                        ), null, null)!!,
-                context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
-                        MediaStore.Files.FileColumns.DATA,
-                        MediaStore.Files.FileColumns.DISPLAY_NAME,
-                        MediaStore.Files.FileColumns.SIZE
-                ), MediaStore.Files.FileColumns.MIME_TYPE + "=?",
-                        arrayOf(
-                                MimeTypeMap.getSingleton().getMimeTypeFromExtension("xml")
-                        ), null, null)!!
-        ))
+        val cursor: Cursor = context.contentResolver.query(MediaStore.Files.getContentUri("external"), arrayOf(
+                MediaStore.Files.FileColumns.DATA,
+                MediaStore.Files.FileColumns.DISPLAY_NAME,
+                MediaStore.Files.FileColumns.SIZE,
+                MediaStore.Files.FileColumns.DATE_ADDED,
+        ), null, null, MediaStore.Files.FileColumns.DATE_ADDED + " DESC", null)!!
 
         val docItems: MutableList<DocItem> = mutableListOf()
 
         if(cursor.moveToFirst()) {
             while(!cursor.isAfterLast) {
-                docItems.add(
-                        DocItem(
-                                cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)),
-                                cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME)),
-                                cursor.getInt(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE))
-                        )
-                )
+                if(cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)).endsWith(".pdf", true )) {
+                    docItems.add(
+                            DocItem(
+                                    cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)),
+                                    cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME)),
+                                    cursor.getInt(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE))
+                            )
+                    )
+                }
 
                 cursor.moveToNext()
             }
-
         }
 
         cursor.close()

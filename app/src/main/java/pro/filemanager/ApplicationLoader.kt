@@ -6,6 +6,7 @@ import android.os.FileObserver
 import android.os.Parcelable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.images.ImageRepo
 import pro.filemanager.videos.VideoRepo
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ class ApplicationLoader : Application() {
         lateinit var appContext: Context
 
         val ApplicationIOScope = CoroutineScope(IO)
+        val ApplicationMainScope = CoroutineScope(Main)
 
         val transientParcelables: MutableMap<String, Parcelable?> = mutableMapOf()
 
@@ -46,7 +48,7 @@ class ApplicationLoader : Application() {
         fun loadImages(context: Context = appContext) {
             if(PermissionWrapper.checkExternalStoragePermissions(context)) {
                 ApplicationIOScope.launch {
-                    ImageRepo.getInstance().loadAlbums(context, false)
+                    ImageRepo.getInstance().loadAlbums(ImageRepo.getInstance().loadItems(appContext, false), false)
                 }
             }
         }

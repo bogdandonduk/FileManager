@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
-import android.util.Log
 import kotlinx.coroutines.delay
 import pro.filemanager.images.albums.ImageAlbumItem
 import java.io.File
@@ -33,29 +32,48 @@ class ImageRepo private constructor() {
         }
     }
 
-    @Volatile private var subscribers: MutableList<RepoSubscriber> = mutableListOf()
+    @Volatile private var itemSubscribers: MutableList<ItemSubscriber> = mutableListOf()
+    @Volatile private var albumSubscribers: MutableList<AlbumSubscriber> = mutableListOf()
     @Volatile private var loadedItems: MutableList<ImageItem>? = null
     @Volatile private var loadedAlbums: MutableList<ImageAlbumItem> ?= null
     @Volatile private var loadingItemsInProgress = false
     @Volatile private var loadingAlbumsInProgress = false
 
     // interface for pushing updates to loadedItems to subscriber (basically ViewModels)
-    interface RepoSubscriber {
+    interface ItemSubscriber {
         fun onUpdate(items: MutableList<ImageItem>)
     }
 
-    private fun notifySubscribers(items: MutableList<ImageItem>) {
-        subscribers.forEach {
+    interface AlbumSubscriber {
+        fun onUpdate(items: MutableList<ImageAlbumItem>)
+    }
+
+    private fun notifyItemSubscribers(items: MutableList<ImageItem>) {
+        itemSubscribers.forEach {
             it.onUpdate(items) // pushing an update to all live subscribers
         }
     }
 
-    fun subscribe(subscriber: RepoSubscriber) {
-        subscribers.add(subscriber) // add new subscriber to subscribers list
+    private fun notifyAlbumSubscribers(items: MutableList<ImageAlbumItem>) {
+        albumSubscribers.forEach {
+            it.onUpdate(items) // pushing an update to all live subscribers
+        }
     }
 
-    fun unsubscribe(subscriber: RepoSubscriber) {
-        subscribers.remove(subscriber) // remove an subscriber from subscribers list
+    fun subscribe(subscriber: ItemSubscriber) {
+        itemSubscribers.add(subscriber) // add new subscriber to subscribers list
+    }
+
+    fun unsubscribe(subscriber: ItemSubscriber) {
+        itemSubscribers.remove(subscriber) // remove an subscriber from subscribers list
+    }
+
+    fun subscribe(subscriber: AlbumSubscriber) {
+        albumSubscribers.add(subscriber) // add new subscriber to subscribers list
+    }
+
+    fun unsubscribe(subscriber: AlbumSubscriber) {
+        albumSubscribers.remove(subscriber) // remove an subscriber from subscribers list
     }
     //
 
@@ -103,7 +121,7 @@ class ImageRepo private constructor() {
 
                 loadingItemsInProgress = false // turn "loading already in progress" indicator off
 
-                notifySubscribers(loadedItems!!)
+                notifyItemSubscribers(loadedItems!!)
 
                 loadedItems!!
             } else {
@@ -117,7 +135,7 @@ class ImageRepo private constructor() {
                 }
 
                 if(loadedItems != null) {
-                    notifySubscribers(loadedItems!!)
+                    notifyItemSubscribers(loadedItems!!)
 
                     loadedItems!! // return items when they are ready from previous fetching that we were waiting out
                 } else {
@@ -130,19 +148,19 @@ class ImageRepo private constructor() {
     }
 
     // refer to similar loadItems(context: Context, forceload: Boolean) method's comments for documentation
-    // quite heavy operation running for about 475 ms on new young CPUs
-    suspend fun loadAlbums(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    // quite heavy operation running for about 475 ms on a new young CPU
+    suspend fun loadAlbums(items: MutableList<ImageItem>, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
         return if(loadedAlbums != null && !forceLoad) {
             loadedAlbums!!
         } else {
             if(!loadingAlbumsInProgress) {
                 loadingAlbumsInProgress = true
 
-                loadedAlbums = splitIntoAlbums(loadItems(context, false))
+                loadedAlbums = splitIntoAlbums(items)
 
                 loadingAlbumsInProgress = false
 
-                notifySubscribers(loadItems(context, false))
+                notifyAlbumSubscribers(loadedAlbums!!)
 
                 loadedAlbums!!
             } else {
@@ -153,7 +171,7 @@ class ImageRepo private constructor() {
                 }
 
                 if(loadedAlbums != null) {
-                    notifySubscribers(loadItems(context, false))
+                    notifyAlbumSubscribers(loadedAlbums!!)
                     loadedAlbums!!
                 } else {
                     throw IllegalStateException("Something went wrong while splitting image items into albums")
@@ -161,6 +179,11 @@ class ImageRepo private constructor() {
 
             }
         }
+    }
+
+    // that very thing to run when FileObserver signal comes
+    suspend fun runUpdatedPipeline(context: Context) {
+        loadAlbums(loadItems(context, true),true)
     }
 
     // algo for grouping images into albums that are just their parent folders in essence

@@ -71,8 +71,8 @@ class VideoBrowserFragment : Fragment(), Observer<MutableList<VideoItem>> {
                 if(viewModel.selectionTool == null)
                     viewModel.selectionTool = SelectionTool()
 
-                @Suppress("UNCHECKED_CAST")
-                viewModel.selectionTool!!.initOnBackCallback(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
+//                @Suppress("UNCHECKED_CAST")
+//                viewModel.selectionTool!!.initOnBackCallback(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
 
                 ApplicationLoader.loadImages()
                 ApplicationLoader.findExternalRoots()

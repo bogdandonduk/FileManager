@@ -30,12 +30,21 @@
 
 
     <include
-        android:id="@+id/fragmentImageAlbumsBottomBarInclude"
-        layout="@layout/layout_bottom_bar"
+        android:id="@+id/fragmentImageAlbumsBottomToolBarInclude"
+        layout="@layout/layout_bottom_toolbar"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="8:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <include
+        android:id="@+id/fragmentImageAlbumsBottomTabsBarInclude"
+        layout="@layout/layout_bottom_tabs_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

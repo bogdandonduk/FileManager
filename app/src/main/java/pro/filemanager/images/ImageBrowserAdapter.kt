@@ -2,6 +2,7 @@ package pro.filemanager.images
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,7 @@ import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.LayoutImageItemBinding
 import pro.filemanager.files.FileCore
 
-class ImageBrowserAdapter(val context: Context, val imageItems: MutableList<ImageItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageBrowserFragment) : RecyclerView.Adapter<ImageBrowserAdapter.ImageItemViewHolder>() {
+class ImageBrowserAdapter(val context: Context, var imageItems: MutableList<ImageItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageBrowserFragment) : RecyclerView.Adapter<ImageBrowserAdapter.ImageItemViewHolder>() {
 
     class ImageItemViewHolder(val context: Context, val binding: LayoutImageItemBinding, val hostFragment: ImageBrowserFragment, val adapter: ImageBrowserAdapter) : RecyclerView.ViewHolder(binding.root) {
         lateinit var item: ImageItem
@@ -22,16 +23,19 @@ class ImageBrowserAdapter(val context: Context, val imageItems: MutableList<Imag
         init {
             binding.layoutImageItemRootLayout.apply {
                 setOnClickListener {
-                    @Suppress("UNCHECKED_CAST")
-                    hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_SHORT, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity) {
-                        FileCore.openFileOut(context, item.data)
+                    hostFragment.MainScope.launch {
+                        @Suppress("UNCHECKED_CAST")
+                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_SHORT, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity, hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb) {
+                            FileCore.openFileOut(context, item.data)
+                        }
                     }
                 }
 
                 setOnLongClickListener {
-                    @Suppress("UNCHECKED_CAST")
-                    hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_LONG, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity)
-
+                    hostFragment.MainScope.launch {
+                        @Suppress("UNCHECKED_CAST")
+                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_LONG, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity, hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                    }
                     true
                 }
             }
@@ -59,6 +63,16 @@ class ImageBrowserAdapter(val context: Context, val imageItems: MutableList<Imag
                         .override(holder.binding.layoutImageItemThumbnail.width, holder.binding.layoutImageItemThumbnail.height)
                         .signature(MediaStoreSignature(ImageCore.MIME_TYPE, imageItems[position].dateModified.toLong(), 0))
                         .into(holder.binding.layoutImageItemThumbnail)
+            }
+
+            holder.binding.layoutImageItemTitle.text = holder.item.displayName
+
+            holder.binding.layoutImageItemRootLayout.post {
+                holder.binding.layoutImageItemRootLayout.width.let {
+                    holder.binding.layoutImageItemTitle.textSize = (it / 22).toFloat()
+
+                    holder.binding.layoutImageItemTitleContainer.visibility = View.VISIBLE
+                }
             }
 
             hostFragment.viewModel.selectionTool?.differentiateItem(position, holder.binding.layoutImageItemThumbnail, holder.binding.layoutImageItemIconCheck, holder.binding.layoutImageItemIconUnchecked)
