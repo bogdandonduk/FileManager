@@ -18,11 +18,11 @@
         app:navGraph="@navigation/home_content_nav_graph" />
 
     <com.google.android.material.navigation.NavigationView
-        android:id="@+id/homeActivityNavView"
+        android:id="@+id/homeActivityMainNavView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@drawable/bg_home_nav_view"
+        android:background="@drawable/bg_home"
         android:fitsSystemWindows="false"
         app:itemTextAppearance="@style/TextAppearance.AppCompat.Medium"
         app:itemTextColor="@android:color/white"

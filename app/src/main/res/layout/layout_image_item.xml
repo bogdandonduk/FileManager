@@ -48,7 +48,8 @@
         app:layout_constraintBottom_toTopOf="@+id/layoutImageItemRootLayoutGl25ph"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/layoutImageItemRootLayoutGl75pv"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_check_circle_24" />
 
     <ImageView
         android:id="@+id/layoutImageItemIconUnchecked"

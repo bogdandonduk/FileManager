@@ -50,59 +50,59 @@ class FileBrowserFragment() : Fragment() {
 
         activity.setSupportActionBar(binding.fragmentFileBrowserLayoutBaseToolbarInclude.layoutBaseToolbar)
 
-        activity.requestExternalStoragePermission {
-
-            ApplicationLoader.ApplicationIOScope.launch {
-
-                viewModel = ViewModelProviders.of(this@FileBrowserFragment, SimpleInjector.provideFileBrowserViewModelFactory()).get(FileBrowserViewModel::class.java)
-
-                if(requireArguments().getString(FileCore.KEY_ARGUMENT_PATH) == FileCore.KEY_INTERNAL_STORAGE) {
-                    val path = FileCore.getInternalRootPath()
-
-                    withContext(Dispatchers.Main) {
-                        activity.supportActionBar?.title = requireArguments().getString(FileCore.KEY_ARGUMENT_APP_BAR_TITLE)
-
-                        binding.fragmentFileBrowserPathTitle.text = path
-
-                        try {
-                            initAdapter(File(path).listFiles()!!)
-                        } catch (e: Exception) {
-
-                        }
-                    }
-                } else if(requireArguments().getString(FileCore.KEY_ARGUMENT_PATH) == FileCore.KEY_EXTERNAL_STORAGE) {
-
-                    try {
-                        val externalPaths: MutableList<String> = FileCore.findExternalRoots(requireContext())
-
-                        withContext(Dispatchers.Main) {
-                            activity.supportActionBar?.title = requireArguments().getString(FileCore.KEY_ARGUMENT_APP_BAR_TITLE)
-
-                            if(externalPaths.isNotEmpty()) {
-                                if(externalPaths.size == 1) {
-                                    binding.fragmentFileBrowserPathTitle.text = externalPaths[0]
-                                    initAdapter(File(externalPaths[0]).listFiles()!!)
-                                } else if(externalPaths.size > 1) {
-                                    binding.fragmentFileBrowserPathTitle.text = FileCore.getInternalDownMostRootPath()
-                                    val multipleExternals: Array<File> = Array(externalPaths.size) {
-                                        File(externalPaths[it])
-                                    }
-                                    initAdapter(multipleExternals)
-                                }
-                            } else {
-//                              TODO: No SD card found
-                            }
-                        }
-                    } catch (thr: Throwable) {
-
-                    }
-                } else {
-                    binding.fragmentFileBrowserPathTitle.text = requireArguments().getString(FileCore.KEY_ARGUMENT_PATH)
-
-                    initAdapter(File(requireArguments().getString(FileCore.KEY_ARGUMENT_PATH)!!).listFiles()!!)
-                }
-            }
-        }
+//        activity.requestExternalStoragePermission {
+//
+//            ApplicationLoader.ApplicationIOScope.launch {
+//
+//                viewModel = ViewModelProviders.of(this@FileBrowserFragment, SimpleInjector.provideFileBrowserViewModelFactory()).get(FileBrowserViewModel::class.java)
+//
+//                if(requireArguments().getString(FileCore.KEY_ARGUMENT_PATH) == FileCore.KEY_INTERNAL_STORAGE) {
+//                    val path = FileCore.getInternalRootPath()
+//
+//                    withContext(Dispatchers.Main) {
+//                        activity.supportActionBar?.title = requireArguments().getString(FileCore.KEY_ARGUMENT_APP_BAR_TITLE)
+//
+//                        binding.fragmentFileBrowserPathTitle.text = path
+//
+//                        try {
+//                            initAdapter(File(path).listFiles()!!)
+//                        } catch (e: Exception) {
+//
+//                        }
+//                    }
+//                } else if(requireArguments().getString(FileCore.KEY_ARGUMENT_PATH) == FileCore.KEY_EXTERNAL_STORAGE) {
+//
+//                    try {
+//                        val externalPaths: MutableList<String> = FileCore.findExternalRoots(requireContext())
+//
+//                        withContext(Dispatchers.Main) {
+//                            activity.supportActionBar?.title = requireArguments().getString(FileCore.KEY_ARGUMENT_APP_BAR_TITLE)
+//
+//                            if(externalPaths.isNotEmpty()) {
+//                                if(externalPaths.size == 1) {
+//                                    binding.fragmentFileBrowserPathTitle.text = externalPaths[0]
+//                                    initAdapter(File(externalPaths[0]).listFiles()!!)
+//                                } else if(externalPaths.size > 1) {
+//                                    binding.fragmentFileBrowserPathTitle.text = FileCore.getInternalDownMostRootPath()
+//                                    val multipleExternals: Array<File> = Array(externalPaths.size) {
+//                                        File(externalPaths[it])
+//                                    }
+//                                    initAdapter(multipleExternals)
+//                                }
+//                            } else {
+////                              TODO: No SD card found
+//                            }
+//                        }
+//                    } catch (thr: Throwable) {
+//
+//                    }
+//                } else {
+//                    binding.fragmentFileBrowserPathTitle.text = requireArguments().getString(FileCore.KEY_ARGUMENT_PATH)
+//
+//                    initAdapter(File(requireArguments().getString(FileCore.KEY_ARGUMENT_PATH)!!).listFiles()!!)
+//                }
+//            }
+//        }
 
     }
 
@@ -124,7 +124,8 @@ class FileBrowserFragment() : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
 
-        viewModel.mainRvScrollPosition = (binding.fragmentFileBrowserList.layoutManager as GridLayoutManager).onSaveInstanceState()
+        if(this::viewModel.isInitialized)
+            viewModel.mainRvScrollPosition = (binding.fragmentFileBrowserList.layoutManager as GridLayoutManager).onSaveInstanceState()
 
     }
 }

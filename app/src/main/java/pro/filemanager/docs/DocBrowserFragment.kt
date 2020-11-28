@@ -14,8 +14,6 @@ import kotlinx.coroutines.withContext
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
-import pro.filemanager.audios.AudioBrowserViewModel
-import pro.filemanager.audios.AudioBrowserViewModelFactory
 import pro.filemanager.core.SimpleInjector
 import pro.filemanager.databinding.FragmentDocBrowserBinding
 import java.lang.IllegalStateException
@@ -46,36 +44,36 @@ class DocBrowserFragment : Fragment(), Observer<MutableList<DocItem>> {
 
         binding.fragmentDocBrowserList.layoutManager = LinearLayoutManager(context)
 
-        activity.requestExternalStoragePermission {
-
-            ApplicationLoader.ApplicationIOScope.launch {
-                viewModel = ViewModelProviders.of(this@DocBrowserFragment, SimpleInjector.provideDocBrowserViewModelFactory()).get(DocBrowserViewModel::class.java)
-
-                withContext(Main) {
-
-                    viewModel.getItemsLive().observe(viewLifecycleOwner, this@DocBrowserFragment)
-
-                    try {
-                        initAdapter(viewModel.getItemsLive().value!!)
-                    } catch(e: IllegalStateException) {
-                        e.printStackTrace()
-
-                        // TODO: MediaStore fetching failed with IllegalStateException.
-                        //  Most likely, it is something out of our hands.
-                        //  Show "Something went wrong" dialog
-
-                    } finally {
-
-                    }
-                }
-
-                ApplicationLoader.loadVideos()
-                ApplicationLoader.loadImages()
-                ApplicationLoader.findExternalRoots()
-                ApplicationLoader.loadAudios()
-            }
-
-        }
+//        activity.requestExternalStoragePermission {
+//
+//            ApplicationLoader.ApplicationIOScope.launch {
+//                viewModel = ViewModelProviders.of(this@DocBrowserFragment, SimpleInjector.provideDocBrowserViewModelFactory()).get(DocBrowserViewModel::class.java)
+//
+//                withContext(Main) {
+//
+//                    viewModel.getItemsLive().observe(viewLifecycleOwner, this@DocBrowserFragment)
+//
+//                    try {
+//                        initAdapter(viewModel.getItemsLive().value!!)
+//                    } catch(e: IllegalStateException) {
+//                        e.printStackTrace()
+//
+//                        // TODO: MediaStore fetching failed with IllegalStateException.
+//                        //  Most likely, it is something out of our hands.
+//                        //  Show "Something went wrong" dialog
+//
+//                    } finally {
+//
+//                    }
+//                }
+//
+//                ApplicationLoader.loadVideos()
+//                ApplicationLoader.loadImages()
+//                ApplicationLoader.findExternalRoots()
+//                ApplicationLoader.loadAudios()
+//            }
+//
+//        }
 
         return binding.root
     }

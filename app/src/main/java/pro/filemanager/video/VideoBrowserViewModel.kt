@@ -1,4 +1,4 @@
-package pro.filemanager.videos
+package pro.filemanager.video
 
 import android.os.Parcelable
 import androidx.lifecycle.LiveData

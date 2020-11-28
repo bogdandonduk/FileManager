@@ -3,13 +3,8 @@ package pro.filemanager.files
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.webkit.MimeTypeMap
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.signature.MediaStoreSignature
-import pro.filemanager.R
 import pro.filemanager.databinding.LayoutFileItemBinding
-import pro.filemanager.images.ImageCore
-import pro.filemanager.videos.VideoCore
 import java.io.File
 
 class FileBrowserAdapter(val context: Context, val files: Array<File>, val layoutInflater: LayoutInflater, val fileBrowserFragment: FileBrowserFragment) : RecyclerView.Adapter<FileBrowserAdapter.FileItemViewHolder>() {

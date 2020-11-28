@@ -2,58 +2,58 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutFileItemRootLayout"
+    android:id="@+id/layoutFolderItemRootLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="1dp"
     android:paddingBottom="1dp">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutFileItemRootLayoutGl10pv"
+        android:id="@+id/layoutFolderItemRootLayoutGl10pv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.1" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutFileItemRootLayoutGl90pv"
+        android:id="@+id/layoutFolderItemRootLayoutGl90pv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.9" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutFileItemRootLayoutGl80ph"
+        android:id="@+id/layoutFolderItemRootLayoutGl80ph"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.8" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutFileItemThumbnailLayout"
+        android:id="@+id/layoutFolderItemThumbnailLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/layoutFileItemRootLayoutGl80ph"
-        app:layout_constraintEnd_toStartOf="@+id/layoutFileItemRootLayoutGl90pv"
-        app:layout_constraintStart_toStartOf="@+id/layoutFileItemRootLayoutGl10pv"
+        app:layout_constraintBottom_toTopOf="@+id/layoutFolderItemRootLayoutGl80ph"
+        app:layout_constraintEnd_toStartOf="@+id/layoutFolderItemRootLayoutGl90pv"
+        app:layout_constraintStart_toStartOf="@+id/layoutFolderItemRootLayoutGl10pv"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/layoutFileItemThumbnailLayoutGl75pv"
+            android:id="@+id/layoutFolderItemThumbnailLayoutGl75pv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.75" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/layoutFileItemThumbnailLayoutGl25ph"
+            android:id="@+id/layoutFolderItemThumbnailLayoutGl25ph"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.25" />
 
         <ImageView
-            android:id="@+id/layoutFileItemThumbnail"
+            android:id="@+id/layoutFolderItemThumbnail"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:contentDescription="@string/title_thumbnail"
@@ -64,34 +64,34 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/layoutFileItemIconCheck"
+            android:id="@+id/layoutFolderItemIconCheck"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="invisible"
-            app:layout_constraintBottom_toTopOf="@+id/layoutFileItemThumbnailLayoutGl25ph"
+            app:layout_constraintBottom_toTopOf="@+id/layoutFolderItemThumbnailLayoutGl25ph"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/layoutFileItemThumbnailLayoutGl75pv"
+            app:layout_constraintStart_toStartOf="@+id/layoutFolderItemThumbnailLayoutGl75pv"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutFileItemTitleContainer"
+        android:id="@+id/layoutFolderItemTitleContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/layoutFileItemRootLayoutGl90pv"
-        app:layout_constraintStart_toStartOf="@+id/layoutFileItemRootLayoutGl10pv"
-        app:layout_constraintTop_toBottomOf="@+id/layoutFileItemThumbnailLayout">
+        app:layout_constraintEnd_toStartOf="@+id/layoutFolderItemRootLayoutGl90pv"
+        app:layout_constraintStart_toStartOf="@+id/layoutFolderItemRootLayoutGl10pv"
+        app:layout_constraintTop_toBottomOf="@+id/layoutFolderItemThumbnailLayout">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/layoutFileItemTitleContainerGl10pv"
+            android:id="@+id/layoutFolderItemTitleContainerGl10pv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.1" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/layoutFileItemTitleContainerGl90pv"
+            android:id="@+id/layoutFolderItemTitleContainerGl90pv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -102,12 +102,12 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/layoutFileItemTitleContainerGl90pv"
-            app:layout_constraintStart_toStartOf="@+id/layoutFileItemTitleContainerGl10pv"
+            app:layout_constraintEnd_toStartOf="@+id/layoutFolderItemTitleContainerGl90pv"
+            app:layout_constraintStart_toStartOf="@+id/layoutFolderItemTitleContainerGl10pv"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/layoutFileItemTitle"
+                android:id="@+id/layoutFolderItemTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"

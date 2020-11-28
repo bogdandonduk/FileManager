@@ -7,7 +7,5 @@ import androidx.lifecycle.ViewModel
 
 class FileBrowserViewModel() : ViewModel() {
 
-    private var pagerFragmentsLive: MutableLiveData<MutableList<Fragment>>? = null
-
     var mainRvScrollPosition: Parcelable? = null
 }

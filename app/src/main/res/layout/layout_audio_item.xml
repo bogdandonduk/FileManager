@@ -1,28 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-    <data>
-        <variable
-            name="AudioItem"
-            type="pro.filemanager.audios.AudioItem" />
-    </data>
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutAudioItemRootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/layoutAudioItemRootLayoutGl10ph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutAudioItemRootLayout"
-        android:layout_width="match_parent"
+        android:id="@+id/layoutAudioItemContentLayout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="20dp">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/layoutAudioItemRootLayoutGl10ph">
 
-        <TextView
-            android:id="@+id/layoutAudioItemFilename"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutAudioItemContentLayoutGl10pv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{AudioItem.displayName}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Filename" />
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.1" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutAudioItemContentLayoutGl90pv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.9" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutAudioItemContentLayoutGl80ph"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.8" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutAudioItemThumbnailLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/layoutAudioItemContentLayoutGl80ph"
+            app:layout_constraintEnd_toStartOf="@+id/layoutAudioItemContentLayoutGl90pv"
+            app:layout_constraintStart_toStartOf="@+id/layoutAudioItemContentLayoutGl10pv"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutAudioItemThumbnailLayoutGl75pv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.75" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutAudioItemThumbnailLayoutGl25ph"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.25" />
+
+            <ImageView
+                android:id="@+id/layoutAudioItemThumbnail"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:contentDescription="@string/title_thumbnail"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_audio" />
+
+            <ImageView
+                android:id="@+id/layoutAudioItemIconCheck"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toTopOf="@+id/layoutAudioItemThumbnailLayoutGl25ph"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/layoutAudioItemThumbnailLayoutGl75pv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_check_circle_24" />
+
+            <ImageView
+                android:id="@+id/layoutAudioItemIconUnchecked"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toTopOf="@+id/layoutAudioItemThumbnailLayoutGl25ph"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/layoutAudioItemThumbnailLayoutGl75pv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/bg_checkbox" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutAudioItemTitleContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/layoutAudioItemContentLayoutGl90pv"
+            app:layout_constraintStart_toStartOf="@+id/layoutAudioItemContentLayoutGl10pv"
+            app:layout_constraintTop_toBottomOf="@+id/layoutAudioItemThumbnailLayout">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutAudioItemTitleContainerGl10pv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.1" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutAudioItemTitleContainerGl90pv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.9" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutAudioItemTitleMidContainer"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/layoutAudioItemTitleContainerGl90pv"
+                app:layout_constraintStart_toStartOf="@+id/layoutAudioItemTitleContainerGl10pv"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/layoutAudioItemTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Filename" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

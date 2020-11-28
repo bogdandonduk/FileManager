@@ -2,7 +2,6 @@ package pro.filemanager.images
 
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.CompoundButton
 import android.widget.SearchView
@@ -15,17 +14,16 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
+import pro.filemanager.core.KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE
 import pro.filemanager.core.SimpleInjector
 import pro.filemanager.core.UIManager
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.FragmentImageBrowserBinding
 import pro.filemanager.images.albums.ImageAlbumItem
-import java.lang.IllegalStateException
 
 class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
 
@@ -33,36 +31,47 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
     lateinit var activity: HomeActivity
     lateinit var navController: NavController
     lateinit var viewModel: ImageBrowserViewModel
+
     var albumItem: ImageAlbumItem? = null
 
-    val IOScope = CoroutineScope(IO)
-    val MainScope = CoroutineScope(Main)
-
     override fun onChanged(t: MutableList<ImageItem>?) {
-        if(binding.fragmentImageBrowserList.adapter != null) {
+        if(binding.fragmentImageBrowserList.adapter != null && this::viewModel.isInitialized) {
+            try {
+                viewModel.MainScope?.cancel()
+                viewModel.MainScope = null
+                viewModel.MainScope = CoroutineScope(Main)
+            } catch(thr: Throwable) {
+
+            }
+
             (binding.fragmentImageBrowserList.adapter as ImageBrowserAdapter).imageItems = t!!
             binding.fragmentImageBrowserList.adapter!!.notifyDataSetChanged()
 
             binding.fragmentImageBrowserList.scrollToPosition(0)
+
+            viewModel.searchInProgress = false
+
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        activity = requireActivity() as HomeActivity
-
-        albumItem = arguments?.getParcelable(ImageCore.KEY_ARGUMENT_ALBUM_PARCELABLE)
-        
-        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentImageBrowserBinding.inflate(inflater, container, false)
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        navController = Navigation.findNavController(binding.root)
+
+        activity = requireActivity() as HomeActivity
+
+        albumItem = arguments?.getParcelable(ImageCore.KEY_ARGUMENT_ALBUM_PARCELABLE)
+
+        setHasOptionsMenu(true)
 
         activity.setSupportActionBar(binding.fragmentImageBrowserToolbarInclude.layoutBaseToolbar)
 
@@ -72,67 +81,55 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
                 viewModel = ViewModelProviders.of(this@ImageBrowserFragment, SimpleInjector.provideImageBrowserViewModelFactory(albumItem)).get(ImageBrowserViewModel::class.java)
 
                 withContext(Main) {
-
                     viewModel.getItemsLive().observe(viewLifecycleOwner, this@ImageBrowserFragment)
 
                     try {
                         initAdapter(viewModel.getItemsLive().value!!)
-                    } catch(e: IllegalStateException) {
+                    } catch (e: IllegalStateException) {
                         e.printStackTrace()
-
-                        // TODO: MediaStore fetching failed with IllegalStateException.
-                        //  Most likely, it is something out of our hands.
-                        //  Show "Something went wrong" dialog
-
+                    // TODO: MediaStore fetching failed with IllegalStateException.
+                    //  Most likely, it is something out of our hands.
+                    //  Show "Something went wrong" dialog
                     }
-                }
 
-                if(viewModel.selectionTool == null)
-                    viewModel.selectionTool = SelectionTool()
+                    if (viewModel.selectionTool == null) viewModel.selectionTool = SelectionTool()
 
-                viewModel.selectionTool!!.initOnBackCallback(activity, binding.fragmentImageBrowserList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                    viewModel.selectionTool!!.initOnBackCallback (activity,
+                            binding.fragmentImageBrowserList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                            binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                            binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                            binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                            binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout)
 
-                if(viewModel.selectionTool!!.selectionMode && viewModel.selectionTool!!.selectedPositions.isNotEmpty()) {
-                    activity.supportActionBar?.hide()
-                    binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout.visibility = View.VISIBLE
-                    binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.text = viewModel.selectionTool!!.selectedPositions.size.toString()
-                }
+                    if(viewModel.selectionTool!!.selectionMode) {
+                        if (viewModel.selectionTool!!.selectedPositions.isNotEmpty()) {
+                            activity.supportActionBar?.hide()
+                            binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout.visibility = View.VISIBLE
+                            binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.text = viewModel.selectionTool!!.selectedPositions.size.toString()
+                        }
 
-                binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
-                    if(b) {
-                        viewModel.selectionTool!!.selectAll(binding.fragmentImageBrowserList.adapter!!, binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
-                    } else {
-                        viewModel.selectionTool!!.unselectAll(binding.fragmentImageBrowserList.adapter!!, binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                        binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
+                        binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout.visibility = View.VISIBLE
+                    }
+
+                    binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
+                        if (b) {
+                            viewModel.selectionTool!!.selectAll(binding.fragmentImageBrowserList.adapter!!, binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                        } else {
+                            viewModel.selectionTool!!.unselectAll(binding.fragmentImageBrowserList.adapter!!, binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                        }
                     }
                 }
             }
         }
 
-        return binding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        if(albumItem != null) {
-            activity.supportActionBar?.title = albumItem!!.displayName
-        } else {
-            activity.supportActionBar?.title = requireContext().resources.getString(R.string.title_images)
-        }
-
-        binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.setButtonDrawable(R.drawable.bg_checkbox)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        navController = Navigation.findNavController(binding.root)
-
         binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.post {
             binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.height.let {
                 binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomBarGalleryTitle.textSize = (it / 8).toFloat()
-                binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomBarGalleryTitle.text = resources.getText(R.string.title_image_gallery)
+                binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomBarGalleryTitle.text = resources.getText(R.string.title_gallery)
 
                 binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarAlbumsTitle.textSize = (it / 8).toFloat()
-                binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarAlbumsTitle.text = resources.getText(R.string.title_image_albums)
+                binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarAlbumsTitle.text = resources.getText(R.string.title_folders)
             }
         }
 
@@ -154,6 +151,23 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
             navController.navigate(R.id.action_imageBrowserFragment_to_imageAlbumsFragment)
         }
 
+        binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarDeleteContainer.setOnClickListener {
+
+            try {
+//                if(this::viewModel.isInitialized && viewModel.selectionTool != null && viewModel.selectionTool!!.selectionMode && viewModel.selectionTool!!.selectedPositions.isNotEmpty()) {
+//
+//                    viewModel.selectionTool!!.selectedPositions.forEach {
+//                        requireContext().contentResolver.delete(Uri.parse((binding.fragmentImageBrowserList.adapter as ImageBrowserAdapter).imageItems[it].data), null, null)
+//                    }
+//
+//                    ApplicationLoader.ApplicationIOScope.launch {
+//                        ImageRepo.getInstance().loadItems(requireContext(), true)
+//                    }
+//                }
+            } catch (thr: Throwable) {
+
+            }
+        }
     }
 
     private fun initAdapter(imageItems: MutableList<ImageItem>) {
@@ -173,9 +187,11 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if(dx > 0 || dy > 0) {
-                    binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
+                    if(this@ImageBrowserFragment::viewModel.isInitialized && viewModel.selectionTool != null && !viewModel.selectionTool!!.selectionMode)
+                        binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
                 } else {
-                    binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.VISIBLE
+                    if(this@ImageBrowserFragment::viewModel.isInitialized && viewModel.selectionTool != null && !viewModel.selectionTool!!.selectionMode)
+                        binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.VISIBLE
 
                 }
             }
@@ -183,10 +199,20 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.common_toolbar_menu, menu)
+    override fun onResume() {
+        super.onResume()
 
-        val searchView = menu.findItem(R.id.imageBrowserToolbarMenuItemSearch).actionView as SearchView
+        if(albumItem != null) {
+            activity.supportActionBar?.title = albumItem!!.displayName
+        } else {
+            activity.supportActionBar?.title = requireContext().resources.getString(R.string.title_images)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_toolbar_menu, menu)
+
+        val searchView = menu.findItem(R.id.mainToolbarMenuItemSearch).actionView as SearchView
 
         searchView.post {
             searchView.apply {
@@ -207,9 +233,10 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
                     }
 
                     override fun onQueryTextChange(newText: String?): Boolean {
+
                         viewModel.search(requireContext(), newText)
 
-                        return false
+                        return true
                     }
 
                 })
@@ -220,15 +247,14 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
     override fun onStop() {
         super.onStop()
 
-        viewModel.mainListRvState = binding.fragmentImageBrowserList.layoutManager?.onSaveInstanceState()
+        if(this::viewModel.isInitialized) viewModel.mainListRvState = binding.fragmentImageBrowserList.layoutManager?.onSaveInstanceState()
 
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        IOScope.cancel()
-        MainScope.cancel()
+        ApplicationLoader.transientParcelables.remove(KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE)
 
     }
 

@@ -1,4 +1,4 @@
-package pro.filemanager.videos
+package pro.filemanager.video
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,20 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
-import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
-import pro.filemanager.core.SimpleInjector
 import pro.filemanager.core.UIManager
-import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.FragmentVideoBrowserBinding
-import java.lang.IllegalStateException
 
 class VideoBrowserFragment : Fragment(), Observer<MutableList<VideoItem>> {
 
@@ -48,46 +42,46 @@ class VideoBrowserFragment : Fragment(), Observer<MutableList<VideoItem>> {
     ): View? {
         binding = FragmentVideoBrowserBinding.inflate(inflater, container, false)
 
-        activity.requestExternalStoragePermission {
-
-            ApplicationLoader.ApplicationIOScope.launch {
-                viewModel = ViewModelProviders.of(this@VideoBrowserFragment, SimpleInjector.provideVideoBrowserViewModelFactory()).get(VideoBrowserViewModel::class.java)
-
-                withContext(Main) {
-                    viewModel.getItemsLive().observe(viewLifecycleOwner, this@VideoBrowserFragment)
-
-                    try {
-                        initAdapter(viewModel.getItemsLive().value!!)
-                    } catch(e: IllegalStateException) {
-
-                        // TODO: MediaStore fetching failed with IllegalStateException.
-                        //  Most likely, it is something out of our hands.
-                        //  Show "Something went wrong" dialog
-
-                    } finally { }
-
-                }
-
-                if(viewModel.selectionTool == null)
-                    viewModel.selectionTool = SelectionTool()
-
-//                @Suppress("UNCHECKED_CAST")
-//                viewModel.selectionTool!!.initOnBackCallback(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
-
-                ApplicationLoader.loadImages()
-                ApplicationLoader.findExternalRoots()
-                ApplicationLoader.loadDocs()
-                ApplicationLoader.loadAudios()
-            }
-
-        }
+//        activity.requestExternalStoragePermission {
+//
+//            ApplicationLoader.ApplicationIOScope.launch {
+//                viewModel = ViewModelProviders.of(this@VideoBrowserFragment, SimpleInjector.provideVideoBrowserViewModelFactory()).get(VideoBrowserViewModel::class.java)
+//
+//                withContext(Main) {
+//                    viewModel.getItemsLive().observe(viewLifecycleOwner, this@VideoBrowserFragment)
+//
+//                    try {
+//                        initAdapter(viewModel.getItemsLive().value!!)
+//                    } catch(e: IllegalStateException) {
+//
+//                        // TODO: MediaStore fetching failed with IllegalStateException.
+//                        //  Most likely, it is something out of our hands.
+//                        //  Show "Something went wrong" dialog
+//
+//                    } finally { }
+//
+//                }
+//
+//                if(viewModel.selectionTool == null)
+//                    viewModel.selectionTool = SelectionTool()
+//
+////                @Suppress("UNCHECKED_CAST")
+////                viewModel.selectionTool!!.initOnBackCallback(requireActivity() as HomeActivity, mainAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
+//
+//                ApplicationLoader.loadImages()
+//                ApplicationLoader.findExternalRoots()
+//                ApplicationLoader.loadDocs()
+//                ApplicationLoader.loadAudios()
+//            }
+//
+//        }
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         activity.setSupportActionBar(binding.fragmentVideoBrowserLayoutBaseToolbarInclude.layoutBaseToolbar)
-        activity.supportActionBar?.title = requireContext().resources.getString(R.string.title_videos)
+        activity.supportActionBar?.title = requireContext().resources.getString(R.string.title_video)
     }
 
     private fun initAdapter(videoItems: MutableList<VideoItem>) {
@@ -105,7 +99,7 @@ class VideoBrowserFragment : Fragment(), Observer<MutableList<VideoItem>> {
     override fun onDestroy() {
         super.onDestroy()
 
-        viewModel.mainRvScrollPosition = (binding.fragmentVideoBrowserList.layoutManager as GridLayoutManager).onSaveInstanceState()
+        if(this::viewModel.isInitialized) viewModel.mainRvScrollPosition = (binding.fragmentVideoBrowserList.layoutManager as GridLayoutManager).onSaveInstanceState()
 
         IOScope.cancel()
         MainScope.cancel()

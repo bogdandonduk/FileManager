@@ -1,9 +1,7 @@
 package pro.filemanager.images.albums
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.RecyclerView
@@ -13,9 +11,8 @@ import pro.filemanager.R
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.LayoutImageAlbumItemBinding
 import pro.filemanager.images.ImageCore
-import pro.filemanager.images.ImageRepo
 
-class ImageAlbumsAdapter(val context: Context, var imageAlbumItems: MutableList<ImageAlbumItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageAlbumsFragment) : RecyclerView.Adapter<ImageAlbumsAdapter.ImageAlbumItemViewHolder>() {
+class ImageAlbumsAdapter(val context: Context, var audioAlbumItems: MutableList<ImageAlbumItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageAlbumsFragment) : RecyclerView.Adapter<ImageAlbumsAdapter.ImageAlbumItemViewHolder>() {
 
     class ImageAlbumItemViewHolder(val context: Context, val binding: LayoutImageAlbumItemBinding, val hostFragment: ImageAlbumsFragment, val adapter: ImageAlbumsAdapter) : RecyclerView.ViewHolder(binding.root) {
         lateinit var item: ImageAlbumItem
@@ -25,7 +22,16 @@ class ImageAlbumsAdapter(val context: Context, var imageAlbumItems: MutableList<
                 setOnClickListener {
                     hostFragment.MainScope.launch {
                         @Suppress("UNCHECKED_CAST")
-                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_SHORT, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity, hostFragment.binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb) {
+                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
+                                SelectionTool.CLICK_SHORT,
+                                adapterPosition,
+                                adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                                hostFragment.requireActivity() as HomeActivity,
+                                hostFragment.binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                                hostFragment.binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                hostFragment.binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                                hostFragment.binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
+                        ) {
                             hostFragment.navController.navigate(R.id.action_imageAlbumsFragment_to_imageBrowserFragment, bundleOf(
                                     ImageCore.KEY_ARGUMENT_ALBUM_PARCELABLE to item
                             ))
@@ -36,7 +42,16 @@ class ImageAlbumsAdapter(val context: Context, var imageAlbumItems: MutableList<
                 setOnLongClickListener {
                     hostFragment.MainScope.launch {
                         @Suppress("UNCHECKED_CAST")
-                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_LONG, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity, hostFragment.binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
+                                SelectionTool.CLICK_LONG,
+                                adapterPosition,
+                                adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                                hostFragment.requireActivity() as HomeActivity,
+                                hostFragment.binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                                hostFragment.binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                hostFragment.binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                                hostFragment.binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
+                        )
                     }
 
                     true
@@ -51,7 +66,7 @@ class ImageAlbumsAdapter(val context: Context, var imageAlbumItems: MutableList<
 
 
     override fun onBindViewHolder(holder: ImageAlbumItemViewHolder, position: Int) {
-        holder.item = imageAlbumItems[position]
+        holder.item = audioAlbumItems[position]
 
         hostFragment.MainScope.launch {
             if (!holder.item.containedImages.first().data.endsWith(".gif", true)) {
@@ -79,6 +94,6 @@ class ImageAlbumsAdapter(val context: Context, var imageAlbumItems: MutableList<
 
     }
 
-    override fun getItemCount(): Int = imageAlbumItems.size
+    override fun getItemCount(): Int = audioAlbumItems.size
 
 }

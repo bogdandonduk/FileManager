@@ -1,11 +1,9 @@
 package pro.filemanager
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -13,7 +11,6 @@ import androidx.navigation.Navigation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
-import pro.filemanager.core.KEY_TRANSIENT_PARCELABLE_IMAGE_ALBUMS_MAIN_LIST_RV_STATE
 import pro.filemanager.databinding.FragmentHomeBinding
 import pro.filemanager.files.FileCore
 
@@ -45,10 +42,10 @@ class HomeFragment : Fragment() {
                 val textSize = (it / 20).toFloat()
 
                 binding.fragmentHomeAudiosBtn.layoutHomeTileTitle.textSize = textSize
-                binding.fragmentHomeAudiosBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_audios)
+                binding.fragmentHomeAudiosBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_audio)
 
                 binding.fragmentHomeVideosBtn.layoutHomeTileTitle.textSize = textSize
-                binding.fragmentHomeVideosBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_videos)
+                binding.fragmentHomeVideosBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_video)
 
                 binding.fragmentHomeDocsBtn.layoutHomeTileTitle.textSize = textSize
                 binding.fragmentHomeDocsBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_docs)

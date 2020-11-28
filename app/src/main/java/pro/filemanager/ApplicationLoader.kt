@@ -7,11 +7,11 @@ import android.os.Parcelable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.Job
 import pro.filemanager.images.ImageRepo
-import pro.filemanager.videos.VideoRepo
+import pro.filemanager.video.VideoRepo
 import kotlinx.coroutines.launch
-import pro.filemanager.audios.AudioRepo
-import pro.filemanager.core.FileSystemObserver
+import pro.filemanager.audio.AudioRepo
 import pro.filemanager.core.PermissionWrapper
 import pro.filemanager.docs.DocRepo
 import pro.filemanager.files.FileCore
@@ -26,7 +26,7 @@ class ApplicationLoader : Application() {
 
         val transientParcelables: MutableMap<String, Parcelable?> = mutableMapOf()
 
-        val fileSystemObserver: FileSystemObserver = FileSystemObserver(FileCore.getInternalDownMostRootPath(), FileObserver.ALL_EVENTS)
+        lateinit var fileObserver: FileObserver
 
         fun loadAll() {
             loadVideos()
@@ -72,7 +72,7 @@ class ApplicationLoader : Application() {
         fun loadAudios(context: Context = appContext) {
             if(PermissionWrapper.checkExternalStoragePermissions(context)) {
                 ApplicationIOScope.launch {
-                    AudioRepo.getInstance().loadItems(context)
+                    AudioRepo.getInstance().loadItems(context, false)
                 }
             }
         }
@@ -85,7 +85,9 @@ class ApplicationLoader : Application() {
 
         loadAll()
 
-//        fileSystemObserver.startWatching()
+//        fileObserver = pro.filemanager.core.FileObserver(path)
+//
+//        fileObserver.startWatching()
 
     }
 

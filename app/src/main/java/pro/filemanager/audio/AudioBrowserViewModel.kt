@@ -1,4 +1,4 @@
-package pro.filemanager.images
+package pro.filemanager.audio
 
 import android.content.Context
 import android.os.Parcelable
@@ -11,43 +11,43 @@ import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.core.tools.SearchTool
 import pro.filemanager.core.tools.SelectionTool
-import pro.filemanager.images.albums.ImageAlbumItem
+import pro.filemanager.audio.albums.AudioAlbumItem
 
-class ImageBrowserViewModel(val imageRepo: ImageRepo, val albumItem: ImageAlbumItem?) : ViewModel(), ImageRepo.ItemSubscriber {
+class AudioBrowserViewModel(val audioRepo: AudioRepo, val albumItem: AudioAlbumItem?) : ViewModel(), AudioRepo.ItemSubscriber {
 
     var IOScope: CoroutineScope? = CoroutineScope(IO)
     var MainScope: CoroutineScope? = CoroutineScope(Main)
 
     var searchInProgress = false
 
-    private var itemsLive: MutableLiveData<MutableList<ImageItem>>? = null
+    private var itemsLive: MutableLiveData<MutableList<AudioItem>>? = null
     var mainListRvState: Parcelable? = null
     var currentSearchText: String? = null
 
     var selectionTool: SelectionTool? = null
 
     init {
-        imageRepo.subscribe(this)
+        audioRepo.subscribe(this)
     }
 
-    private suspend fun initItemsLive(context: Context) : MutableLiveData<MutableList<ImageItem>> {
-        if(itemsLive == null)
+    private suspend fun initItemsLive(context: Context) : MutableLiveData<MutableList<AudioItem>> {
+        if(itemsLive == null) {
             itemsLive =
-                    if(albumItem != null) MutableLiveData(albumItem.containedImages) else MutableLiveData(imageRepo.loadItems(context, false))
+                    if(albumItem != null) MutableLiveData(albumItem.containedImages) else MutableLiveData(audioRepo.loadItems(context, false))
+        }
 
         return itemsLive!!
     }
 
-    suspend fun getItemsLive() = initItemsLive(ApplicationLoader.appContext) as LiveData<MutableList<ImageItem>>
+    suspend fun getItemsLive() = initItemsLive(ApplicationLoader.appContext) as LiveData<MutableList<AudioItem>>
 
-    override fun onUpdate(items: MutableList<ImageItem>) {
+
+    override fun onUpdate(items: MutableList<AudioItem>) {
         itemsLive?.postValue(items)
     }
 
     override fun onCleared() {
-        super.onCleared()
-
-        imageRepo.unsubscribe(this)
+        audioRepo.unsubscribe(this)
 
         try {
             IOScope?.cancel()
@@ -55,7 +55,6 @@ class ImageBrowserViewModel(val imageRepo: ImageRepo, val albumItem: ImageAlbumI
         } catch (thr: Throwable) {
 
         }
-
     }
 
     fun search(context: Context, text: String?) {
@@ -70,16 +69,14 @@ class ImageBrowserViewModel(val imageRepo: ImageRepo, val albumItem: ImageAlbumI
                 currentSearchText = text
 
                 if(albumItem != null) {
-                    itemsLive?.postValue(SearchTool.searchImageItems(text, albumItem.containedImages))
+                    itemsLive!!.postValue(SearchTool.searchAudioItems(text, albumItem.containedImages))
                 } else {
-                    itemsLive?.postValue(SearchTool.searchImageItems(text, imageRepo.loadItems(context, false)))
+                    itemsLive!!.postValue(SearchTool.searchAudioItems(text, audioRepo.loadItems(context, false)))
                 }
             } else {
-                itemsLive?.postValue(imageRepo.loadItems(context, false))
+                itemsLive!!.postValue(audioRepo.loadItems(context, false))
             }
 
         }
-
     }
-
 }

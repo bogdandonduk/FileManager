@@ -2,13 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragmentImageAlbumsViewerRootLayout"
+    android:id="@+id/fragmentAudioAlbumsViewerRootLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:layout_height="match_parent">
 
     <include
-        android:id="@+id/fragmentImageAlbumsToolbarInclude"
+        android:id="@+id/fragmentAudioAlbumsToolbarInclude"
         layout="@layout/layout_base_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,16 +16,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/fragmentImageAlbumsList"
+        android:id="@+id/fragmentAudioAlbumsList"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragmentImageAlbumsToolbarInclude" />
+        app:layout_constraintTop_toBottomOf="@+id/fragmentAudioAlbumsToolbarInclude" />
 
     <include
-        android:id="@+id/fragmentImageAlbumsBottomToolBarInclude"
+        android:id="@+id/fragmentAudioAlbumsBottomToolBarInclude"
         layout="@layout/layout_bottom_toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -36,7 +35,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <include
-        android:id="@+id/fragmentImageAlbumsBottomTabsBarInclude"
+        android:id="@+id/fragmentAudioAlbumsBottomTabsBarInclude"
         layout="@layout/layout_bottom_tabs_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

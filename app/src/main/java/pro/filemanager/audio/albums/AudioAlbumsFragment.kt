@@ -1,4 +1,4 @@
-package pro.filemanager.images.albums
+package pro.filemanager.audio.albums
 
 import android.graphics.Typeface
 import android.os.Bundle
@@ -25,40 +25,28 @@ import pro.filemanager.core.PermissionWrapper
 import pro.filemanager.core.SimpleInjector
 import pro.filemanager.core.UIManager
 import pro.filemanager.core.tools.SelectionTool
-import pro.filemanager.databinding.FragmentImageAlbumsBinding
+import pro.filemanager.databinding.FragmentAudioAlbumsBinding
 import java.lang.IllegalStateException
-import java.lang.Runnable
 
-class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
+class AudioAlbumsFragment : Fragment(), Observer<MutableList<AudioAlbumItem>> {
 
-    lateinit var binding: FragmentImageAlbumsBinding
+    lateinit var binding: FragmentAudioAlbumsBinding
     lateinit var navController: NavController
     lateinit var activity: HomeActivity
-    lateinit var viewModel: ImageAlbumsViewModel
+    lateinit var viewModel: AudioAlbumsViewModel
 
     val IOScope = CoroutineScope(IO)
     val MainScope = CoroutineScope(Main)
 
     lateinit var onBackCallback: OnBackPressedCallback
-
     lateinit var externalStorageSuccessAction: Runnable
 
-    override fun onChanged(t: MutableList<ImageAlbumItem>?) {
-        if(binding.fragmentImageAlbumsList.adapter != null) {
-            try {
-                viewModel.MainScope?.cancel()
-                viewModel.MainScope = null
-                viewModel.MainScope = CoroutineScope(Main)
-            } catch(thr: Throwable) {
+    override fun onChanged(t: MutableList<AudioAlbumItem>?) {
+        if(binding.fragmentAudioAlbumsList.adapter != null) {
+            (binding.fragmentAudioAlbumsList.adapter as AudioAlbumsAdapter).audioAlbumItems = t!!
+            binding.fragmentAudioAlbumsList.adapter!!.notifyDataSetChanged()
 
-            }
-
-            (binding.fragmentImageAlbumsList.adapter as ImageAlbumsAdapter).audioAlbumItems = t!!
-            binding.fragmentImageAlbumsList.adapter!!.notifyDataSetChanged()
-
-            binding.fragmentImageAlbumsList.scrollToPosition(0)
-
-            viewModel.searchInProgress = false
+            binding.fragmentAudioAlbumsList.scrollToPosition(0)
         }
     }
 
@@ -71,7 +59,7 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
 
         onBackCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navController.popBackStack(R.id.imageBrowserFragment, true)
+                navController.popBackStack(R.id.audioBrowserFragment, true)
             }
         }
 
@@ -81,18 +69,18 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentImageAlbumsBinding.inflate(inflater, container, false)
+    ): View {
+        binding = FragmentAudioAlbumsBinding.inflate(inflater, container, false)
 
-        activity.setSupportActionBar(binding.fragmentImageAlbumsToolbarInclude.layoutBaseToolbar)
+        activity.setSupportActionBar(binding.fragmentAudioAlbumsToolbarInclude.layoutBaseToolbar)
 
         externalStorageSuccessAction = Runnable {
             ApplicationLoader.ApplicationIOScope.launch {
-                viewModel = ViewModelProviders.of(this@ImageAlbumsFragment, SimpleInjector.provideImageAlbumsViewModelFactory()).get(ImageAlbumsViewModel::class.java)
+                viewModel = ViewModelProviders.of(this@AudioAlbumsFragment, SimpleInjector.provideAudioAlbumsViewModelFactory()).get(AudioAlbumsViewModel::class.java)
 
                 withContext(Main) {
                     try {
-                        viewModel.getAlbumsLive().observe(viewLifecycleOwner, this@ImageAlbumsFragment)
+                        viewModel.getAlbumsLive().observe(viewLifecycleOwner, this@AudioAlbumsFragment)
 
                         initAdapter(viewModel.getAlbumsLive().value!!)
 
@@ -113,29 +101,29 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
 
                     viewModel.selectionTool!!.initOnBackCallback(
                             activity,
-                            binding.fragmentImageAlbumsList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                            binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                            binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                            binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                            binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
+                            binding.fragmentAudioAlbumsList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                            binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                            binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                            binding.fragmentAudioAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                            binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
                     )
 
                     if (viewModel.selectionTool!!.selectionMode) {
                         if (viewModel.selectionTool!!.selectedPositions.isNotEmpty()) {
                             activity.supportActionBar?.hide()
-                            binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout.visibility = View.VISIBLE
-                            binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.text = viewModel.selectionTool!!.selectedPositions.size.toString()
+                            binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout.visibility = View.VISIBLE
+                            binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.text = viewModel.selectionTool!!.selectedPositions.size.toString()
                         }
 
-                        binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
-                        binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout.visibility = View.VISIBLE
+                        binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
+                        binding.fragmentAudioAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout.visibility = View.VISIBLE
                     }
 
-                    binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
+                    binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
                         if (b) {
-                            viewModel.selectionTool!!.selectAll(binding.fragmentImageAlbumsList.adapter!!, binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                            viewModel.selectionTool!!.selectAll(binding.fragmentAudioAlbumsList.adapter!!, binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
                         } else {
-                            viewModel.selectionTool!!.unselectAll(binding.fragmentImageAlbumsList.adapter!!, binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                            viewModel.selectionTool!!.unselectAll(binding.fragmentAudioAlbumsList.adapter!!, binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
                         }
                     }
                 }
@@ -143,6 +131,7 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
         }
 
         PermissionWrapper.requestExternalStorage(requireActivity(), externalStorageSuccessAction)
+
         return binding.root
     }
 
@@ -155,56 +144,56 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         navController = Navigation.findNavController(binding.root)
 
-        binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.post {
-            binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.height.let {
-                binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomBarGalleryTitle.textSize = (it / 8).toFloat()
-                binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomBarGalleryTitle.text = resources.getText(R.string.title_gallery)
+        binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.post {
+            binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.height.let {
+                binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomBarGalleryTitle.textSize = (it / 8).toFloat()
+                binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomBarGalleryTitle.text = resources.getText(R.string.title_gallery)
 
-                binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarAlbumsTitle.textSize = (it / 8).toFloat()
-                binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarAlbumsTitle.text = resources.getText(R.string.title_folders)
+                binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarAlbumsTitle.textSize = (it / 8).toFloat()
+                binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarAlbumsTitle.text = resources.getText(R.string.title_folders)
             }
         }
 
-        binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarAlbumsTitle.setTypeface(null, Typeface.BOLD)
-        binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarAlbumsTitleIndicator.visibility = View.VISIBLE
+        binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarAlbumsTitle.setTypeface(null, Typeface.BOLD)
+        binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarAlbumsTitleIndicator.visibility = View.VISIBLE
 
         activity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
 
-        binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarGalleryTitleContainer.setOnClickListener {
+        binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarGalleryTitleContainer.setOnClickListener {
             onBackCallback.isEnabled = false
-            ApplicationLoader.transientParcelables[KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE] = binding.fragmentImageAlbumsList.layoutManager?.onSaveInstanceState()
+            ApplicationLoader.transientParcelables[KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE] = binding.fragmentAudioAlbumsList.layoutManager?.onSaveInstanceState()
             activity.onBackPressed()
         }
 
     }
 
-    private fun initAdapter(audioAlbumItems: MutableList<ImageAlbumItem>) {
-        binding.fragmentImageAlbumsList.layoutManager = GridLayoutManager(context, UIManager.getAlbumGridSpanNumber(requireActivity()))
+    private fun initAdapter(audioAlbumItems: MutableList<AudioAlbumItem>) {
+        binding.fragmentAudioAlbumsList.layoutManager = GridLayoutManager(context, UIManager.getAlbumGridSpanNumber(requireActivity()))
         ApplicationLoader.transientParcelables[KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE].let {
             if(it != null) {
-                binding.fragmentImageAlbumsList.layoutManager?.onRestoreInstanceState(it)
+                binding.fragmentAudioAlbumsList.layoutManager?.onRestoreInstanceState(it)
                 ApplicationLoader.transientParcelables.remove(KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE)
             } else
-                binding.fragmentImageAlbumsList.layoutManager?.onRestoreInstanceState(viewModel.mainListRvState)
+                binding.fragmentAudioAlbumsList.layoutManager?.onRestoreInstanceState(viewModel.mainListRvState)
         }
 
-        binding.fragmentImageAlbumsList.adapter = ImageAlbumsAdapter(requireActivity(), audioAlbumItems, layoutInflater, this@ImageAlbumsFragment)
+        binding.fragmentAudioAlbumsList.adapter = AudioAlbumsAdapter(requireActivity(), audioAlbumItems, layoutInflater, this@AudioAlbumsFragment)
 
-        binding.fragmentImageAlbumsList.itemAnimator = object : DefaultItemAnimator() {
+        binding.fragmentAudioAlbumsList.itemAnimator = object : DefaultItemAnimator() {
             override fun canReuseUpdatedViewHolder(viewHolder: RecyclerView.ViewHolder): Boolean {
                 return true
             }
         }
 
-        binding.fragmentImageAlbumsList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.fragmentAudioAlbumsList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dx > 0 || dy > 0) {
-                    if(this@ImageAlbumsFragment::viewModel.isInitialized && viewModel.selectionTool != null && !viewModel.selectionTool!!.selectionMode)
-                        binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
+                    if(this@AudioAlbumsFragment::viewModel.isInitialized && viewModel.selectionTool != null && !viewModel.selectionTool!!.selectionMode)
+                        binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
                 } else {
-                    if(this@ImageAlbumsFragment::viewModel.isInitialized && viewModel.selectionTool != null && !viewModel.selectionTool!!.selectionMode)
-                        binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.VISIBLE
+                    if(this@AudioAlbumsFragment::viewModel.isInitialized && viewModel.selectionTool != null && !viewModel.selectionTool!!.selectionMode)
+                        binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.VISIBLE
                 }
             }
         })
@@ -217,7 +206,7 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
 
         searchView.post {
             searchView.apply {
-                if(this@ImageAlbumsFragment::viewModel.isInitialized && !viewModel.currentSearchText.isNullOrEmpty()) {
+                if(this@AudioAlbumsFragment::viewModel.isInitialized && !viewModel.currentSearchText.isNullOrEmpty()) {
                     setQuery(viewModel.currentSearchText, false)
                     isIconified = false
                     requestFocus()
@@ -252,7 +241,7 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
         super.onStop()
 
         if(this::viewModel.isInitialized)
-            viewModel.mainListRvState = binding.fragmentImageAlbumsList.layoutManager?.onSaveInstanceState()
+            viewModel.mainListRvState = binding.fragmentAudioAlbumsList.layoutManager?.onSaveInstanceState()
 
     }
 
@@ -262,8 +251,8 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
         IOScope.cancel()
         MainScope.cancel()
 
+        ApplicationLoader.transientParcelables.remove(KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE)
     }
-
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         PermissionWrapper.handleExternalStorageRequestResult(

@@ -1,14 +1,11 @@
 package pro.filemanager.core.tools
 
 import android.graphics.Color
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
-import androidx.activity.OnBackPressedCallback
 import androidx.annotation.IntDef
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import pro.filemanager.ApplicationLoader
@@ -29,7 +26,16 @@ class SelectionTool {
     var selectionMode = false
     val selectedPositions = mutableListOf<Int>()
 
-    fun handleClickInViewHolder(@ClickType clickType: Int, position: Int, adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, activity: HomeActivity, selectionCheckBox: CheckBox, offAction: Runnable = Runnable {}) {
+    fun handleClickInViewHolder(
+            @ClickType clickType: Int,
+            position: Int,
+            adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
+            activity: HomeActivity,
+            selectionCheckBox: CheckBox,
+            selectionCheckBoxLayout: ViewGroup,
+            toolbarLayout: ViewGroup,
+            tabsBarLayout: ViewGroup,
+            offAction: Runnable = Runnable {}) {
         if(clickType == CLICK_SHORT) {
             if(!selectionMode)
                 offAction.run()
@@ -53,13 +59,16 @@ class SelectionTool {
                             }
                         }
 
-                        initOnBackCallback(activity, adapter, selectionCheckBox)
+                        initOnBackCallback(activity, adapter, selectionCheckBox, selectionCheckBoxLayout, toolbarLayout, tabsBarLayout)
 
                         if(selectionCheckBox.isChecked)
                             selectionCheckBox.toggle()
 
-                        selectionCheckBox.visibility = View.INVISIBLE
+                        selectionCheckBoxLayout.visibility = View.GONE
                         activity.supportActionBar?.show()
+
+                        toolbarLayout.visibility = View.GONE
+                        tabsBarLayout.visibility = View.VISIBLE
                     }
                 }
 
@@ -75,11 +84,14 @@ class SelectionTool {
                     }
                 }
 
-                initOnBackCallback(activity, adapter, selectionCheckBox)
+                initOnBackCallback(activity, adapter, selectionCheckBox, selectionCheckBoxLayout, toolbarLayout, tabsBarLayout)
 
                 activity.supportActionBar?.hide()
-                selectionCheckBox.visibility = View.VISIBLE
+                selectionCheckBoxLayout.visibility = View.VISIBLE
                 selectionCheckBox.text = selectedPositions.size.toString()
+
+                tabsBarLayout.visibility = View.GONE
+                toolbarLayout.visibility = View.VISIBLE
             } else {
                 if(!selectedPositions.contains(position)) {
                     selectedPositions.add(position)
@@ -100,13 +112,16 @@ class SelectionTool {
                             }
                         }
 
-                        initOnBackCallback(activity, adapter, selectionCheckBox)
+                        initOnBackCallback(activity, adapter, selectionCheckBox, selectionCheckBoxLayout, toolbarLayout, tabsBarLayout)
 
                         if(selectionCheckBox.isChecked)
                             selectionCheckBox.toggle()
 
-                        selectionCheckBox.visibility = View.INVISIBLE
+                        selectionCheckBoxLayout.visibility = View.GONE
                         activity.supportActionBar?.show()
+
+                        toolbarLayout.visibility = View.GONE
+                        tabsBarLayout.visibility = View.VISIBLE
                     }
                 }
             }
@@ -114,7 +129,8 @@ class SelectionTool {
         }
     }
 
-    fun selectAll(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, selectionCheckBox: CheckBox) {
+    fun selectAll(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                  selectionCheckBox: CheckBox) {
         selectionCheckBox.text = adapter.itemCount.toString()
 
         for (i in 0 until adapter.itemCount) {
@@ -129,7 +145,8 @@ class SelectionTool {
 
     }
 
-    fun unselectAll(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, selectionCheckBox: CheckBox) {
+    fun unselectAll(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                    selectionCheckBox: CheckBox) {
         selectionCheckBox.text = (0).toString()
 
         for (i in 0 until adapter.itemCount) {
@@ -144,7 +161,13 @@ class SelectionTool {
 
     }
 
-    fun initOnBackCallback(activity: HomeActivity, adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, selectionCheckBox: CheckBox) {
+    fun initOnBackCallback(
+            activity: HomeActivity,
+            adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
+            selectionCheckBox: CheckBox,
+            selectionCheckBoxLayout: ViewGroup,
+            toolbarLayout: ViewGroup,
+            tabsBarLayout: ViewGroup) {
          activity.currentOnBackBehavior = if(selectionMode)
              Runnable {
 
@@ -160,8 +183,11 @@ class SelectionTool {
                  if(selectionCheckBox.isChecked)
                      selectionCheckBox.toggle()
 
-                 selectionCheckBox.visibility = View.GONE
+                 selectionCheckBoxLayout.visibility = View.GONE
                  activity.supportActionBar?.show()
+
+                 toolbarLayout.visibility = View.GONE
+                 tabsBarLayout.visibility = View.VISIBLE
 
                  activity.currentOnBackBehavior = null
              }
@@ -176,13 +202,10 @@ class SelectionTool {
 
                 thumbnail.setColorFilter(Color.argb(120, 0, 0, 0))
 
-                ImageCore.glideSimpleRequestBuilder
-                        .load(R.drawable.ic_baseline_check_circle_24)
-                        .into(checkMark)
-
                 checkMark.scaleX = 0f
                 checkMark.scaleY = 0f
 
+                checkMark.visibility = View.VISIBLE
                 checkMark.animate().scaleX(1f).setDuration(150).start()
                 checkMark.animate().scaleY(1f).setDuration(150).start()
 

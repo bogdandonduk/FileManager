@@ -1,9 +1,11 @@
-package pro.filemanager.videos
+package pro.filemanager.audio
 
-data class VideoItem(
+import java.io.Serializable
+
+data class AudioItem(
         val data: String,
         val displayName: String,
         val size: Int,
         val dateModified: Int,
         val dateAdded: Int
-)
+) : Serializable

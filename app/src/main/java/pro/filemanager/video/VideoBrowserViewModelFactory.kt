@@ -1,4 +1,4 @@
-package pro.filemanager.videos
+package pro.filemanager.video
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

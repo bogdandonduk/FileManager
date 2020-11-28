@@ -23,18 +23,35 @@ class ImageBrowserAdapter(val context: Context, var imageItems: MutableList<Imag
         init {
             binding.layoutImageItemRootLayout.apply {
                 setOnClickListener {
-                    hostFragment.MainScope.launch {
+                    hostFragment.viewModel.MainScope?.launch {
                         @Suppress("UNCHECKED_CAST")
-                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_SHORT, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity, hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb) {
+                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
+                                SelectionTool.CLICK_SHORT,
+                                adapterPosition,
+                                adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                                hostFragment.requireActivity() as HomeActivity,
+                                hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                                hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                hostFragment.binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                                hostFragment.binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout) {
                             FileCore.openFileOut(context, item.data)
                         }
                     }
                 }
 
                 setOnLongClickListener {
-                    hostFragment.MainScope.launch {
+                    hostFragment.viewModel.MainScope?.launch {
                         @Suppress("UNCHECKED_CAST")
-                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(SelectionTool.CLICK_LONG, adapterPosition, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, hostFragment.requireActivity() as HomeActivity, hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
+                                SelectionTool.CLICK_LONG,
+                                adapterPosition,
+                                adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                                hostFragment.requireActivity() as HomeActivity,
+                                hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                                hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                hostFragment.binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                                hostFragment.binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout
+                        )
                     }
                     true
                 }
@@ -50,7 +67,7 @@ class ImageBrowserAdapter(val context: Context, var imageItems: MutableList<Imag
     override fun onBindViewHolder(holder: ImageItemViewHolder, position: Int) {
         holder.item = imageItems[position]
 
-        hostFragment.MainScope.launch {
+        hostFragment.viewModel.MainScope?.launch {
             if(!holder.item.data.endsWith(".gif", true)) {
                 ImageCore.glideBitmapRequestBuilder
                         .load(holder.item.data)

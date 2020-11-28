@@ -1,4 +1,4 @@
-package pro.filemanager.videos
+package pro.filemanager.video
 
 import android.annotation.SuppressLint
 import android.content.Context

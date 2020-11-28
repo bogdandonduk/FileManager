@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <include
-        android:id="@+id/fragmentAudioBrowserLayoutBaseToolbarInclude"
+        android:id="@+id/fragmentAudioBrowserToolbarInclude"
         layout="@layout/layout_base_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,10 +19,31 @@
         android:id="@+id/fragmentAudioBrowserList"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:fadeScrollbars="true"
-        android:scrollbars="vertical"
+        android:padding="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragmentAudioBrowserLayoutBaseToolbarInclude" />
+        app:layout_constraintTop_toBottomOf="@+id/fragmentAudioBrowserToolbarInclude" />
+
+    <include
+        android:id="@+id/fragmentAudioBrowserBottomToolBarInclude"
+        layout="@layout/layout_bottom_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <include
+        android:id="@+id/fragmentAudioBrowserBottomTabsBarInclude"
+        layout="@layout/layout_bottom_tabs_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -43,7 +43,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/title_image_gallery" />
+                tools:text="@string/title_gallery" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layoutBottomBarGalleryTitleIndicator"
@@ -77,7 +77,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/title_image_albums" />
+                tools:text="@string/title_folders" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layoutBottomTabsBarAlbumsTitleIndicator"
