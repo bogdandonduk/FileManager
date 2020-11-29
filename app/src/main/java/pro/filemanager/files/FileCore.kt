@@ -3,12 +3,17 @@ package pro.filemanager.files
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
+import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import android.webkit.MimeTypeMap
+import android.widget.TextView
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.delay
+import pro.filemanager.databinding.LayoutFileItemBinding
 import java.io.File
 import java.util.*
 
@@ -47,7 +52,13 @@ object FileCore {
             if (intent.resolveActivity(context.packageManager) != null) {
                 context.startActivity(intent)
             } else {
-
+                MimeTypeMap.getFileExtensionFromUrl(path).let {
+                    try {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=$it")))
+                    } catch (thr: Throwable) {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/search?q=$it")))
+                    }
+                }
             }
 
         }
@@ -95,7 +106,7 @@ object FileCore {
 
                         findingExternalRootsInProgress = true
 
-                        var shortestPathLength = 100000000
+                        var shortestPathLength = Int.MAX_VALUE
 
                         externalRootPaths = mutableListOf()
 
@@ -149,7 +160,51 @@ object FileCore {
             }
         }
 
-
     }
 
+    fun differentiateFile(file: File, fileBinding: LayoutFileItemBinding) {
+        if(file.isDirectory) {
+            fileBinding.layoutFileItemImageInclude.layoutImageItemRootLayout.visibility = View.INVISIBLE
+
+            fileBinding.layoutFileItemFolderInclude.layoutFolderItemThumbnailLayout.post {
+                fileBinding.layoutFileItemFolderInclude.layoutFolderItemTitle.text = file.name
+
+                fileBinding.layoutFileItemFolderInclude.layoutFolderItemTitle.textSize = (fileBinding.layoutFileItemFolderInclude.layoutFolderItemThumbnailLayout.width / 15).toFloat()
+
+                fileBinding.layoutFileItemFolderInclude.layoutFolderItemRootLayout.visibility = View.VISIBLE
+            }
+        } else {
+
+        }
+
+//        else if(holder.mimeType != null) {
+//            if(holder.mimeType!!.contains("image/", true)) {
+//                if(!holder.file.absolutePath.endsWith(".gif", true)) {
+//                    ImageCore.glideBitmapRequestBuilder
+//                            .load(holder.file.absolutePath)
+//                            .override(holder.binding.layoutFileItemImageInclude.layoutImageItemThumbnail.width, holder.binding.layoutFileItemImageInclude.layoutImageItemThumbnail.height)
+//                            .signature(MediaStoreSignature(ImageCore.MIME_TYPE, files[position].lastModified(), 0))
+//                            .into(holder.binding.layoutFileItemImageInclude.layoutImageItemThumbnail)
+//                } else {
+//                    ImageCore.glideGifRequestBuilder
+//                            .load(holder.file.absolutePath)
+//                            .override(holder.binding.layoutFileItemImageInclude.layoutImageItemThumbnail.width, holder.binding.layoutFileItemImageInclude.layoutImageItemThumbnail.height)
+//                            .signature(MediaStoreSignature(ImageCore.MIME_TYPE, files[position].lastModified().toLong(), 0))
+//                            .into(holder.binding.layoutFileItemImageInclude.layoutImageItemThumbnail)
+//                }
+//            } else if(holder.mimeType!!.contains("video/", true)) {
+//                VideoCore.glideRequestBuilder
+//                        .load(holder.file.absolutePath)
+//                        .override(holder.binding.layoutFileItemVideoInclude.layoutVideoItemThumbnail.width, holder.binding.layoutFileItemVideoInclude.layoutVideoItemThumbnail.height)
+//                        .signature(MediaStoreSignature(VideoCore.MIME_TYPE, files[position].lastModified(), 0))
+//                        .into(holder.binding.layoutFileItemVideoInclude.layoutVideoItemThumbnail)
+//            }
+//        }
+//
+//        if(holder.file.isHidden) {
+//            holder.binding.layoutFileItemThumbnail.alpha = 0.5f
+//        } else {
+//            holder.binding.layoutFileItemThumbnail.alpha = 1f
+//        }
+    }
 }

@@ -18,15 +18,15 @@ object SimpleInjector {
 
     fun provideVideoBrowserViewModelFactory() : VideoBrowserViewModelFactory = VideoBrowserViewModelFactory(VideoRepo.getInstance())
 
-    fun provideImageBrowserViewModelFactory(albumItem: ImageAlbumItem?) : ImageBrowserViewModelFactory = ImageBrowserViewModelFactory(ImageRepo.getInstance(), albumItem)
+    fun provideImageBrowserViewModelFactory(albumItem: ImageAlbumItem?) : ImageBrowserViewModelFactory = ImageBrowserViewModelFactory(ImageRepo.getSingleton(), albumItem)
 
-    fun provideImageAlbumsViewModelFactory() : ImageAlbumsViewModelFactory = ImageAlbumsViewModelFactory(ImageRepo.getInstance())
+    fun provideImageAlbumsViewModelFactory() : ImageAlbumsViewModelFactory = ImageAlbumsViewModelFactory(ImageRepo.getSingleton())
 
     fun provideDocBrowserViewModelFactory() : DocBrowserViewModelFactory = DocBrowserViewModelFactory(DocRepo.getInstance())
     fun provideAudioBrowserViewModelFactory(albumItem: AudioAlbumItem?) : AudioBrowserViewModelFactory = AudioBrowserViewModelFactory(AudioRepo.getInstance(), albumItem)
 
     fun provideAudioAlbumsViewModelFactory() : AudioAlbumsViewModelFactory = AudioAlbumsViewModelFactory(AudioRepo.getInstance())
 
-    fun provideFileBrowserViewModelFactory() : FileBrowserViewModelFactory = FileBrowserViewModelFactory()
+    fun provideFileBrowserViewModelFactory(path: String) : FileBrowserViewModelFactory = FileBrowserViewModelFactory(path)
 
 }

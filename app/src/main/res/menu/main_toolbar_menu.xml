@@ -10,7 +10,9 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/mainToolbarMenuItemSort"
-        android:title="@string/title_sort" />
+        android:icon="@drawable/ic_baseline_sort_24"
+        android:title="@string/title_sort"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/mainToolbarMenuItemSettings"
         android:icon="@drawable/ic_search_black_24dp"

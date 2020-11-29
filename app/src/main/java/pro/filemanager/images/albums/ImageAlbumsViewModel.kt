@@ -8,13 +8,14 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.audio.albums.AudioAlbumItem
+import pro.filemanager.core.KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT
 import pro.filemanager.core.tools.SearchTool
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.images.ImageRepo
 
 class ImageAlbumsViewModel(var imageRepo: ImageRepo) : ViewModel(), ImageRepo.AlbumSubscriber {
 
-    var IOScope: CoroutineScope? = CoroutineScope(Dispatchers.IO)
+    var IOScope = CoroutineScope(Dispatchers.IO)
     var MainScope: CoroutineScope? = CoroutineScope(Dispatchers.Main)
 
     private var itemsLive: MutableLiveData<MutableList<ImageAlbumItem>>? = null
@@ -23,7 +24,8 @@ class ImageAlbumsViewModel(var imageRepo: ImageRepo) : ViewModel(), ImageRepo.Al
     var searchInProgress = false
 
     var mainListRvState: Parcelable? = null
-    var currentSearchText: String? = null
+    var isSearchViewEnabled = false
+    var currentSearchText = ""
 
     init {
         imageRepo.subscribe(this)
@@ -49,7 +51,7 @@ class ImageAlbumsViewModel(var imageRepo: ImageRepo) : ViewModel(), ImageRepo.Al
         imageRepo.unsubscribe(this)
 
         try {
-            IOScope?.cancel()
+            IOScope.cancel()
             MainScope?.cancel()
         } catch (thr: Throwable) {
 
@@ -57,16 +59,16 @@ class ImageAlbumsViewModel(var imageRepo: ImageRepo) : ViewModel(), ImageRepo.Al
     }
 
     fun search(context: Context, text: String?) {
-        IOScope!!.launch {
+        IOScope.launch {
             while (searchInProgress) {
                 delay(25)
             }
 
             searchInProgress = true
 
-            if(!text.isNullOrEmpty()) {
-                currentSearchText = text
+            currentSearchText = text ?: ""
 
+            if(!text.isNullOrEmpty()) {
                 itemsLive?.postValue(SearchTool.searchImageAlbumItems(text, imageRepo.loadAlbums(imageRepo.loadItems(context, false), false)))
             } else {
                 itemsLive?.postValue(imageRepo.loadAlbums(imageRepo.loadItems(context, false),false))

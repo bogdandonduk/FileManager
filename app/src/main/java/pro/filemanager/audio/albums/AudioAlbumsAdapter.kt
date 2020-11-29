@@ -21,7 +21,7 @@ class AudioAlbumsAdapter(val context: Context, var audioAlbumItems: MutableList<
         init {
             binding.layoutAudioAlbumItemContentLayout.apply {
                 setOnClickListener {
-                    hostFragment.MainScope.launch {
+                    hostFragment.viewModel.MainScope?.launch {
                         @Suppress("UNCHECKED_CAST")
                         hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
                                 SelectionTool.CLICK_SHORT,
@@ -41,7 +41,7 @@ class AudioAlbumsAdapter(val context: Context, var audioAlbumItems: MutableList<
                 }
 
                 setOnLongClickListener {
-                    hostFragment.MainScope.launch {
+                    hostFragment.viewModel.MainScope?.launch {
                         @Suppress("UNCHECKED_CAST")
                         hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
                                 SelectionTool.CLICK_LONG,
@@ -69,11 +69,11 @@ class AudioAlbumsAdapter(val context: Context, var audioAlbumItems: MutableList<
     override fun onBindViewHolder(holder: ImageAlbumItemViewHolder, position: Int) {
         holder.item = audioAlbumItems[position]
 
-            holder.binding.layoutAudioAlbumItemCard.post {
+            holder.binding.layoutAudioAlbumItemRootLayout.post {
                 holder.binding.layoutAudioAlbumItemTitle.text = holder.item.displayName
-                holder.binding.layoutAudioAlbumItemTitle.textSize = (holder.binding.layoutAudioAlbumItemCard.width / 30).toFloat()
+                holder.binding.layoutAudioAlbumItemTitle.textSize = (holder.binding.layoutAudioAlbumItemRootLayout.width / 30).toFloat()
                 holder.binding.layoutAudioAlbumItemCount.text = holder.item.containedImages.size.toString()
-                holder.binding.layoutAudioAlbumItemCount.textSize = (holder.binding.layoutAudioAlbumItemCard.width / 40).toFloat()
+                holder.binding.layoutAudioAlbumItemCount.textSize = (holder.binding.layoutAudioAlbumItemRootLayout.width / 40).toFloat()
             }
 
             hostFragment.viewModel.selectionTool?.differentiateItem(position, holder.binding.layoutAudioAlbumItemThumbnail, holder.binding.layoutAudioAlbumItemIconCheck, holder.binding.layoutAudioAlbumItemIconUnchecked)

@@ -20,7 +20,7 @@ class ImageAlbumsAdapter(val context: Context, var audioAlbumItems: MutableList<
         init {
             binding.layoutImageAlbumItemContentLayout.apply {
                 setOnClickListener {
-                    hostFragment.MainScope.launch {
+                    hostFragment.viewModel.MainScope?.launch {
                         @Suppress("UNCHECKED_CAST")
                         hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
                                 SelectionTool.CLICK_SHORT,
@@ -40,7 +40,7 @@ class ImageAlbumsAdapter(val context: Context, var audioAlbumItems: MutableList<
                 }
 
                 setOnLongClickListener {
-                    hostFragment.MainScope.launch {
+                    hostFragment.viewModel.MainScope?.launch {
                         @Suppress("UNCHECKED_CAST")
                         hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
                                 SelectionTool.CLICK_LONG,
@@ -68,7 +68,7 @@ class ImageAlbumsAdapter(val context: Context, var audioAlbumItems: MutableList<
     override fun onBindViewHolder(holder: ImageAlbumItemViewHolder, position: Int) {
         holder.item = audioAlbumItems[position]
 
-        hostFragment.MainScope.launch {
+        hostFragment.viewModel.MainScope?.launch {
             if (!holder.item.containedImages.first().data.endsWith(".gif", true)) {
                 ImageCore.glideBitmapRequestBuilder
                         .load(holder.item.containedImages.first().data)

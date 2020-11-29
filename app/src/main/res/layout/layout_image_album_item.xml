@@ -94,7 +94,8 @@
                 app:layout_constraintBottom_toTopOf="@+id/layoutImageAlbumItemCardGl20ph"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/layoutImageAlbumItemCardGl80pv"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_check_circle_24" />
 
             <ImageView
                 android:id="@+id/layoutImageAlbumItemIconUnchecked"
@@ -158,7 +159,7 @@
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/layoutImageAlbumItemTitle"
-                        tools:text="Count" />
+                        tools:text="279" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

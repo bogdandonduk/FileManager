@@ -46,6 +46,7 @@ android {
 }
 
 dependencies {
+    implementation files('/home/bogdan/AndroidStudioProjects/FileManager/app/libs/commons-io-2.8.0.jar')
     def coroutines_version = "1.4.0"
     def navigation_version = "2.3.1"
     def glide_version = "4.11.0"

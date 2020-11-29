@@ -5,7 +5,7 @@ import java.io.Serializable
 data class ImageItem(
         val data: String,
         val displayName: String,
-        val size: Int,
+        val size: Long,
         val dateModified: Int,
         val dateAdded: Int
 ) : Serializable

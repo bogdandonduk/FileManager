@@ -2,10 +2,11 @@ package pro.filemanager.audio
 
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
 import android.widget.SearchView
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -15,19 +16,17 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
 import pro.filemanager.audio.albums.AudioAlbumItem
 import pro.filemanager.core.KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE
-import pro.filemanager.core.PermissionWrapper
+import pro.filemanager.core.KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT
 import pro.filemanager.core.SimpleInjector
 import pro.filemanager.core.UIManager
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.FragmentAudioBrowserBinding
-import java.lang.Runnable
 
 class AudioBrowserFragment : Fragment(), Observer<MutableList<AudioItem>> {
 
@@ -37,6 +36,9 @@ class AudioBrowserFragment : Fragment(), Observer<MutableList<AudioItem>> {
     lateinit var viewModel: AudioBrowserViewModel
 
     var albumItem: AudioAlbumItem? = null
+    lateinit var onBackCallback: OnBackPressedCallback
+
+    lateinit var searchView: SearchView
 
     override fun onChanged(t: MutableList<AudioItem>?) {
 
@@ -63,7 +65,7 @@ class AudioBrowserFragment : Fragment(), Observer<MutableList<AudioItem>> {
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentAudioBrowserBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -79,6 +81,12 @@ class AudioBrowserFragment : Fragment(), Observer<MutableList<AudioItem>> {
         setHasOptionsMenu(true)
 
         activity.setSupportActionBar(binding.fragmentAudioBrowserToolbarInclude.layoutBaseToolbar)
+
+        onBackCallback = object : OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
+                navController.popBackStack(R.id.homeFragment, false)
+            }
+        }
 
         activity.requestExternalStoragePermission {
 
@@ -131,6 +139,9 @@ class AudioBrowserFragment : Fragment(), Observer<MutableList<AudioItem>> {
                 }
             }
         }
+
+        activity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
+        if(albumItem == null) onBackCallback.isEnabled = true
 
         binding.fragmentAudioBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.post {
             binding.fragmentAudioBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.height.let {
@@ -221,15 +232,28 @@ class AudioBrowserFragment : Fragment(), Observer<MutableList<AudioItem>> {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_toolbar_menu, menu)
 
-        val searchView = menu.findItem(R.id.mainToolbarMenuItemSearch).actionView as SearchView
+        searchView = menu.findItem(R.id.mainToolbarMenuItemSearch).actionView as SearchView
 
         searchView.post {
+
             searchView.apply {
-                if(this@AudioBrowserFragment::viewModel.isInitialized && !viewModel.currentSearchText.isNullOrEmpty()) {
+                imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
+
+                setOnSearchClickListener {
+                    viewModel.isSearchViewEnabled = true
+                }
+
+                setOnCloseListener {
+                    viewModel.isSearchViewEnabled = false
+                    false
+                }
+
+                if(this@AudioBrowserFragment::viewModel.isInitialized && viewModel.isSearchViewEnabled) {
                     setQuery(viewModel.currentSearchText, false)
                     isIconified = false
                     requestFocus()
 
+                    if(viewModel.currentSearchText.isEmpty()) clearFocus()
                 } else {
                     isIconified = true
                 }
@@ -257,13 +281,6 @@ class AudioBrowserFragment : Fragment(), Observer<MutableList<AudioItem>> {
 
         if(this::viewModel.isInitialized)
             viewModel.mainListRvState = binding.fragmentAudioBrowserList.layoutManager?.onSaveInstanceState()
-
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        ApplicationLoader.transientParcelables.remove(KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE)
 
     }
 

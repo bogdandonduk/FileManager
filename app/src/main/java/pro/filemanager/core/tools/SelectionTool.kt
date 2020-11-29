@@ -200,7 +200,7 @@ class SelectionTool {
                 checkMark.visibility = View.VISIBLE
                 uncheckedMark.visibility = View.INVISIBLE
 
-                thumbnail.setColorFilter(Color.argb(120, 0, 0, 0))
+                thumbnail.setColorFilter(Color.argb(100, 0, 0, 0))
 
                 checkMark.scaleX = 0f
                 checkMark.scaleY = 0f

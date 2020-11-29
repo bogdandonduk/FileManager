@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
+import android.text.format.Formatter
+import android.util.Log
 import kotlinx.coroutines.delay
 import pro.filemanager.images.albums.ImageAlbumItem
 import java.io.File
@@ -22,7 +24,7 @@ class ImageRepo private constructor() {
     companion object {
         @Volatile private var instance: ImageRepo? = null
 
-        fun getInstance() : ImageRepo {
+        fun getSingleton() : ImageRepo {
             return if(instance != null) {
                 instance!!
             } else {
@@ -34,9 +36,14 @@ class ImageRepo private constructor() {
 
     @Volatile private var itemSubscribers: MutableList<ItemSubscriber> = mutableListOf()
     @Volatile private var albumSubscribers: MutableList<AlbumSubscriber> = mutableListOf()
+
     @Volatile private var loadedItems: MutableList<ImageItem>? = null
+    @Volatile private var itemsSortedBySizeMax: MutableList<ImageItem>? = null
+
     @Volatile private var loadedAlbums: MutableList<ImageAlbumItem> ?= null
+
     @Volatile private var loadingItemsInProgress = false
+    @Volatile private var loadingItemsSortedBySizeMaxInProgress = false
     @Volatile private var loadingAlbumsInProgress = false
 
     // interface for pushing updates to loadedItems to subscriber (basically ViewModels)
@@ -103,7 +110,7 @@ class ImageRepo private constructor() {
                             ImageItem(
                                 cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
                                 cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
-                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
+                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)).toLong(),
                                 cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
                                 cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
                             )
@@ -147,7 +154,75 @@ class ImageRepo private constructor() {
 
     }
 
-    // refer to similar loadItems(context: Context, forceload: Boolean) method's comments for documentation
+    // refer to loadItems(context: Context, forceLoad: Boolean): MutableList<ImageItem> method for similar comments
+    @SuppressLint("Recycle")
+    suspend fun loadItemsBySizeMax(context: Context, forceLoad: Boolean) : MutableList<ImageItem> {
+        return if(itemsSortedBySizeMax != null && !forceLoad) {
+            itemsSortedBySizeMax!!
+        } else {
+            if(!loadingItemsSortedBySizeMaxInProgress) {
+
+                loadingItemsSortedBySizeMaxInProgress = true
+
+                val cursor: Cursor = context.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, arrayOf(
+                    MediaStore.Images.ImageColumns.DATA,
+                    MediaStore.Images.ImageColumns.DISPLAY_NAME,
+                    MediaStore.Images.ImageColumns.SIZE,
+                    MediaStore.Images.ImageColumns.DATE_MODIFIED,
+                    MediaStore.Images.ImageColumns.DATE_ADDED
+                ), null, null, MediaStore.Images.ImageColumns.SIZE + " DESC", null)!!
+
+                val imageItems: MutableList<ImageItem> = mutableListOf()
+
+                if(cursor.moveToFirst()) {
+                    while(!cursor.isAfterLast) {
+                        imageItems.add(
+                            ImageItem(
+                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
+                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
+                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)).toLong(),
+                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
+                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
+                            )
+                        )
+
+                        cursor.moveToNext()
+                    }
+
+                }
+
+                cursor.close()
+
+                itemsSortedBySizeMax = imageItems
+                //
+
+                loadingItemsSortedBySizeMaxInProgress = false
+
+                itemsSortedBySizeMax!!
+            } else {
+
+                val timeout = System.currentTimeMillis() + 20000
+
+                while(loadingItemsSortedBySizeMaxInProgress && System.currentTimeMillis() < timeout) {
+                    delay(25)
+                }
+
+                if(itemsSortedBySizeMax != null) {
+                    itemsSortedBySizeMax!!
+                } else {
+                    throw IllegalStateException("Something went wrong while fetching audios from MediaStore")
+                }
+
+            }
+        }
+
+    }
+
+    suspend fun loadItemsBySizeMin(context: Context, forceLoad: Boolean) : MutableList<ImageItem> {
+        return loadItemsBySizeMax(context, forceLoad).reversed() as MutableList<ImageItem>
+    }
+
+    // refer to similar loadItems(context: Context, forceLoad: Boolean) : MutableList<ImageItems> method's similar comments
     // quite heavy operation running for about 475 ms on a new young CPU
     suspend fun loadAlbums(items: MutableList<ImageItem>, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
         return if(loadedAlbums != null && !forceLoad) {

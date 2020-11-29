@@ -2,7 +2,9 @@ package pro.filemanager.images.albums
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
 import android.widget.SearchView
 import androidx.activity.OnBackPressedCallback
@@ -15,19 +17,14 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
-import pro.filemanager.core.KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE
-import pro.filemanager.core.PermissionWrapper
-import pro.filemanager.core.SimpleInjector
-import pro.filemanager.core.UIManager
+import pro.filemanager.core.*
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.FragmentImageAlbumsBinding
 import java.lang.IllegalStateException
-import java.lang.Runnable
 
 class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
 
@@ -36,12 +33,8 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
     lateinit var activity: HomeActivity
     lateinit var viewModel: ImageAlbumsViewModel
 
-    val IOScope = CoroutineScope(IO)
-    val MainScope = CoroutineScope(Main)
-
     lateinit var onBackCallback: OnBackPressedCallback
-
-    lateinit var externalStorageSuccessAction: Runnable
+    lateinit var searchView: SearchView
 
     override fun onChanged(t: MutableList<ImageAlbumItem>?) {
         if(binding.fragmentImageAlbumsList.adapter != null) {
@@ -62,12 +55,24 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentImageAlbumsBinding.inflate(inflater, container, false)
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        navController = Navigation.findNavController(binding.root)
 
         activity = requireActivity() as HomeActivity
 
         setHasOptionsMenu(true)
+
+        activity.setSupportActionBar(binding.fragmentImageAlbumsToolbarInclude.layoutBaseToolbar)
 
         onBackCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -75,24 +80,22 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
             }
         }
 
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentImageAlbumsBinding.inflate(inflater, container, false)
-
-        activity.setSupportActionBar(binding.fragmentImageAlbumsToolbarInclude.layoutBaseToolbar)
-
-        externalStorageSuccessAction = Runnable {
+        activity.requestExternalStoragePermission {
             ApplicationLoader.ApplicationIOScope.launch {
                 viewModel = ViewModelProviders.of(this@ImageAlbumsFragment, SimpleInjector.provideImageAlbumsViewModelFactory()).get(ImageAlbumsViewModel::class.java)
 
                 withContext(Main) {
                     try {
                         viewModel.getAlbumsLive().observe(viewLifecycleOwner, this@ImageAlbumsFragment)
+
+                        ApplicationLoader.transientStrings[KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT].let {
+                            if(!it.isNullOrEmpty()) {
+                                viewModel.isSearchViewEnabled = true
+                                viewModel.currentSearchText = it
+
+                                viewModel.search(requireContext(), viewModel.currentSearchText)
+                            }
+                        }
 
                         initAdapter(viewModel.getAlbumsLive().value!!)
 
@@ -106,7 +109,6 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
                     } finally {
 
                     }
-
 
                     if (viewModel.selectionTool == null)
                         viewModel.selectionTool = SelectionTool()
@@ -142,18 +144,7 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
             }
         }
 
-        PermissionWrapper.requestExternalStorage(requireActivity(), externalStorageSuccessAction)
-        return binding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        activity.supportActionBar?.title = requireContext().resources.getString(R.string.title_folders)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        navController = Navigation.findNavController(binding.root)
+        activity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
 
         binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.post {
             binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.height.let {
@@ -167,8 +158,6 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
 
         binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarAlbumsTitle.setTypeface(null, Typeface.BOLD)
         binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarAlbumsTitleIndicator.visibility = View.VISIBLE
-
-        activity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
 
         binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarGalleryTitleContainer.setOnClickListener {
             onBackCallback.isEnabled = false
@@ -191,9 +180,7 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
         binding.fragmentImageAlbumsList.adapter = ImageAlbumsAdapter(requireActivity(), audioAlbumItems, layoutInflater, this@ImageAlbumsFragment)
 
         binding.fragmentImageAlbumsList.itemAnimator = object : DefaultItemAnimator() {
-            override fun canReuseUpdatedViewHolder(viewHolder: RecyclerView.ViewHolder): Boolean {
-                return true
-            }
+            override fun canReuseUpdatedViewHolder(viewHolder: RecyclerView.ViewHolder): Boolean = true
         }
 
         binding.fragmentImageAlbumsList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -210,18 +197,38 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        activity.supportActionBar?.title = requireContext().resources.getString(R.string.title_folders)
+
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_toolbar_menu, menu)
 
-        val searchView = menu.findItem(R.id.mainToolbarMenuItemSearch).actionView as SearchView
+        searchView = menu.findItem(R.id.mainToolbarMenuItemSearch).actionView as SearchView
 
         searchView.post {
             searchView.apply {
-                if(this@ImageAlbumsFragment::viewModel.isInitialized && !viewModel.currentSearchText.isNullOrEmpty()) {
+                imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
+
+                setOnSearchClickListener {
+                    viewModel.isSearchViewEnabled = true
+                }
+
+                setOnCloseListener {
+                    viewModel.isSearchViewEnabled = false
+                    ApplicationLoader.transientStrings.remove(KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT)
+                    false
+                }
+
+                if(this@ImageAlbumsFragment::viewModel.isInitialized && viewModel.isSearchViewEnabled) {
                     setQuery(viewModel.currentSearchText, false)
                     isIconified = false
                     requestFocus()
 
+                    if(viewModel.currentSearchText.isEmpty()) clearFocus()
                 } else {
                     isIconified = true
                 }
@@ -229,17 +236,12 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
                 setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
                     override fun onQueryTextSubmit(query: String?): Boolean {
-
                         return false
                     }
 
                     override fun onQueryTextChange(newText: String?): Boolean {
                         viewModel.search(requireContext(), newText)
-
-                        if(newText.isNullOrEmpty()) {
-                            isIconified = true
-                        }
-
+                        ApplicationLoader.transientStrings[KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT] = newText
                         return false
                     }
 
@@ -256,23 +258,4 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-        IOScope.cancel()
-        MainScope.cancel()
-
-    }
-
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        PermissionWrapper.handleExternalStorageRequestResult(
-                requireActivity(),
-                requestCode,
-                grantResults,
-                externalStorageSuccessAction
-        ) {
-            requireActivity().onBackPressed()
-        }
-    }
 }
