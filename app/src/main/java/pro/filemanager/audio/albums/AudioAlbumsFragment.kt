@@ -216,12 +216,16 @@ class AudioAlbumsFragment : Fragment(), Observer<MutableList<AudioAlbumItem>> {
                 imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
 
                 setOnSearchClickListener {
-                    viewModel.isSearchViewEnabled = true
+                    if(this@AudioAlbumsFragment::viewModel.isInitialized)
+                        viewModel.isSearchViewEnabled = true
                 }
 
                 setOnCloseListener {
-                    viewModel.isSearchViewEnabled = false
+                    if(this@AudioAlbumsFragment::viewModel.isInitialized)
+                        viewModel.isSearchViewEnabled = false
+
                     ApplicationLoader.transientStrings.remove(KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT)
+
                     false
                 }
 

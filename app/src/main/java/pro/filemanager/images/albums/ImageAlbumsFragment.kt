@@ -214,12 +214,16 @@ class ImageAlbumsFragment : Fragment(), Observer<MutableList<ImageAlbumItem>> {
                 imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
 
                 setOnSearchClickListener {
-                    viewModel.isSearchViewEnabled = true
+                    if(this@ImageAlbumsFragment::viewModel.isInitialized)
+                        viewModel.isSearchViewEnabled = true
                 }
 
                 setOnCloseListener {
-                    viewModel.isSearchViewEnabled = false
+                    if(this@ImageAlbumsFragment::viewModel.isInitialized)
+                        viewModel.isSearchViewEnabled = false
+
                     ApplicationLoader.transientStrings.remove(KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT)
+
                     false
                 }
 

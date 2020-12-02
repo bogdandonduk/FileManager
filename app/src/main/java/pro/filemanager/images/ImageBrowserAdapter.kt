@@ -24,35 +24,39 @@ class ImageBrowserAdapter(val context: Context, var imageItems: MutableList<Imag
         init {
             binding.layoutImageItemRootLayout.apply {
                 setOnClickListener {
-                    hostFragment.viewModel.MainScope?.launch {
-                        @Suppress("UNCHECKED_CAST")
-                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
-                                SelectionTool.CLICK_SHORT,
-                                adapterPosition,
-                                adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                                hostFragment.requireActivity() as HomeActivity,
-                                hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                                hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                                hostFragment.binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                                hostFragment.binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout) {
-                            FileCore.openFileOut(context, item.data)
+                    if(this@ImageItemViewHolder::item.isInitialized) {
+                        hostFragment.viewModel.MainScope?.launch {
+                            @Suppress("UNCHECKED_CAST")
+                            hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
+                                    SelectionTool.CLICK_SHORT,
+                                    adapterPosition,
+                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                                    hostFragment.requireActivity() as HomeActivity,
+                                    hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                                    hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                    hostFragment.binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                                    hostFragment.binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout) {
+                                FileCore.openFileOut(context, item.data)
+                            }
                         }
                     }
                 }
 
                 setOnLongClickListener {
-                    hostFragment.viewModel.MainScope?.launch {
-                        @Suppress("UNCHECKED_CAST")
-                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
-                                SelectionTool.CLICK_LONG,
-                                adapterPosition,
-                                adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                                hostFragment.requireActivity() as HomeActivity,
-                                hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                                hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                                hostFragment.binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                                hostFragment.binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout
-                        )
+                    if(this@ImageItemViewHolder::item.isInitialized) {
+                        hostFragment.viewModel.MainScope?.launch {
+                            @Suppress("UNCHECKED_CAST")
+                            hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
+                                    SelectionTool.CLICK_LONG,
+                                    adapterPosition,
+                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                                    hostFragment.requireActivity() as HomeActivity,
+                                    hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                                    hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                    hostFragment.binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                                    hostFragment.binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout
+                            )
+                        }
                     }
                     true
                 }

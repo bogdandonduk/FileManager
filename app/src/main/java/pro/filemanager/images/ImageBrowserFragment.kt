@@ -7,6 +7,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
 import android.widget.SearchView
 import androidx.activity.OnBackPressedCallback
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -20,11 +21,12 @@ import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
-import pro.filemanager.core.KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE
-import pro.filemanager.core.KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT
 import pro.filemanager.core.SimpleInjector
 import pro.filemanager.core.UIManager
 import pro.filemanager.core.tools.SelectionTool
+import pro.filemanager.core.tools.sort.OptionItem
+import pro.filemanager.core.tools.sort.SortBottomModalSheetFragment
+import pro.filemanager.core.tools.sort.SortTool
 import pro.filemanager.databinding.FragmentImageBrowserBinding
 import pro.filemanager.images.albums.ImageAlbumItem
 
@@ -44,7 +46,6 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
         if(binding.fragmentImageBrowserList.adapter != null && this::viewModel.isInitialized) {
             try {
                 viewModel.MainScope?.cancel()
-                viewModel.MainScope = null
                 viewModel.MainScope = CoroutineScope(Main)
             } catch(thr: Throwable) {
 
@@ -229,43 +230,53 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
 
         searchView = menu.findItem(R.id.mainToolbarMenuItemSearch).actionView as SearchView
 
-        searchView.post {
-            searchView.apply {
-                imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
+        searchView.apply {
+            imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
 
-                setOnSearchClickListener {
+            setOnSearchClickListener {
+                if(this@ImageBrowserFragment::viewModel.isInitialized)
                     viewModel.isSearchViewEnabled = true
-                }
-
-                setOnCloseListener {
-                    viewModel.isSearchViewEnabled = false
-                    false
-                }
-
-                if(this@ImageBrowserFragment::viewModel.isInitialized && viewModel.isSearchViewEnabled) {
-                    setQuery(viewModel.currentSearchText, false)
-                    isIconified = false
-                    requestFocus()
-
-                    if(viewModel.currentSearchText.isEmpty()) clearFocus()
-                } else {
-                    isIconified = true
-                }
-
-                setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-
-                    override fun onQueryTextSubmit(query: String?): Boolean {
-                        return false
-                    }
-
-                    override fun onQueryTextChange(newText: String?): Boolean {
-                        viewModel.search(requireContext(), newText)
-
-                        return true
-                    }
-
-                })
             }
+
+            setOnCloseListener {
+                if(this@ImageBrowserFragment::viewModel.isInitialized)
+                    viewModel.isSearchViewEnabled = false
+                false
+            }
+
+            if(this@ImageBrowserFragment::viewModel.isInitialized && viewModel.isSearchViewEnabled) {
+                setQuery(viewModel.currentSearchText, false)
+                isIconified = false
+                requestFocus()
+
+                if(viewModel.currentSearchText.isEmpty()) clearFocus()
+            } else {
+                isIconified = true
+            }
+
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return false
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    viewModel.search(requireContext(), newText)
+
+                    return true
+                }
+
+            })
+        }
+
+        menu.findItem(R.id.mainToolbarMenuItemSort).setOnMenuItemClickListener {
+
+            val sortBottomModalSheetFragment = SortBottomModalSheetFragment()
+                sortBottomModalSheetFragment.arguments = bundleOf(SortTool.KEY_ARGUMENT_SORTING_VIEW_MODEL to viewModel)
+
+            sortBottomModalSheetFragment.show(requireActivity().supportFragmentManager, null)
+
+            true
         }
     }
 

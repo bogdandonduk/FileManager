@@ -240,11 +240,13 @@ class AudioBrowserFragment : Fragment(), Observer<MutableList<AudioItem>> {
                 imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
 
                 setOnSearchClickListener {
-                    viewModel.isSearchViewEnabled = true
+                    if(this@AudioBrowserFragment::viewModel.isInitialized)
+                        viewModel.isSearchViewEnabled = true
                 }
 
                 setOnCloseListener {
-                    viewModel.isSearchViewEnabled = false
+                    if(this@AudioBrowserFragment::viewModel.isInitialized)
+                        viewModel.isSearchViewEnabled = false
                     false
                 }
 

@@ -1,26 +1,16 @@
 package pro.filemanager
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.format.Formatter
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.os.Handler
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import kotlinx.coroutines.launch
 import pro.filemanager.core.PermissionWrapper
-import pro.filemanager.core.UIManager
+import pro.filemanager.core.tools.sort.SortBottomModalSheetFragment
 import pro.filemanager.databinding.ActivityHomeBinding
 import pro.filemanager.files.FileCore
-import java.io.File
 
 class HomeActivity : AppCompatActivity() {
 

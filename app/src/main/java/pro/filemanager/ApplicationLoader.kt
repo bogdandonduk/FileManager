@@ -4,8 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.os.FileObserver
 import android.os.Parcelable
-import android.text.format.Formatter
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -14,7 +12,6 @@ import pro.filemanager.video.VideoRepo
 import kotlinx.coroutines.launch
 import pro.filemanager.audio.AudioRepo
 import pro.filemanager.core.PermissionWrapper
-import pro.filemanager.core.tools.SortTool
 import pro.filemanager.docs.DocRepo
 import pro.filemanager.files.FileCore
 

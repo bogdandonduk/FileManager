@@ -7,13 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 import pro.filemanager.ApplicationLoader
-import pro.filemanager.audio.albums.AudioAlbumItem
-import pro.filemanager.core.KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT
 import pro.filemanager.core.tools.SearchTool
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.images.ImageRepo
 
-class ImageAlbumsViewModel(var imageRepo: ImageRepo) : ViewModel(), ImageRepo.AlbumSubscriber {
+class ImageAlbumsViewModel(var imageRepo: ImageRepo) : ViewModel(), ImageRepo.AlbumObserver {
 
     var IOScope = CoroutineScope(Dispatchers.IO)
     var MainScope: CoroutineScope? = CoroutineScope(Dispatchers.Main)

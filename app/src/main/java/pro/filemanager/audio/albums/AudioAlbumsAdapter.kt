@@ -21,38 +21,42 @@ class AudioAlbumsAdapter(val context: Context, var audioAlbumItems: MutableList<
         init {
             binding.layoutAudioAlbumItemContentLayout.apply {
                 setOnClickListener {
-                    hostFragment.viewModel.MainScope?.launch {
-                        @Suppress("UNCHECKED_CAST")
-                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
-                                SelectionTool.CLICK_SHORT,
-                                adapterPosition,
-                                adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                                hostFragment.requireActivity() as HomeActivity,
-                                hostFragment.binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                                hostFragment.binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                                hostFragment.binding.fragmentAudioAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                                hostFragment.binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
-                        ) {
-                            hostFragment.navController.navigate(R.id.action_audioAlbumsFragment_to_audioBrowserFragment, bundleOf(
-                                    ImageCore.KEY_ARGUMENT_ALBUM_PARCELABLE to item
-                            ))
+                    if(this@ImageAlbumItemViewHolder::item.isInitialized) {
+                        hostFragment.viewModel.MainScope?.launch {
+                            @Suppress("UNCHECKED_CAST")
+                            hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
+                                    SelectionTool.CLICK_SHORT,
+                                    adapterPosition,
+                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                                    hostFragment.requireActivity() as HomeActivity,
+                                    hostFragment.binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                                    hostFragment.binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                    hostFragment.binding.fragmentAudioAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                                    hostFragment.binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
+                            ) {
+                                hostFragment.navController.navigate(R.id.action_audioAlbumsFragment_to_audioBrowserFragment, bundleOf(
+                                        ImageCore.KEY_ARGUMENT_ALBUM_PARCELABLE to item
+                                ))
+                            }
                         }
                     }
                 }
 
                 setOnLongClickListener {
-                    hostFragment.viewModel.MainScope?.launch {
-                        @Suppress("UNCHECKED_CAST")
-                        hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
-                                SelectionTool.CLICK_LONG,
-                                adapterPosition,
-                                adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                                hostFragment.requireActivity() as HomeActivity,
-                                hostFragment.binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                                hostFragment.binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                                hostFragment.binding.fragmentAudioAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                                hostFragment.binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
-                        )
+                    if(this@ImageAlbumItemViewHolder::item.isInitialized) {
+                        hostFragment.viewModel.MainScope?.launch {
+                            @Suppress("UNCHECKED_CAST")
+                            hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
+                                    SelectionTool.CLICK_LONG,
+                                    adapterPosition,
+                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                                    hostFragment.requireActivity() as HomeActivity,
+                                    hostFragment.binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                                    hostFragment.binding.fragmentAudioAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                    hostFragment.binding.fragmentAudioAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                                    hostFragment.binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
+                            )
+                        }
                     }
 
                     true
