@@ -25,9 +25,11 @@ import pro.filemanager.R
 import pro.filemanager.core.*
 import pro.filemanager.core.base.BaseFragment
 import pro.filemanager.core.tools.SelectionTool
+import pro.filemanager.core.tools.ShareTool
 import pro.filemanager.core.tools.sort.SortBottomModalSheetFragment
 import pro.filemanager.core.tools.sort.SortTool
 import pro.filemanager.databinding.FragmentImageAlbumsBinding
+import pro.filemanager.images.ImageBrowserAdapter
 import java.lang.IllegalStateException
 
 class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>> {
@@ -144,8 +146,8 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
                 viewModel = ViewModelProviders.of(this@ImageAlbumsFragment, SimpleInjector.provideImageAlbumsViewModelFactory()).get(ImageAlbumsViewModel::class.java)
 
                 withContext(Main) {
+                    viewModel.getAlbumsLive().observe(viewLifecycleOwner, this@ImageAlbumsFragment)
                     try {
-                        viewModel.getAlbumsLive().observe(viewLifecycleOwner, this@ImageAlbumsFragment)
 
                         ApplicationLoader.transientStrings[UIManager.KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT].let {
                             if(!it.isNullOrEmpty()) {
@@ -156,48 +158,54 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
                             }
                         }
 
-                        initAdapter(viewModel.getAlbumsLive().value!!)
+                        if(viewModel.selectionTool == null) viewModel.selectionTool = SelectionTool()
 
-                    } catch (e: IllegalStateException) {
-                        e.printStackTrace()
+                        try {
+                            initAdapter(viewModel.getAlbumsLive().value!!)
 
-                        // TODO: MediaStore fetching failed with IllegalStateException.
-                        //  Most likely, it is something out of our hands.
-                        //  Show "Something went wrong" dialog
+                            viewModel.selectionTool!!.initOnBackCallback(
+                                    activity,
+                                    binding.fragmentImageAlbumsList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                                    binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                                    binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                    binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                                    binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
+                            )
+                        } catch (e: IllegalStateException) {
 
-                    } finally {
-
-                    }
-
-                    if (viewModel.selectionTool == null)
-                        viewModel.selectionTool = SelectionTool()
-
-                    viewModel.selectionTool!!.initOnBackCallback(
-                            activity,
-                            binding.fragmentImageAlbumsList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                            binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                            binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                            binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                            binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
-                    )
-
-                    if (viewModel.selectionTool!!.selectionMode) {
-                        if (viewModel.selectionTool!!.selectedPositions.isNotEmpty()) {
-                            activity.supportActionBar?.hide()
-                            binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout.visibility = View.VISIBLE
-                            binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.text = viewModel.selectionTool!!.selectedPositions.size.toString()
                         }
 
-                        binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
-                        binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout.visibility = View.VISIBLE
-                    }
-
-                    binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
-                        if (b) {
-                            viewModel.selectionTool!!.selectAll(binding.fragmentImageAlbumsList.adapter!!, binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
-                        } else {
-                            viewModel.selectionTool!!.unselectAll(binding.fragmentImageAlbumsList.adapter!!, binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                        binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout.post {
+                            binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout.height.let {
+                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarShareTitle?.textSize = (it / 50).toFloat()
+                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarMoveTitle?.textSize = (it / 50).toFloat()
+                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarCopyTitle?.textSize = (it / 50).toFloat()
+                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarInfoTitle?.textSize = (it / 50).toFloat()
+                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarDeleteTitle?.textSize = (it / 50).toFloat()
+                            }
                         }
+
+                        if (viewModel.selectionTool!!.selectionMode) {
+                            if (viewModel.selectionTool!!.selectedPositions.isNotEmpty()) {
+                                activity.supportActionBar?.hide()
+                                binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout.visibility = View.VISIBLE
+                                binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.text = viewModel.selectionTool!!.selectedPositions.size.toString()
+                            }
+
+                            binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
+                            binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout.visibility = View.VISIBLE
+                        }
+
+                        binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
+                            if (b) {
+                                viewModel.selectionTool!!.selectAll(binding.fragmentImageAlbumsList.adapter!!, binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                            } else {
+                                viewModel.selectionTool!!.unselectAll(binding.fragmentImageAlbumsList.adapter!!, binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                            }
+                        }
+
+                    } catch (thr: Throwable) {
+
                     }
                 }
             }

@@ -1371,7 +1371,7 @@ class ImageRepo private constructor() {
     }
 
     // algo for grouping images into albums that are just their parent folders in essence
-    private fun splitIntoAlbums(imageItems: MutableList<ImageItem>) : MutableList<ImageAlbumItem> {
+    fun splitIntoAlbums(imageItems: MutableList<ImageItem>) : MutableList<ImageAlbumItem> {
 
         //  mediator procedure for finding paths of folders containing ImageItems
         val parentPaths = mutableListOf<String>()

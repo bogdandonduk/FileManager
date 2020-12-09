@@ -25,6 +25,7 @@ import pro.filemanager.core.SimpleInjector
 import pro.filemanager.core.UIManager
 import pro.filemanager.core.base.BaseFragment
 import pro.filemanager.core.tools.SelectionTool
+import pro.filemanager.core.tools.ShareTool
 import pro.filemanager.core.tools.sort.SortBottomModalSheetFragment
 import pro.filemanager.core.tools.sort.SortTool
 import pro.filemanager.databinding.FragmentImageBrowserBinding
@@ -178,41 +179,67 @@ class ImageBrowserFragment : BaseFragment(), Observer<MutableList<ImageItem>> {
                     viewModel.getItemsLive(frContext).observe(viewLifecycleOwner, this@ImageBrowserFragment)
 
                     try {
+
+                        if(viewModel.selectionTool == null) viewModel.selectionTool = SelectionTool()
+
                         initAdapter(viewModel.getItemsLive(frContext).value!!)
-                    } catch (thr: Throwable) {
 
-                    }
-
-                    if(viewModel.selectionTool == null) viewModel.selectionTool = SelectionTool()
-
-                    try {
                         viewModel.selectionTool!!.initOnBackCallback (activity,
                                 binding.fragmentImageBrowserList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
                                 binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
                                 binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
                                 binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
                                 binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout)
+
+                        binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout.post {
+                            binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout.height.let {
+                                binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarShareTitle?.textSize = (it / 10).toFloat()
+                                binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarMoveTitle?.textSize = (it / 10).toFloat()
+                                binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarCopyTitle?.textSize = (it / 10).toFloat()
+                                binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarInfoTitle?.textSize = (it / 10).toFloat()
+                                binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarDeleteTitle?.textSize = (it / 10).toFloat()
+                            }
+                        }
+
+                        if(viewModel.selectionTool!!.selectionMode) {
+                            if (viewModel.selectionTool!!.selectedPositions.isNotEmpty()) {
+                                activity.supportActionBar?.hide()
+                                binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout.visibility = View.VISIBLE
+                                binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.text = viewModel.selectionTool!!.selectedPositions.size.toString()
+                            }
+
+                            binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
+                            binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout.visibility = View.VISIBLE
+                        }
+
+                        binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
+                            if (b) {
+                                viewModel.selectionTool!!.selectAll(binding.fragmentImageBrowserList.adapter!!, binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                            } else {
+                                viewModel.selectionTool!!.unselectAll(binding.fragmentImageBrowserList.adapter!!, binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                            }
+                        }
+
+                        binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarShareContainer.setOnClickListener {
+                            if(this@ImageBrowserFragment::viewModel.isInitialized &&
+                                    viewModel.selectionTool != null &&
+                                    !viewModel.selectionTool!!.selectedPositions.isNullOrEmpty()
+                            ) {
+                                try {
+                                    val paths = mutableListOf<String>()
+
+                                    viewModel.selectionTool!!.selectedPositions.forEach {
+                                        paths.add((binding.fragmentImageBrowserList.adapter as ImageBrowserAdapter).imageItems[it].data)
+                                    }
+
+                                    ShareTool.shareFiles(frContext, paths)
+                                } catch(thr: Throwable) {
+
+                                }
+                            }
+                        }
                     } catch (thr: Throwable) {
 
-                    }
-
-                    if(viewModel.selectionTool!!.selectionMode) {
-                        if (viewModel.selectionTool!!.selectedPositions.isNotEmpty()) {
-                            activity.supportActionBar?.hide()
-                            binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout.visibility = View.VISIBLE
-                            binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.text = viewModel.selectionTool!!.selectedPositions.size.toString()
-                        }
-
-                        binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
-                        binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout.visibility = View.VISIBLE
-                    }
-
-                    binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
-                        if (b) {
-                            viewModel.selectionTool!!.selectAll(binding.fragmentImageBrowserList.adapter!!, binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
-                        } else {
-                            viewModel.selectionTool!!.unselectAll(binding.fragmentImageBrowserList.adapter!!, binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
-                        }
                     }
                 }
             }

@@ -42,5 +42,10 @@
     <string name="sort_option_size_smallest">Size (Smallest)</string>
     <string name="sort_option_name_alphabetic">Name (Alphabet)</string>
     <string name="sort_option_name_reversed">Name (Reversed)</string>
+    <string name="toolbar_delete">Delete</string>
+    <string name="toolbar_share">Share</string>
+    <string name="toolbar_copy">Copy</string>
+    <string name="toolbar_move">Move</string>
+    <string name="toolbar_info">Info</string>
 
 </resources>

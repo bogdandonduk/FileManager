@@ -17,6 +17,7 @@ import pro.filemanager.core.tools.SearchTool
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.core.tools.sort.SortTool
 import pro.filemanager.images.albums.ImageAlbumItem
+import java.io.File
 import java.lang.IllegalStateException
 
 @Parcelize
@@ -145,82 +146,93 @@ class ImageBrowserViewModel(val imageRepo: @RawValue ImageRepo, val albumItem: I
             when(currentSortOrder) {
                 SortTool.SORT_ORDER_DATE_RECENT -> {
                     search(
-                      if(albumItem != null) {
-                            imageRepo.splitAlbumsByDateRecent(context, false).forEach {
-                                if(it.data == albumItem.data) {
-                                    albumItem.containedImages = it.containedImages
+                            if(albumItem != null) {
+                                val imageItems = mutableListOf<ImageItem>()
+                                imageRepo.loadItemsByDateRecent(context, false).forEach {
+                                    if(File(it.data).parent == albumItem.data) {
+                                        imageItems.add(it)
+                                    }
                                 }
-                            }
-                            albumItem.containedImages
-                        } else {
-                            imageRepo.loadItemsByDateRecent(context, false)
-                        })
+                                albumItem.containedImages = imageItems
+                                albumItem.containedImages
+                            } else {
+                                imageRepo.loadItemsByDateRecent(context, false)
+                            })
                 }
                 SortTool.SORT_ORDER_DATE_OLDEST -> {
                     search(
-                        if(albumItem != null) {
-                            imageRepo.splitAlbumsByDateOldest(context, false).forEach {
-                                if(it.data == albumItem.data) {
-                                    albumItem.containedImages = it.containedImages
+                            if(albumItem != null) {
+                                val imageItems = mutableListOf<ImageItem>()
+                                imageRepo.loadItemsByDateOldest(context).forEach {
+                                    if(File(it.data).parent == albumItem.data) {
+                                        imageItems.add(it)
+                                    }
                                 }
-                            }
-                            albumItem.containedImages
-                        } else {
-                            imageRepo.loadItemsByDateOldest(context)
-                        })
+                                albumItem.containedImages = imageItems
+                                albumItem.containedImages
+                            } else {
+                                imageRepo.loadItemsByDateOldest(context)
+                            })
                 }
                 SortTool.SORT_ORDER_NAME_REVERSED -> {
                     search(
-                        if(albumItem != null) {
-                            imageRepo.splitAlbumsByNameReversed(context, false).forEach {
-                                if(it.data == albumItem.data) {
-                                    albumItem.containedImages = it.containedImages
+                            if(albumItem != null) {
+                                val imageItems = mutableListOf<ImageItem>()
+                                imageRepo.loadItemsByNameReversed(context, false).forEach {
+                                    if(File(it.data).parent == albumItem.data) {
+                                        imageItems.add(it)
+                                    }
                                 }
-                            }
-                            albumItem.containedImages
-                        } else {
-                            imageRepo.loadItemsByNameReversed(context, false)
-                        })
+                                albumItem.containedImages = imageItems
+                                albumItem.containedImages
+                            } else {
+                                imageRepo.loadItemsByNameReversed(context, false)
+                            })
                 }
                 SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
                     search(
-                        if(albumItem != null) {
-                            imageRepo.splitAlbumsByNameAlphabetic(context, false).forEach {
-                                if(it.data == albumItem.data) {
-                                    albumItem.containedImages = it.containedImages
+                            if(albumItem != null) {
+                                val imageItems = mutableListOf<ImageItem>()
+                                imageRepo.loadItemsByNameAlphabetic(context).forEach {
+                                    if(File(it.data).parent == albumItem.data) {
+                                        imageItems.add(it)
+                                    }
                                 }
-                            }
-                            albumItem.containedImages
-                        } else {
-                            imageRepo.loadItemsByNameAlphabetic(context)
-                        })
+                                albumItem.containedImages = imageItems
+                                albumItem.containedImages
+                            } else {
+                                imageRepo.loadItemsByNameAlphabetic(context)
+                            })
                 }
                 SortTool.SORT_ORDER_SIZE_LARGEST -> {
                     search(
-                        if(albumItem != null) {
-                            imageRepo.splitAlbumsBySizeLargest(context, false).forEach {
-                                if(it.data == albumItem.data) {
-                                    albumItem.containedImages = it.containedImages
+                            if(albumItem != null) {
+                                val imageItems = mutableListOf<ImageItem>()
+                                imageRepo.loadItemsBySizeLargest(context, false).forEach {
+                                    if(File(it.data).parent == albumItem.data) {
+                                        imageItems.add(it)
+                                    }
                                 }
-                            }
-                            albumItem.containedImages
-                        } else {
-                            imageRepo.loadItemsBySizeLargest(context, false)
-                        })
+                                albumItem.containedImages = imageItems
+                                albumItem.containedImages
+                            } else {
+                                imageRepo.loadItemsBySizeLargest(context, false)
+                            })
                 }
                 SortTool.SORT_ORDER_SIZE_SMALLEST -> {
-                    Log.d("TAG", "assignItemsLive: HERE")
                     search(
-                        if (albumItem != null) {
-                            imageRepo.splitAlbumsBySizeSmallest(context, false).forEach {
-                                if (it.data == albumItem.data) {
-                                    albumItem.containedImages = it.containedImages
+                            if(albumItem != null) {
+                                val imageItems = mutableListOf<ImageItem>()
+                                imageRepo.loadItemsBySizeSmallest(context).forEach {
+                                    if(File(it.data).parent == albumItem.data) {
+                                        imageItems.add(it)
+                                    }
                                 }
-                            }
-                            albumItem.containedImages
-                        } else {
-                            imageRepo.loadItemsBySizeSmallest(context)
-                        })
+                                albumItem.containedImages = imageItems
+                                albumItem.containedImages
+                            } else {
+                                imageRepo.loadItemsBySizeSmallest(context)
+                            })
                 }
                 else -> {
                     throw IllegalStateException("Invalid Sort Order")
