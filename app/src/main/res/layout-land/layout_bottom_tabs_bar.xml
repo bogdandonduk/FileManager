@@ -48,7 +48,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layoutBottomBarGalleryTitleIndicator"
                 android:layout_width="0dp"
-                android:layout_height="1dp"
+                android:layout_height="2dp"
                 android:background="@android:color/white"
                 android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -82,7 +82,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layoutBottomTabsBarAlbumsTitleIndicator"
                 android:layout_width="0dp"
-                android:layout_height="1dp"
+                android:layout_height="2dp"
                 android:background="@android:color/white"
                 android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"

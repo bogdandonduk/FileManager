@@ -10,8 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
-import pro.filemanager.R
-import pro.filemanager.images.ImageCore
 
 class SelectionTool {
     companion object {
@@ -44,6 +42,10 @@ class SelectionTool {
                     selectedPositions.add(position)
                     adapter.notifyItemChanged(position)
                     selectionCheckBox.text = selectedPositions.size.toString()
+
+                    if(selectedPositions.size == 1) {
+                        toolbarLayout.visibility = View.VISIBLE
+                    }
                 } else {
                     selectedPositions.remove(position)
 
@@ -51,24 +53,10 @@ class SelectionTool {
                         adapter.notifyItemChanged(position)
                         selectionCheckBox.text = selectedPositions.size.toString()
                     } else {
-                        selectionMode = false
-
-                        for (i in 0 until adapter.itemCount) {
-                            ApplicationLoader.ApplicationMainScope.launch {
-                                adapter.notifyItemChanged(i)
-                            }
-                        }
-
-                        initOnBackCallback(activity, adapter, selectionCheckBox, selectionCheckBoxLayout, toolbarLayout, tabsBarLayout)
-
-                        if(selectionCheckBox.isChecked)
-                            selectionCheckBox.toggle()
-
-                        selectionCheckBoxLayout.visibility = View.GONE
-                        activity.supportActionBar?.show()
+                        adapter.notifyItemChanged(position)
+                        selectionCheckBox.text = selectedPositions.size.toString()
 
                         toolbarLayout.visibility = View.GONE
-                        tabsBarLayout.visibility = View.VISIBLE
                     }
                 }
 
@@ -97,6 +85,10 @@ class SelectionTool {
                     selectedPositions.add(position)
                     adapter.notifyItemChanged(position)
                     selectionCheckBox.text = selectedPositions.size.toString()
+
+                    if(selectedPositions.size == 1) {
+                        toolbarLayout.visibility = View.VISIBLE
+                    }
                 } else {
                     selectedPositions.remove(position)
 
@@ -104,28 +96,42 @@ class SelectionTool {
                         adapter.notifyItemChanged(position)
                         selectionCheckBox.text = selectedPositions.size.toString()
                     } else {
-                        selectionMode = false
-
-                        for (i in 0 until adapter.itemCount) {
-                            ApplicationLoader.ApplicationMainScope.launch {
-                                adapter.notifyItemChanged(i)
-                            }
-                        }
-
-                        initOnBackCallback(activity, adapter, selectionCheckBox, selectionCheckBoxLayout, toolbarLayout, tabsBarLayout)
-
-                        if(selectionCheckBox.isChecked)
-                            selectionCheckBox.toggle()
-
-                        selectionCheckBoxLayout.visibility = View.GONE
-                        activity.supportActionBar?.show()
+                        adapter.notifyItemChanged(position)
+                        selectionCheckBox.text = selectedPositions.size.toString()
 
                         toolbarLayout.visibility = View.GONE
-                        tabsBarLayout.visibility = View.VISIBLE
                     }
                 }
             }
 
+        }
+    }
+
+    fun enterMode(activity: HomeActivity,
+                  adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                  selectionCheckBox: CheckBox,
+                  selectionCheckBoxLayout: ViewGroup,
+                  toolbarLayout: ViewGroup,
+                  tabsBarLayout: ViewGroup
+    ) {
+        if(!selectionMode) {
+
+            selectionMode = true
+
+            for (i in 0 until adapter.itemCount) {
+                ApplicationLoader.ApplicationMainScope.launch {
+                    adapter.notifyItemChanged(i)
+                }
+            }
+
+            initOnBackCallback(activity, adapter, selectionCheckBox, selectionCheckBoxLayout, toolbarLayout, tabsBarLayout)
+
+            activity.supportActionBar?.hide()
+            selectionCheckBoxLayout.visibility = View.VISIBLE
+            selectionCheckBox.text = selectedPositions.size.toString()
+
+            tabsBarLayout.visibility = View.GONE
+            toolbarLayout.visibility = View.VISIBLE
         }
     }
 

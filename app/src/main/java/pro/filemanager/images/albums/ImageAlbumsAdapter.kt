@@ -12,7 +12,7 @@ import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.LayoutImageAlbumItemBinding
 import pro.filemanager.images.ImageCore
 
-class ImageAlbumsAdapter(val context: Context, var audioAlbumItems: MutableList<ImageAlbumItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageAlbumsFragment) : RecyclerView.Adapter<ImageAlbumsAdapter.ImageAlbumItemViewHolder>() {
+class ImageAlbumsAdapter(val context: Context, var imageAlbumItems: MutableList<ImageAlbumItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageAlbumsFragment) : RecyclerView.Adapter<ImageAlbumsAdapter.ImageAlbumItemViewHolder>() {
 
     class ImageAlbumItemViewHolder(val context: Context, val binding: LayoutImageAlbumItemBinding, val hostFragment: ImageAlbumsFragment, val adapter: ImageAlbumsAdapter) : RecyclerView.ViewHolder(binding.root) {
         lateinit var item: ImageAlbumItem
@@ -69,7 +69,7 @@ class ImageAlbumsAdapter(val context: Context, var audioAlbumItems: MutableList<
 
 
     override fun onBindViewHolder(holder: ImageAlbumItemViewHolder, position: Int) {
-        holder.item = audioAlbumItems[position]
+        holder.item = imageAlbumItems[position]
 
         hostFragment.viewModel.MainScope?.launch {
             if (!holder.item.containedImages.first().data.endsWith(".gif", true)) {
@@ -97,6 +97,6 @@ class ImageAlbumsAdapter(val context: Context, var audioAlbumItems: MutableList<
 
     }
 
-    override fun getItemCount(): Int = audioAlbumItems.size
+    override fun getItemCount(): Int = imageAlbumItems.size
 
 }

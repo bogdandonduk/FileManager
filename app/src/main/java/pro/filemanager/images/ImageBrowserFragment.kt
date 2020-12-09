@@ -2,16 +2,15 @@ package pro.filemanager.images
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
 import android.widget.SearchView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
@@ -21,20 +20,20 @@ import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
+import pro.filemanager.core.PermissionWrapper
 import pro.filemanager.core.SimpleInjector
 import pro.filemanager.core.UIManager
+import pro.filemanager.core.base.BaseFragment
 import pro.filemanager.core.tools.SelectionTool
-import pro.filemanager.core.tools.sort.OptionItem
 import pro.filemanager.core.tools.sort.SortBottomModalSheetFragment
 import pro.filemanager.core.tools.sort.SortTool
 import pro.filemanager.databinding.FragmentImageBrowserBinding
 import pro.filemanager.images.albums.ImageAlbumItem
+import kotlin.math.log
 
-class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
+class ImageBrowserFragment : BaseFragment(), Observer<MutableList<ImageItem>> {
 
     lateinit var binding: FragmentImageBrowserBinding
-    lateinit var activity: HomeActivity
-    lateinit var navController: NavController
     lateinit var viewModel: ImageBrowserViewModel
 
     var albumItem: ImageAlbumItem? = null
@@ -88,56 +87,10 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
             }
         }
 
-        activity.requestExternalStoragePermission {
-
-            ApplicationLoader.ApplicationIOScope.launch {
-                viewModel = ViewModelProviders.of(this@ImageBrowserFragment, SimpleInjector.provideImageBrowserViewModelFactory(albumItem)).get(ImageBrowserViewModel::class.java)
-
-                withContext(Main) {
-                    viewModel.getItemsLive().observe(viewLifecycleOwner, this@ImageBrowserFragment)
-
-                    try {
-                        initAdapter(viewModel.getItemsLive().value!!)
-                    } catch (e: IllegalStateException) {
-                        e.printStackTrace()
-                    // TODO: MediaStore fetching failed with IllegalStateException.
-                    //  Most likely, it is something out of our hands.
-                    //  Show "Something went wrong" dialog
-                    }
-
-                    if (viewModel.selectionTool == null) viewModel.selectionTool = SelectionTool()
-
-                    viewModel.selectionTool!!.initOnBackCallback (activity,
-                            binding.fragmentImageBrowserList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                            binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                            binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                            binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                            binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout)
-
-                    if(viewModel.selectionTool!!.selectionMode) {
-                        if (viewModel.selectionTool!!.selectedPositions.isNotEmpty()) {
-                            activity.supportActionBar?.hide()
-                            binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout.visibility = View.VISIBLE
-                            binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.text = viewModel.selectionTool!!.selectedPositions.size.toString()
-                        }
-
-                        binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
-                        binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout.visibility = View.VISIBLE
-                    }
-
-                    binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
-                        if (b) {
-                            viewModel.selectionTool!!.selectAll(binding.fragmentImageBrowserList.adapter!!, binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
-                        } else {
-                            viewModel.selectionTool!!.unselectAll(binding.fragmentImageBrowserList.adapter!!, binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
-                        }
-                    }
-                }
-            }
-        }
-
         activity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
         if(albumItem == null) onBackCallback.isEnabled = true
+
+        launchCore()
 
         binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.post {
             binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.height.let {
@@ -188,6 +141,7 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
 
     private fun initAdapter(imageItems: MutableList<ImageItem>) {
         binding.fragmentImageBrowserList.layoutManager = GridLayoutManager(context, UIManager.getItemGridSpanNumber(requireActivity()))
+
         binding.fragmentImageBrowserList.layoutManager?.onRestoreInstanceState(viewModel.mainListRvState)
 
         binding.fragmentImageBrowserList.adapter = ImageBrowserAdapter(requireActivity(), imageItems, layoutInflater, this@ImageBrowserFragment)
@@ -208,11 +162,61 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
                 } else {
                     if(this@ImageBrowserFragment::viewModel.isInitialized && viewModel.selectionTool != null && !viewModel.selectionTool!!.selectionMode)
                         binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.VISIBLE
-
                 }
             }
         })
 
+    }
+
+    fun launchCore() {
+        activity.requestExternalStoragePermission {
+
+            ApplicationLoader.ApplicationIOScope.launch {
+                viewModel = ViewModelProviders.of(this@ImageBrowserFragment, SimpleInjector.provideImageBrowserViewModelFactory(albumItem)).get(ImageBrowserViewModel::class.java)
+
+                withContext(Main) {
+                    viewModel.getItemsLive(frContext).observe(viewLifecycleOwner, this@ImageBrowserFragment)
+
+                    try {
+                        initAdapter(viewModel.getItemsLive(frContext).value!!)
+                    } catch (thr: Throwable) {
+
+                    }
+
+                    if(viewModel.selectionTool == null) viewModel.selectionTool = SelectionTool()
+
+                    try {
+                        viewModel.selectionTool!!.initOnBackCallback (activity,
+                                binding.fragmentImageBrowserList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                                binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                                binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                                binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout)
+                    } catch (thr: Throwable) {
+
+                    }
+
+                    if(viewModel.selectionTool!!.selectionMode) {
+                        if (viewModel.selectionTool!!.selectedPositions.isNotEmpty()) {
+                            activity.supportActionBar?.hide()
+                            binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout.visibility = View.VISIBLE
+                            binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.text = viewModel.selectionTool!!.selectedPositions.size.toString()
+                        }
+
+                        binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
+                        binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout.visibility = View.VISIBLE
+                    }
+
+                    binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
+                        if (b) {
+                            viewModel.selectionTool!!.selectAll(binding.fragmentImageBrowserList.adapter!!, binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                        } else {
+                            viewModel.selectionTool!!.unselectAll(binding.fragmentImageBrowserList.adapter!!, binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -222,6 +226,14 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
             activity.supportActionBar?.title = albumItem!!.displayName
         } else {
             activity.supportActionBar?.title = requireContext().resources.getString(R.string.title_images)
+        }
+
+        if(ApplicationLoader.isUserSentToAppDetailsSettings && PermissionWrapper.checkExternalStoragePermissions(frContext)) {
+            launchCore()
+            ApplicationLoader.isUserSentToAppDetailsSettings = false
+        } else if(ApplicationLoader.isUserSentToAppDetailsSettings && !PermissionWrapper.checkExternalStoragePermissions(frContext)) {
+            ApplicationLoader.isUserSentToAppDetailsSettings = false
+            activity.onBackPressed()
         }
     }
 
@@ -261,20 +273,42 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    viewModel.search(requireContext(), newText)
+                    if(this@ImageBrowserFragment::viewModel.isInitialized) {
+                        viewModel.IOScope.launch {
+                            viewModel.setSearchText(newText)
+
+                            viewModel.assignItemsLive(frContext)
+                        }
+                    }
 
                     return true
                 }
-
             })
         }
 
         menu.findItem(R.id.mainToolbarMenuItemSort).setOnMenuItemClickListener {
 
-            val sortBottomModalSheetFragment = SortBottomModalSheetFragment()
+            if(this@ImageBrowserFragment::viewModel.isInitialized) {
+                val sortBottomModalSheetFragment = SortBottomModalSheetFragment()
                 sortBottomModalSheetFragment.arguments = bundleOf(SortTool.KEY_ARGUMENT_SORTING_VIEW_MODEL to viewModel)
 
-            sortBottomModalSheetFragment.show(requireActivity().supportFragmentManager, null)
+                sortBottomModalSheetFragment.show(requireActivity().supportFragmentManager, null)
+            }
+
+            true
+        }
+
+        menu.findItem(R.id.mainToolbarMenuItemEdit).setOnMenuItemClickListener {
+
+            if(this@ImageBrowserFragment::viewModel.isInitialized && viewModel.selectionTool != null && binding.fragmentImageBrowserList.adapter != null) {
+                viewModel.selectionTool!!.enterMode(activity,
+                        binding.fragmentImageBrowserList.adapter!!,
+                        binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                        binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                        binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                        binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout
+                )
+            }
 
             true
         }
@@ -284,7 +318,6 @@ class ImageBrowserFragment : Fragment(), Observer<MutableList<ImageItem>> {
         super.onStop()
 
         if(this::viewModel.isInitialized) viewModel.mainListRvState = binding.fragmentImageBrowserList.layoutManager?.onSaveInstanceState()
-
     }
 
 }

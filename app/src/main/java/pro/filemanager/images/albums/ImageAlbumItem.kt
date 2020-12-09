@@ -11,5 +11,6 @@ import java.io.Serializable
 data class ImageAlbumItem(
         val data: String,
         val displayName: String = File(data).name,
-        val containedImages: @RawValue MutableList<ImageItem> = mutableListOf()
-    ) : Parcelable, Serializable
+        var containedImages: MutableList<ImageItem> = mutableListOf(),
+        var totalSize: Long = 0
+) : Parcelable, Serializable

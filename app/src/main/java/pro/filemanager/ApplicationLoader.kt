@@ -25,6 +25,7 @@ class ApplicationLoader : Application() {
 
         val transientParcelables: MutableMap<String, Parcelable?> = mutableMapOf()
         val transientStrings: MutableMap<String, String?> = mutableMapOf()
+        var isUserSentToAppDetailsSettings = false
 
         lateinit var fileObserver: FileObserver
 
@@ -48,10 +49,7 @@ class ApplicationLoader : Application() {
         fun loadImages(context: Context = appContext) {
             if(PermissionWrapper.checkExternalStoragePermissions(context)) {
                 ApplicationIOScope.launch {
-                    ImageRepo.getSingleton().let {
-                        it.loadAlbums(it.loadItems(context, false), false)
-                        it.loadItemsBySizeMin(context, false)
-                    }
+                    ImageRepo.getSingleton().loadAll(context, false)
                 }
             }
         }

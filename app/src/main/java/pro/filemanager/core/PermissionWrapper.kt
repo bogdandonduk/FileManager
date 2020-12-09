@@ -11,6 +11,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
+import pro.filemanager.ApplicationLoader
 import pro.filemanager.R
 
 /*
@@ -27,7 +28,7 @@ object PermissionWrapper {
             if(activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 if(activity.shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) || activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     showDeniedRationaleDialog(activity)
-                } else if(activity.getSharedPreferences(KEY_SP_NAME, Context.MODE_PRIVATE).getBoolean(KEY_SP_DO_NOT_ASK_AGAIN_EXTERNAL_STORAGE_SELECTED, false)) {
+                } else if(activity.getSharedPreferences(PreferencesWrapper.KEY_SP_NAME, Context.MODE_PRIVATE).getBoolean(KEY_SP_DO_NOT_ASK_AGAIN_EXTERNAL_STORAGE_SELECTED, false)) {
                     showDoNotAskAgainSelectedRationaleDialog(activity)
                 } else {
                     activity.requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_EXTERNAL_STORAGE)
@@ -44,11 +45,11 @@ object PermissionWrapper {
     fun handleExternalStorageRequestResult(activity: Activity, requestCode: Int, grantResults: IntArray, successAction: Runnable = Runnable {}, denialAction: Runnable = Runnable {}) {
         if(requestCode == REQUEST_CODE_EXTERNAL_STORAGE) {
             if(grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                activity.getSharedPreferences(KEY_SP_NAME, Context.MODE_PRIVATE).edit().remove(KEY_SP_DO_NOT_ASK_AGAIN_EXTERNAL_STORAGE_SELECTED).apply()
+                activity.getSharedPreferences(PreferencesWrapper.KEY_SP_NAME, Context.MODE_PRIVATE).edit().remove(KEY_SP_DO_NOT_ASK_AGAIN_EXTERNAL_STORAGE_SELECTED).apply()
                 successAction.run()
             } else {
                 if(!activity.shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) || !activity.shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    activity.getSharedPreferences(KEY_SP_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_SP_DO_NOT_ASK_AGAIN_EXTERNAL_STORAGE_SELECTED, true).apply()
+                    activity.getSharedPreferences(PreferencesWrapper.KEY_SP_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_SP_DO_NOT_ASK_AGAIN_EXTERNAL_STORAGE_SELECTED, true).apply()
                 }
 
                 denialAction.run()
@@ -61,10 +62,15 @@ object PermissionWrapper {
         AlertDialog.Builder(activity)
                 .setTitle(R.string.external_storage_denied_rationale_title)
                 .setMessage(R.string.external_storage_denied_rationale_message)
-                .setPositiveButton(R.string.permission_grant) { _: DialogInterface, _: Int ->
+                .setPositiveButton(R.string.permission_grant) { dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
                     activity.requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_EXTERNAL_STORAGE)
                 }
-                .setNegativeButton(R.string.permission_deny) { _: DialogInterface, _: Int ->
+                .setNegativeButton(R.string.permission_deny) { dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
+                    activity.onBackPressed()
+                }
+                .setOnCancelListener {
                     activity.onBackPressed()
                 }
                 .create()
@@ -75,10 +81,16 @@ object PermissionWrapper {
         AlertDialog.Builder(activity)
                 .setTitle(R.string.external_storage_denied_rationale_title)
                 .setMessage(R.string.external_storage_do_not_ask_again_selected_rationale_message)
-                .setPositiveButton(R.string.permission_grant) { _: DialogInterface, _: Int ->
+                .setPositiveButton(R.string.permission_grant) { dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
+                    ApplicationLoader.isUserSentToAppDetailsSettings = true
                     openAppDetailsSettings(activity)
                 }
-                .setNegativeButton(R.string.permission_deny) { _: DialogInterface, _: Int ->
+                .setNegativeButton(R.string.permission_deny) { dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
+                    activity.onBackPressed()
+                }
+                .setOnCancelListener {
                     activity.onBackPressed()
                 }
                 .create()

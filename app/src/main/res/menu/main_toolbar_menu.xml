@@ -13,9 +13,14 @@
         android:icon="@drawable/ic_baseline_sort_24"
         android:title="@string/title_sort"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/mainToolbarMenuItemEdit"
+        android:title="@string/title_edit"
+        app:showAsAction="never" />
+
     <item
         android:id="@+id/mainToolbarMenuItemSettings"
-        android:icon="@drawable/ic_search_black_24dp"
         android:title="@string/title_settings"
-        app:actionViewClass="android.widget.SearchView" />
+        app:showAsAction="never" />
 </menu>

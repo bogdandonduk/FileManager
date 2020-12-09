@@ -9,4 +9,6 @@
 
     <color name="tabIndicator">#cfff</color>
 
+    <color name="bgDark">#303030</color>
+
 </resources>

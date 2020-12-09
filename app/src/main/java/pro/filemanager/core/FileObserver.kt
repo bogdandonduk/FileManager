@@ -11,7 +11,7 @@ class FileObserver(path: String) : FileObserver(path, ALL_EVENTS) {
         Log.d("TAG", "onEvent: $event $path")
 
         ApplicationLoader.ApplicationIOScope.launch {
-            ImageRepo.getSingleton().loadItems(ApplicationLoader.appContext, true)
+            ImageRepo.getSingleton().loadItemsByDateRecent(ApplicationLoader.appContext, true)
         }
     }
 

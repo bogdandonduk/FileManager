@@ -20,8 +20,6 @@ import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
-import pro.filemanager.core.KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE
-import pro.filemanager.core.KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT
 import pro.filemanager.core.SimpleInjector
 import pro.filemanager.core.UIManager
 import pro.filemanager.core.tools.SelectionTool
@@ -88,7 +86,7 @@ class AudioAlbumsFragment : Fragment(), Observer<MutableList<AudioAlbumItem>> {
                     try {
                         viewModel.getAlbumsLive().observe(viewLifecycleOwner, this@AudioAlbumsFragment)
 
-                        ApplicationLoader.transientStrings[KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT].let {
+                        ApplicationLoader.transientStrings[UIManager.KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT].let {
                             if(!it.isNullOrEmpty()) {
                                 viewModel.isSearchViewEnabled = true
                                 viewModel.currentSearchText = it
@@ -162,7 +160,7 @@ class AudioAlbumsFragment : Fragment(), Observer<MutableList<AudioAlbumItem>> {
 
         binding.fragmentAudioAlbumsBottomTabsBarInclude.layoutBottomTabsBarGalleryTitleContainer.setOnClickListener {
             onBackCallback.isEnabled = false
-            ApplicationLoader.transientParcelables[KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE] = binding.fragmentAudioAlbumsList.layoutManager?.onSaveInstanceState()
+            ApplicationLoader.transientParcelables[UIManager.KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE] = binding.fragmentAudioAlbumsList.layoutManager?.onSaveInstanceState()
             activity.onBackPressed()
         }
 
@@ -170,10 +168,10 @@ class AudioAlbumsFragment : Fragment(), Observer<MutableList<AudioAlbumItem>> {
 
     private fun initAdapter(audioAlbumItems: MutableList<AudioAlbumItem>) {
         binding.fragmentAudioAlbumsList.layoutManager = GridLayoutManager(context, UIManager.getAlbumGridSpanNumber(requireActivity()))
-        ApplicationLoader.transientParcelables[KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE].let {
+        ApplicationLoader.transientParcelables[UIManager.KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE].let {
             if(it != null) {
                 binding.fragmentAudioAlbumsList.layoutManager?.onRestoreInstanceState(it)
-                ApplicationLoader.transientParcelables.remove(KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE)
+                ApplicationLoader.transientParcelables.remove(UIManager.KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE)
             } else
                 binding.fragmentAudioAlbumsList.layoutManager?.onRestoreInstanceState(viewModel.mainListRvState)
         }
@@ -224,7 +222,7 @@ class AudioAlbumsFragment : Fragment(), Observer<MutableList<AudioAlbumItem>> {
                     if(this@AudioAlbumsFragment::viewModel.isInitialized)
                         viewModel.isSearchViewEnabled = false
 
-                    ApplicationLoader.transientStrings.remove(KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT)
+                    ApplicationLoader.transientStrings.remove(UIManager.KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT)
 
                     false
                 }
@@ -249,7 +247,7 @@ class AudioAlbumsFragment : Fragment(), Observer<MutableList<AudioAlbumItem>> {
                     override fun onQueryTextChange(newText: String?): Boolean {
                         viewModel.search(requireContext(), newText)
 
-                        ApplicationLoader.transientStrings[KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT] = newText
+                        ApplicationLoader.transientStrings[UIManager.KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT] = newText
                         return false
                     }
 

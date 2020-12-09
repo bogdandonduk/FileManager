@@ -13,8 +13,7 @@ import pro.filemanager.ApplicationLoader
 import pro.filemanager.core.tools.SearchTool
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.audio.albums.AudioAlbumItem
-import pro.filemanager.core.KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE
-import pro.filemanager.core.KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT
+import pro.filemanager.core.UIManager
 
 class AudioBrowserViewModel(val audioRepo: AudioRepo, val albumItem: AudioAlbumItem?) : ViewModel(), AudioRepo.ItemSubscriber {
 
@@ -56,8 +55,8 @@ class AudioBrowserViewModel(val audioRepo: AudioRepo, val albumItem: AudioAlbumI
         audioRepo.unsubscribe(this)
 
         if(albumItem == null) {
-            ApplicationLoader.transientParcelables.remove(KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE)
-            ApplicationLoader.transientStrings.remove(KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT)
+            ApplicationLoader.transientParcelables.remove(UIManager.KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE)
+            ApplicationLoader.transientStrings.remove(UIManager.KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT)
         }
 
         try {

@@ -2,20 +2,22 @@ package pro.filemanager.core.base
 
 import android.content.Context
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.android.parcel.Parcelize
+import pro.filemanager.core.tools.sort.SortTool
+import pro.filemanager.images.ImageItem
 
 @Parcelize
 open class BaseViewModel : ViewModel(), Parcelable {
-    open fun sortBySizeMax(context: Context) { }
 
-    open fun sortBySizeMin(context: Context) { }
+    // must-override
+    open var currentSortOrder: String = SortTool.SORT_ORDER_DATE_RECENT
 
-    open fun sortByDateRecent(context: Context) { }
+    open fun setSortOrder(context: Context, sortOrder: String, isPersistable: Boolean) {
+        currentSortOrder = sortOrder
+    }
 
-    open fun sortByDateOldest(context: Context) { }
-
-    open fun sortByNameAlphabetic(context: Context) { }
-
-    open fun sortByNameReversed(context: Context) { }
+    open suspend fun assignItemsLive(context: Context) { }
 }
