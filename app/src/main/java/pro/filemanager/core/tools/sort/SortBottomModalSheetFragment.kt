@@ -17,6 +17,8 @@ class SortBottomModalSheetFragment : BottomSheetDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = LayoutSortBottomModalSheetBinding.inflate(inflater, container, false)
 
+        SortTool.sortingInProgress = false
+
         return binding.root
     }
 

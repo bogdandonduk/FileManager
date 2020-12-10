@@ -80,7 +80,7 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
 
         onBackCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navController.popBackStack(R.id.imageBrowserFragment, true)
+                navController.popBackStack(R.id.homeFragment, false)
             }
         }
 
@@ -147,7 +147,9 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
 
                 withContext(Main) {
                     viewModel.getAlbumsLive().observe(viewLifecycleOwner, this@ImageAlbumsFragment)
+
                     try {
+                        initAdapter(viewModel.getAlbumsLive().value!!)
 
                         ApplicationLoader.transientStrings[UIManager.KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT].let {
                             if(!it.isNullOrEmpty()) {
@@ -160,20 +162,14 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
 
                         if(viewModel.selectionTool == null) viewModel.selectionTool = SelectionTool()
 
-                        try {
-                            initAdapter(viewModel.getAlbumsLive().value!!)
-
-                            viewModel.selectionTool!!.initOnBackCallback(
-                                    activity,
-                                    binding.fragmentImageAlbumsList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                                    binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                                    binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                                    binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                                    binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
-                            )
-                        } catch (e: IllegalStateException) {
-
-                        }
+                        viewModel.selectionTool!!.initOnBackCallback(
+                                activity,
+                                binding.fragmentImageAlbumsList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                                binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
+                                binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                                binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
+                        )
 
                         binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout.post {
                             binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout.height.let {
@@ -284,7 +280,9 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
         }
 
         menu.findItem(R.id.mainToolbarMenuItemSort).setOnMenuItemClickListener {
-            if(this@ImageAlbumsFragment::viewModel.isInitialized) {
+            if(this@ImageAlbumsFragment::viewModel.isInitialized && !SortTool.sortingInProgress) {
+                SortTool.sortingInProgress = true
+
                 val sortBottomModalSheetFragment = SortBottomModalSheetFragment()
                     sortBottomModalSheetFragment.arguments = bundleOf(SortTool.KEY_ARGUMENT_SORTING_VIEW_MODEL to viewModel)
 

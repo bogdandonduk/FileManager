@@ -30,7 +30,6 @@ import pro.filemanager.core.tools.sort.SortBottomModalSheetFragment
 import pro.filemanager.core.tools.sort.SortTool
 import pro.filemanager.databinding.FragmentImageBrowserBinding
 import pro.filemanager.images.albums.ImageAlbumItem
-import kotlin.math.log
 
 class ImageBrowserFragment : BaseFragment(), Observer<MutableList<ImageItem>> {
 
@@ -223,7 +222,8 @@ class ImageBrowserFragment : BaseFragment(), Observer<MutableList<ImageItem>> {
                         binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarShareContainer.setOnClickListener {
                             if(this@ImageBrowserFragment::viewModel.isInitialized &&
                                     viewModel.selectionTool != null &&
-                                    !viewModel.selectionTool!!.selectedPositions.isNullOrEmpty()
+                                    !viewModel.selectionTool!!.selectedPositions.isNullOrEmpty() &&
+                                    binding.fragmentImageBrowserList.adapter != null
                             ) {
                                 try {
                                     val paths = mutableListOf<String>()
@@ -232,9 +232,10 @@ class ImageBrowserFragment : BaseFragment(), Observer<MutableList<ImageItem>> {
                                         paths.add((binding.fragmentImageBrowserList.adapter as ImageBrowserAdapter).imageItems[it].data)
                                     }
 
-                                    ShareTool.shareFiles(frContext, paths)
+                                    ShareTool.shareImages(frContext, paths)
                                 } catch(thr: Throwable) {
-
+                                    Log.d("TAG", "launchCore: EXCEPTION")
+                                    thr.printStackTrace()
                                 }
                             }
                         }
@@ -315,7 +316,9 @@ class ImageBrowserFragment : BaseFragment(), Observer<MutableList<ImageItem>> {
 
         menu.findItem(R.id.mainToolbarMenuItemSort).setOnMenuItemClickListener {
 
-            if(this@ImageBrowserFragment::viewModel.isInitialized) {
+            if(this@ImageBrowserFragment::viewModel.isInitialized && !SortTool.sortingInProgress) {
+                SortTool.sortingInProgress = true
+
                 val sortBottomModalSheetFragment = SortBottomModalSheetFragment()
                 sortBottomModalSheetFragment.arguments = bundleOf(SortTool.KEY_ARGUMENT_SORTING_VIEW_MODEL to viewModel)
 

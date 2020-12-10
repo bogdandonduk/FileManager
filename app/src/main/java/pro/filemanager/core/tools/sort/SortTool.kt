@@ -28,6 +28,8 @@ object SortTool {
     const val SORT_ORDER_SIZE_LARGEST = "sizeLargest"
     const val SORT_ORDER_SIZE_SMALLEST = "sizeSmallest"
 
+    var sortingInProgress = false
+
     fun getSortOptions(context: Context, viewModel: BaseViewModel, bottomModalSheetFragment: SortBottomModalSheetFragment) : MutableList<OptionItem> {
         return mutableListOf<OptionItem>().apply {
             add(
@@ -91,7 +93,6 @@ object SortTool {
                                 if(bottomModalSheetFragment.showsDialog)
                                     bottomModalSheetFragment.dismiss()
                             }
-
                         }
                     }
             )
@@ -104,7 +105,6 @@ object SortTool {
                                 if(bottomModalSheetFragment.showsDialog)
                                     bottomModalSheetFragment.dismiss()
                             }
-
                         }
                     }
             )

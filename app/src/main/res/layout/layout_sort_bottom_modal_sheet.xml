@@ -5,7 +5,7 @@
     android:id="@+id/layoutSortBottomModalSheetRootLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/appBar">
+    android:background="@color/bgDark">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/layoutSortBottomModalSheetList"
