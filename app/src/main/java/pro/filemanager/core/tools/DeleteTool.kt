@@ -81,7 +81,7 @@ object DeleteTool {
         dialog.show()
     }
     
-    fun deleteAlbumsAndRefreshMediaStore(activity: HomeActivity, paths: MutableList<String>, albumsCount: Int, viewModel: BaseViewModel, refreshAction: Runnable) {
+    fun deleteAlbumsAndRefreshMediaStore(activity: HomeActivity, paths: MutableList<String>, albumsCount: Int, refreshAction: Runnable) {
         val dialog = AlertDialog.Builder(activity)
                 .setView(
                         activity.layoutInflater.inflate(R.layout.layout_base_dialog, null).apply {
@@ -104,9 +104,17 @@ object DeleteTool {
                             }
                         }
                 )
+                .setOnCancelListener {
+                    it.dismiss()
+                }
+                .setOnDismissListener {
+                    showingDialogInProgress = false
+                }
                 .create()
 
         dialog.setOnShowListener { dialogInterface ->
+            showingDialogInProgress = true
+
             (dialogInterface as AlertDialog).findViewById<Button>(R.id.layoutBaseDialogPositiveButton).setOnClickListener {
                 dialogInterface.dismiss()
 
@@ -121,26 +129,15 @@ object DeleteTool {
 
                 refreshAction.run()
 
-                viewModel.shownDialogs.apply {
-                    if(!this.contains(dialog)) add(dialog)
-                }
-
                 activity.onBackPressed()
             }
 
             dialogInterface.findViewById<Button>(R.id.layoutBaseDialogNegativeButton).setOnClickListener {
                 dialogInterface.dismiss()
-                viewModel.shownDialogs.apply {
-                    if(!this.contains(dialog)) add(dialog)
-                }
             }
         }
 
         dialog.window?.setBackgroundDrawableResource(R.drawable.bg_blank)
         dialog.show()
-
-        viewModel.shownDialogs.apply {
-            if(!this.contains(dialog)) add(dialog)
-        }
     }
 }

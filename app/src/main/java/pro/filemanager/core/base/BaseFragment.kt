@@ -30,13 +30,4 @@ open class BaseFragment : Fragment() {
                 }
     }
 
-    fun initBottomBars(toolbar: ViewGroup, tabsBar: ViewGroup, selectionMode: Boolean) {
-        if(selectionMode) {
-            tabsBar.visibility = View.GONE
-            toolbar.visibility = View.VISIBLE
-        } else {
-            toolbar.visibility = View.GONE
-            tabsBar.visibility = View.VISIBLE
-        }
-    }
 }

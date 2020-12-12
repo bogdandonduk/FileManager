@@ -225,32 +225,6 @@ class ImageBrowserFragment : BaseFragment(), Observer<MutableList<ImageItem>> {
                             navController.navigate(R.id.action_imageBrowserFragment_to_imageAlbumsFragment)
                         }
 
-                        binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarDeleteContainer.setOnClickListener {
-                            try {
-                                if(this@ImageBrowserFragment::viewModel.isInitialized &&
-                                    viewModel.selectionTool != null &&
-                                    viewModel.selectionTool!!.selectionMode &&
-                                    viewModel.selectionTool!!.selectedPaths.isNotEmpty() &&
-                                    binding.fragmentImageBrowserList.adapter != null
-                                ) {
-                                    ApplicationLoader.ApplicationMainScope.launch {
-                                        DeleteTool.deleteItemsAndRefreshMediaStore(activity, viewModel.selectionTool!!.selectedPaths) {
-                                            shouldScrollToTop = false
-                                            ApplicationLoader.ApplicationIOScope.launch {
-                                                viewModel.assignItemsLive(frContext, true)
-                                            }
-                                        }
-                                    }
-                                }
-                            } catch (thr: Throwable) {
-
-                            }
-                        }
-
-                        if(DeleteTool.showingDialogInProgress) {
-                            binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarDeleteContainer.callOnClick()
-                        }
-
                         binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarShareContainer.setOnClickListener {
                             if(this@ImageBrowserFragment::viewModel.isInitialized &&
                                     viewModel.selectionTool != null &&
@@ -268,6 +242,10 @@ class ImageBrowserFragment : BaseFragment(), Observer<MutableList<ImageItem>> {
                         }
 
                         binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarCopyContainer.setOnClickListener {
+
+                        }
+
+                        binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRenameContainer.setOnClickListener {
 
                         }
 
@@ -291,6 +269,32 @@ class ImageBrowserFragment : BaseFragment(), Observer<MutableList<ImageItem>> {
                                     )
                                 }
                             }
+                        }
+
+                        binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarDeleteContainer.setOnClickListener {
+                            try {
+                                if(this@ImageBrowserFragment::viewModel.isInitialized &&
+                                        viewModel.selectionTool != null &&
+                                        viewModel.selectionTool!!.selectionMode &&
+                                        viewModel.selectionTool!!.selectedPaths.isNotEmpty() &&
+                                        binding.fragmentImageBrowserList.adapter != null
+                                ) {
+                                    ApplicationLoader.ApplicationMainScope.launch {
+                                        DeleteTool.deleteItemsAndRefreshMediaStore(activity, viewModel.selectionTool!!.selectedPaths) {
+                                            shouldScrollToTop = false
+                                            ApplicationLoader.ApplicationIOScope.launch {
+                                                viewModel.assignItemsLive(frContext, true)
+                                            }
+                                        }
+                                    }
+                                }
+                            } catch (thr: Throwable) {
+
+                            }
+                        }
+
+                        if(DeleteTool.showingDialogInProgress) {
+                            binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarDeleteContainer.callOnClick()
                         }
                     } catch (thr: Throwable) {
 
@@ -377,6 +381,7 @@ class ImageBrowserFragment : BaseFragment(), Observer<MutableList<ImageItem>> {
 
         menu.findItem(R.id.mainToolbarMenuItemEdit).setOnMenuItemClickListener {
             if(this@ImageBrowserFragment::viewModel.isInitialized && viewModel.selectionTool != null && binding.fragmentImageBrowserList.adapter != null) {
+                menu.close()
                 viewModel.selectionTool!!.selectionMode = true
 
                 if(binding.fragmentImageBrowserList.adapter!!.itemCount > 0) {

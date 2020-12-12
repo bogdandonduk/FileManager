@@ -287,7 +287,7 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
                                                         }
                                                     }
                                                 },
-                                                viewModel.selectionTool!!.selectedPaths.size, viewModel) {
+                                                viewModel.selectionTool!!.selectedPaths.size) {
                                             ApplicationLoader.ApplicationIOScope.launch {
                                                 shouldScrollToTop = false
                                                 viewModel.assignItemsLive(frContext, true)
@@ -295,13 +295,14 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
                                         }
                                     }
                                 }
+
                             } catch (thr: Throwable) {
 
                             }
                         }
 
-                        viewModel.shownDialogs.forEach {
-                            it.show()
+                        if(DeleteTool.showingDialogInProgress) {
+                            binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumDeleteContainer.callOnClick()
                         }
                     } catch (thr: Throwable) {
 
@@ -399,6 +400,7 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
 
         menu.findItem(R.id.mainToolbarMenuItemEdit).setOnMenuItemClickListener {
             if(this@ImageAlbumsFragment::viewModel.isInitialized && viewModel.selectionTool != null && binding.fragmentImageAlbumsList.adapter != null) {
+                menu.close()
                 viewModel.selectionTool!!.selectionMode = true
 
                 if(binding.fragmentImageAlbumsList.adapter!!.itemCount > 0) {

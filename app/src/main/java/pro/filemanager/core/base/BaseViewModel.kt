@@ -15,7 +15,6 @@ open class BaseViewModel : ViewModel(), Parcelable {
 
     // must-override
     open var currentSortOrder: String = SortTool.SORT_ORDER_DATE_RECENT
-    open val shownDialogs = mutableListOf<Dialog>()
 
     open fun setSortOrder(context: Context, sortOrder: String, isPersistable: Boolean) {
         currentSortOrder = sortOrder
