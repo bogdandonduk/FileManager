@@ -2,6 +2,8 @@ package pro.filemanager.core.base
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import pro.filemanager.ApplicationLoader
@@ -16,13 +18,25 @@ open class BaseFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        activity = requireActivity() as HomeActivity
+
         frContext =
                 try {
                     requireContext()
                 } catch(thr: Throwable) {
-                    requireActivity().applicationContext
+                    activity.applicationContext
                 } finally {
                     ApplicationLoader.appContext
                 }
+    }
+
+    fun initBottomBars(toolbar: ViewGroup, tabsBar: ViewGroup, selectionMode: Boolean) {
+        if(selectionMode) {
+            tabsBar.visibility = View.GONE
+            toolbar.visibility = View.VISIBLE
+        } else {
+            toolbar.visibility = View.GONE
+            tabsBar.visibility = View.VISIBLE
+        }
     }
 }

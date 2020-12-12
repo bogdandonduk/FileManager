@@ -1,5 +1,6 @@
 package pro.filemanager.core.base
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
@@ -14,10 +15,11 @@ open class BaseViewModel : ViewModel(), Parcelable {
 
     // must-override
     open var currentSortOrder: String = SortTool.SORT_ORDER_DATE_RECENT
+    open val shownDialogs = mutableListOf<Dialog>()
 
     open fun setSortOrder(context: Context, sortOrder: String, isPersistable: Boolean) {
         currentSortOrder = sortOrder
     }
 
-    open suspend fun assignItemsLive(context: Context) { }
+    open suspend fun assignItemsLive(context: Context, forceLoad: Boolean) { }
 }

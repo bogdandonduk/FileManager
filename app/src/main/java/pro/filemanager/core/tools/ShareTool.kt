@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.webkit.MimeTypeMap
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import pro.filemanager.R
 import pro.filemanager.files.FileCore
@@ -35,28 +36,41 @@ object ShareTool {
                         flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                 }, context.resources.getString(R.string.toolbar_share)))
             } else if(paths.size > 1) {
+                var totalSize: Long = 0
 
-                context.startActivity(
-                    Intent.createChooser(
-                        Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-                            putParcelableArrayListExtra(
-                                Intent.EXTRA_STREAM,
-                                arrayListOf<Uri>().apply {
-                                    paths.forEach {
-                                        add(
-                                            FileProvider.getUriForFile(
-                                                context,
-                                                context.packageName + ".fileProvider",
-                                                File(it)
-                                            )
-                                        )
-                                    }
-                                })
-                            type = ImageCore.MIME_TYPE
-                            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        }, context.resources.getString(R.string.toolbar_share)
-                    )
-                )
+                paths.forEach {
+                    totalSize += File(it).length()
+                }
+
+                if(paths.size <= 500 && totalSize <= 1073741824) {
+                    try {
+                        context.startActivity(
+                                Intent.createChooser(
+                                        Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                                            putParcelableArrayListExtra(
+                                                    Intent.EXTRA_STREAM,
+                                                    arrayListOf<Uri>().apply {
+                                                        paths.forEach {
+                                                            add(
+                                                                    FileProvider.getUriForFile(
+                                                                            context,
+                                                                            context.packageName + ".fileProvider",
+                                                                            File(it)
+                                                                    )
+                                                            )
+                                                        }
+                                                    })
+                                            type = ImageCore.MIME_TYPE
+                                            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                        }, context.resources.getString(R.string.toolbar_share)
+                                )
+                        )
+                    } catch(thr: Throwable) {
+                        Toast.makeText(context, context.resources.getString(R.string.warning_items_size_too_large), Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(context, context.resources.getString(R.string.warning_items_size_too_large), Toast.LENGTH_SHORT).show()
+                }
             } else {
                 throw IllegalArgumentException("Illegal filepaths")
             }

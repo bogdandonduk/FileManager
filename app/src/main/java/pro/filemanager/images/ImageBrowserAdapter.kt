@@ -1,17 +1,12 @@
 package pro.filemanager.images
 
 import android.content.Context
-import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.RotateAnimation
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.signature.MediaStoreSignature
 import kotlinx.coroutines.launch
-import pro.filemanager.HomeActivity
-import pro.filemanager.R
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.LayoutImageItemBinding
 import pro.filemanager.files.FileCore
@@ -30,12 +25,9 @@ class ImageBrowserAdapter(val context: Context, var imageItems: MutableList<Imag
                             hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
                                     SelectionTool.CLICK_SHORT,
                                     adapterPosition,
-                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                                    hostFragment.requireActivity() as HomeActivity,
-                                    hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                                    hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                                    hostFragment.binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                                    hostFragment.binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout) {
+                                    item.data,
+                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>
+                            ) {
                                 FileCore.openFileOut(context, item.data)
                             }
                         }
@@ -49,12 +41,8 @@ class ImageBrowserAdapter(val context: Context, var imageItems: MutableList<Imag
                             hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
                                     SelectionTool.CLICK_LONG,
                                     adapterPosition,
-                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                                    hostFragment.requireActivity() as HomeActivity,
-                                    hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                                    hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                                    hostFragment.binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                                    hostFragment.binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout
+                                    item.data,
+                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>
                             )
                         }
                     }
@@ -66,6 +54,21 @@ class ImageBrowserAdapter(val context: Context, var imageItems: MutableList<Imag
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageItemViewHolder {
+        if(false) {
+            hostFragment.viewModel.MainScope?.launch {
+                @Suppress("UNCHECKED_CAST")
+                hostFragment.viewModel.selectionTool?.initSelectionState(
+                        hostFragment.activity,
+                        this@ImageBrowserAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                        hostFragment.binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                        hostFragment.binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout,
+                        hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                        hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb,
+                        hostFragment.viewModel.selectionTool!!.selectionMode,
+                        hostFragment.viewModel.selectionTool!!.selectedPaths.size
+                )
+            }
+        }
         return ImageItemViewHolder(context, LayoutImageItemBinding.inflate(layoutInflater, parent, false), hostFragment, this)
     }
 
@@ -77,13 +80,13 @@ class ImageBrowserAdapter(val context: Context, var imageItems: MutableList<Imag
                 ImageCore.glideBitmapRequestBuilder
                         .load(holder.item.data)
                         .override(holder.binding.layoutImageItemThumbnail.width, holder.binding.layoutImageItemThumbnail.height)
-                        .signature(MediaStoreSignature(ImageCore.MIME_TYPE, imageItems[position].dateModified.toLong(), 0))
+                        .signature(MediaStoreSignature(ImageCore.MIME_TYPE, imageItems[position].dateModified, 0))
                         .into(holder.binding.layoutImageItemThumbnail)
             } else {
                 ImageCore.glideGifRequestBuilder
                         .load(holder.item.data)
                         .override(holder.binding.layoutImageItemThumbnail.width, holder.binding.layoutImageItemThumbnail.height)
-                        .signature(MediaStoreSignature(ImageCore.MIME_TYPE, imageItems[position].dateModified.toLong(), 0))
+                        .signature(MediaStoreSignature(ImageCore.MIME_TYPE, imageItems[position].dateModified, 0))
                         .into(holder.binding.layoutImageItemThumbnail)
             }
 
@@ -97,10 +100,30 @@ class ImageBrowserAdapter(val context: Context, var imageItems: MutableList<Imag
                 }
             }
 
-            hostFragment.viewModel.selectionTool?.differentiateItem(position, holder.binding.layoutImageItemThumbnail, holder.binding.layoutImageItemIconCheck, holder.binding.layoutImageItemIconUnchecked)
+            hostFragment.viewModel.selectionTool?.differentiateItem(
+                    holder.item.data,
+                    holder.binding.layoutImageItemThumbnail,
+                    holder.binding.layoutImageItemIconCheck,
+                    holder.binding.layoutImageItemIconUnchecked
+            )
 
         }
 
+        hostFragment.viewModel.MainScope?.launch {
+            hostFragment.viewModel.MainScope?.launch {
+                @Suppress("UNCHECKED_CAST")
+                hostFragment.viewModel.selectionTool?.initSelectionState(
+                        hostFragment.activity,
+                        this@ImageBrowserAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                        hostFragment.binding.fragmentImageBrowserBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                        hostFragment.binding.fragmentImageBrowserBottomTabsBarInclude.layoutBottomTabsBarRootLayout,
+                        hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                        hostFragment.binding.fragmentImageBrowserToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb,
+                        hostFragment.viewModel.selectionTool!!.selectionMode,
+                        hostFragment.viewModel.selectionTool!!.selectedPaths.size
+                )
+            }
+        }
     }
 
     override fun getItemCount(): Int = imageItems.size

@@ -48,7 +48,7 @@ class FileBrowserFragment() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         navController = Navigation.findNavController(binding.root)
 
-        activity.setSupportActionBar(binding.fragmentFileBrowserLayoutBaseToolbarInclude.layoutBaseToolbar)
+        activity.setSupportActionBar(binding.fragmentFileBrowserLayoutBaseToolbarInclude.layoutBaseToolBarInclude.layoutBaseToolbar)
 
         activity.requestExternalStoragePermission {
 

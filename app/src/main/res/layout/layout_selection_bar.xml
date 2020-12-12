@@ -4,27 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutSelectionBarRootLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="?attr/actionBarSize">
+    android:layout_height="wrap_content">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutSelectionBarRootLayoutGl5pv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.05" />
-
-    <CheckBox
-        android:id="@+id/layoutSelectionBarRootLayoutSelectionCountCb"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:button="@drawable/bg_checkbox"
-        android:paddingStart="10dp"
-        android:textColor="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutSelectionBarContentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:minHeight="?attr/actionBarSize"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/layoutSelectionBarRootLayoutGl5pv"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="3" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutSelectionBarContentLayoutGl5pv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.05" />
+
+        <CheckBox
+            android:id="@+id/layoutSelectionBarContentLayoutSelectionCountCb"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:button="@drawable/bg_checkbox"
+            android:paddingStart="10dp"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/layoutSelectionBarContentLayoutGl5pv"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="3" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

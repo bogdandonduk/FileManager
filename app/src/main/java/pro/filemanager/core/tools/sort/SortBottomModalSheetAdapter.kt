@@ -25,7 +25,6 @@ class SortBottomModalSheetAdapter(val context: Context, val optionItems: Mutable
         holder.optionItem = optionItems[position]
 
         holder.binding.layoutSortBottomModalSheetItemTitle.text = holder.optionItem.title
-
     }
 
     override fun getItemCount(): Int = optionItems.size

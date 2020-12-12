@@ -1,6 +1,8 @@
 package pro.filemanager.core.tools.sort
 
 import android.content.Context
+import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -14,8 +16,6 @@ import java.util.*
 
 object SortTool {
 
-    const val KEY_ARGUMENT_SORTING_VIEW_MODEL = "sortingViewModel"
-
     const val KEY_SP_IMAGE_BROWSER_SORT_ORDER = "imageBrowserSortOrder"
     const val KEY_SP_IMAGE_ALBUMS_SORT_ORDER = "imageAlbumsSortOrder"
 
@@ -28,67 +28,65 @@ object SortTool {
     const val SORT_ORDER_SIZE_LARGEST = "sizeLargest"
     const val SORT_ORDER_SIZE_SMALLEST = "sizeSmallest"
 
-    var sortingInProgress = false
+    @Volatile var showingDialogInProgress = false
 
-    fun getSortOptions(context: Context, viewModel: BaseViewModel, bottomModalSheetFragment: SortBottomModalSheetFragment) : MutableList<OptionItem> {
+    @Volatile var sortingViewModel: BaseViewModel? = null
+
+    fun getSortOptions(context: Context, bottomModalSheetFragment: SortBottomModalSheetFragment) : MutableList<OptionItem> {
         return mutableListOf<OptionItem>().apply {
             add(
                     OptionItem(context.resources.getString(R.string.sort_option_date_recent)) {
                         ApplicationLoader.ApplicationIOScope.launch {
-                            viewModel.setSortOrder(context, SortTool.SORT_ORDER_DATE_RECENT, true)
-                            viewModel.assignItemsLive(context)
+                            sortingViewModel?.setSortOrder(context, SORT_ORDER_DATE_RECENT, true)
+                            sortingViewModel?.assignItemsLive(context, false)
                             withContext(Dispatchers.Main) {
                                 if(bottomModalSheetFragment.showsDialog)
                                     bottomModalSheetFragment.dismiss()
                             }
-
                         }
                     }
             )
             add(
                     OptionItem(context.resources.getString(R.string.sort_option_date_oldest)) {
                         ApplicationLoader.ApplicationIOScope.launch {
-                            viewModel.setSortOrder(context, SortTool.SORT_ORDER_DATE_OLDEST, true)
-                            viewModel.assignItemsLive(context)
+                            sortingViewModel?.setSortOrder(context, SORT_ORDER_DATE_OLDEST, true)
+                            sortingViewModel?.assignItemsLive(context, false)
                             withContext(Dispatchers.Main) {
                                 if(bottomModalSheetFragment.showsDialog)
                                     bottomModalSheetFragment.dismiss()
                             }
-
                         }
                     }
             )
             add(
                     OptionItem(context.resources.getString(R.string.sort_option_name_alphabetic)) {
                         ApplicationLoader.ApplicationIOScope.launch {
-                            viewModel.setSortOrder(context, SortTool.SORT_ORDER_NAME_ALPHABETIC, true)
-                            viewModel.assignItemsLive(context)
+                            sortingViewModel?.setSortOrder(context, SORT_ORDER_NAME_ALPHABETIC, true)
+                            sortingViewModel?.assignItemsLive(context, false)
                             withContext(Dispatchers.Main) {
-                                if(bottomModalSheetFragment.showsDialog)
+                                if (bottomModalSheetFragment.showsDialog)
                                     bottomModalSheetFragment.dismiss()
                             }
-
                         }
                     }
             )
             add(
                     OptionItem(context.resources.getString(R.string.sort_option_name_reversed)) {
                         ApplicationLoader.ApplicationIOScope.launch {
-                            viewModel.setSortOrder(context, SortTool.SORT_ORDER_NAME_REVERSED, true)
-                            viewModel.assignItemsLive(context)
+                            sortingViewModel?.setSortOrder(context, SORT_ORDER_NAME_REVERSED, true)
+                            sortingViewModel?.assignItemsLive(context, false)
                             withContext(Dispatchers.Main) {
                                 if(bottomModalSheetFragment.showsDialog)
                                     bottomModalSheetFragment.dismiss()
                             }
-
                         }
                     }
             )
             add(
                     OptionItem(context.resources.getString(R.string.sort_option_size_largest)) {
                         ApplicationLoader.ApplicationIOScope.launch {
-                            viewModel.setSortOrder(context, SortTool.SORT_ORDER_SIZE_LARGEST, true)
-                            viewModel.assignItemsLive(context)
+                            sortingViewModel?.setSortOrder(context, SORT_ORDER_SIZE_LARGEST, true)
+                            sortingViewModel?.assignItemsLive(context, false)
                             withContext(Dispatchers.Main) {
                                 if(bottomModalSheetFragment.showsDialog)
                                     bottomModalSheetFragment.dismiss()
@@ -99,8 +97,8 @@ object SortTool {
             add(
                     OptionItem(context.resources.getString(R.string.sort_option_size_smallest)) {
                         ApplicationLoader.ApplicationIOScope.launch {
-                            viewModel.setSortOrder(context, SortTool.SORT_ORDER_SIZE_SMALLEST, true)
-                            viewModel.assignItemsLive(context)
+                            sortingViewModel?.setSortOrder(context, SORT_ORDER_SIZE_SMALLEST, true)
+                            sortingViewModel?.assignItemsLive(context, false)
                             withContext(Dispatchers.Main) {
                                 if(bottomModalSheetFragment.showsDialog)
                                     bottomModalSheetFragment.dismiss()
@@ -108,7 +106,16 @@ object SortTool {
                         }
                     }
             )
+
         }
+    }
+
+    fun showSortBottomModalSheetFragment(fm: FragmentManager, viewModel: BaseViewModel) {
+        showingDialogInProgress = true
+
+        sortingViewModel = viewModel
+
+        SortBottomModalSheetFragment().show(fm, null)
     }
 
     fun sortFilesBySizeLargest(files: MutableList<File>) : MutableList<File> {

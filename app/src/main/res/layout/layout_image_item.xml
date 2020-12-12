@@ -33,6 +33,7 @@
         android:id="@+id/layoutImageItemThumbnail"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/title_thumbnail"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
@@ -40,27 +41,42 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutImageItemRootLayoutBgRippleHolder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:elevation="3dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <ImageView
         android:id="@+id/layoutImageItemIconCheck"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:padding="2dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/layoutImageItemRootLayoutGl25ph"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/layoutImageItemRootLayoutGl75pv"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_check_circle_24" />
+        app:srcCompat="@drawable/ic_check" />
 
     <ImageView
         android:id="@+id/layoutImageItemIconUnchecked"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:padding="2dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/layoutImageItemRootLayoutGl25ph"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/layoutImageItemRootLayoutGl75pv"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_donut_large_24" />
+        app:srcCompat="@drawable/ic_circle" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutImageItemTitleContainer"

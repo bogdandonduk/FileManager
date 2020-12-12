@@ -8,11 +8,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.images.ImageRepo
-import pro.filemanager.video.VideoRepo
 import kotlinx.coroutines.launch
-import pro.filemanager.audio.AudioRepo
 import pro.filemanager.core.PermissionWrapper
-import pro.filemanager.docs.DocRepo
 import pro.filemanager.files.FileCore
 
 class ApplicationLoader : Application() {
@@ -30,20 +27,8 @@ class ApplicationLoader : Application() {
         lateinit var fileObserver: FileObserver
 
         fun loadAll() {
-            loadVideos()
             loadImages()
-
             findExternalRoots()
-            loadDocs()
-            loadAudios()
-        }
-
-        fun loadVideos(context: Context = appContext) {
-            if(PermissionWrapper.checkExternalStoragePermissions(context)) {
-                ApplicationIOScope.launch {
-                    VideoRepo.getInstance().loadItems(context)
-                }
-            }
         }
 
         fun loadImages(context: Context = appContext) {
@@ -58,22 +43,6 @@ class ApplicationLoader : Application() {
             if(PermissionWrapper.checkExternalStoragePermissions(context)) {
                 ApplicationIOScope.launch {
                     FileCore.findExternalRoots(context)
-                }
-            }
-        }
-
-        fun loadDocs(context: Context = appContext) {
-            if(PermissionWrapper.checkExternalStoragePermissions(context)) {
-                ApplicationIOScope.launch {
-                    DocRepo.getInstance().loadItems(context)
-                }
-            }
-        }
-
-        fun loadAudios(context: Context = appContext) {
-            if(PermissionWrapper.checkExternalStoragePermissions(context)) {
-                ApplicationIOScope.launch {
-                    AudioRepo.getInstance().loadItems(context, false)
                 }
             }
         }

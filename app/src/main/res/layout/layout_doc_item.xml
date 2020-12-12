@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-    <data>
-        <variable
-            name="DocItem"
-            type="pro.filemanager.docs.DocItem" />
-    </data>
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutDocItemRootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutDocItemRootLayout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/layoutDocItemFilename"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:text="@{DocItem.displayName}"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Filename" />
 
-        <TextView
-            android:id="@+id/layoutDocItemFilename"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{DocItem.displayName}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Filename" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+</androidx.constraintlayout.widget.ConstraintLayout>

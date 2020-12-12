@@ -2,7 +2,7 @@
 <resources>
     <color name="appBar">#008fba</color>
 
-    <color name="tileBtn">#3fff</color>
+    <color name="tileBtn">#4fff</color>
     <color name="itemTitle">#9000</color>
 
     <color name="homeBgGradStart">#87c0bb</color>
@@ -10,5 +10,7 @@
     <color name="tabIndicator">#cfff</color>
 
     <color name="bgDark">#303030</color>
+
+    <color name="bgDarkSemiTransparent">#aa303030</color>
 
 </resources>

@@ -26,12 +26,8 @@ class ImageAlbumsAdapter(val context: Context, var imageAlbumItems: MutableList<
                             hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
                                     SelectionTool.CLICK_SHORT,
                                     adapterPosition,
-                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                                    hostFragment.requireActivity() as HomeActivity,
-                                    hostFragment.binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                                    hostFragment.binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                                    hostFragment.binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                                    hostFragment.binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
+                                    item.data,
+                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>
                             ) {
                                 hostFragment.navController.navigate(R.id.action_imageAlbumsFragment_to_imageBrowserFragment, bundleOf(
                                         ImageCore.KEY_ARGUMENT_ALBUM_PARCELABLE to item
@@ -48,15 +44,12 @@ class ImageAlbumsAdapter(val context: Context, var imageAlbumItems: MutableList<
                             hostFragment.viewModel.selectionTool?.handleClickInViewHolder(
                                     SelectionTool.CLICK_LONG,
                                     adapterPosition,
-                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                                    hostFragment.requireActivity() as HomeActivity,
-                                    hostFragment.binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                                    hostFragment.binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                                    hostFragment.binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                                    hostFragment.binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
+                                    item.data,
+                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>
                             )
                         }
                     }
+
                     true
                 }
             }
@@ -72,14 +65,14 @@ class ImageAlbumsAdapter(val context: Context, var imageAlbumItems: MutableList<
         holder.item = imageAlbumItems[position]
 
         hostFragment.viewModel.MainScope?.launch {
-            if (!holder.item.containedImages.first().data.endsWith(".gif", true)) {
+            if (!holder.item.containedItems.first().data.endsWith(".gif", true)) {
                 ImageCore.glideBitmapRequestBuilder
-                        .load(holder.item.containedImages.first().data)
+                        .load(holder.item.containedItems.first().data)
                         .override(holder.binding.layoutImageAlbumItemContentLayout.width, holder.binding.layoutImageAlbumItemThumbnail.height)
                         .into(holder.binding.layoutImageAlbumItemThumbnail)
             } else {
                 ImageCore.glideGifRequestBuilder
-                        .load(holder.item.containedImages.first().data)
+                        .load(holder.item.containedItems.first().data)
                         .override(holder.binding.layoutImageAlbumItemThumbnail.width, holder.binding.layoutImageAlbumItemThumbnail.height)
                         .into(holder.binding.layoutImageAlbumItemThumbnail)
             }
@@ -87,14 +80,31 @@ class ImageAlbumsAdapter(val context: Context, var imageAlbumItems: MutableList<
             holder.binding.layoutImageAlbumItemCard.post {
                 holder.binding.layoutImageAlbumItemTitle.text = holder.item.displayName
                 holder.binding.layoutImageAlbumItemTitle.textSize = (holder.binding.layoutImageAlbumItemCard.width / 30).toFloat()
-                holder.binding.layoutImageAlbumItemCount.text = holder.item.containedImages.size.toString()
+                holder.binding.layoutImageAlbumItemCount.text = holder.item.containedItems.size.toString()
                 holder.binding.layoutImageAlbumItemCount.textSize = (holder.binding.layoutImageAlbumItemCard.width / 40).toFloat()
             }
 
-            hostFragment.viewModel.selectionTool?.differentiateItem(position, holder.binding.layoutImageAlbumItemThumbnail, holder.binding.layoutImageAlbumItemIconCheck, holder.binding.layoutImageAlbumItemIconUnchecked)
-
+            hostFragment.viewModel.selectionTool?.differentiateItem(
+                    holder.item.data,
+                    holder.binding.layoutImageAlbumItemThumbnail,
+                    holder.binding.layoutImageAlbumItemIconCheck,
+                    holder.binding.layoutImageAlbumItemIconUnchecked
+            )
         }
 
+        hostFragment.viewModel.MainScope?.launch {
+            @Suppress("UNCHECKED_CAST")
+            hostFragment.viewModel.selectionTool?.initSelectionState(
+                    hostFragment.activity,
+                    this@ImageAlbumsAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
+                    hostFragment.binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumRootLayout,
+                    hostFragment.binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout,
+                    hostFragment.binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                    hostFragment.binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb,
+                    hostFragment.viewModel.selectionTool!!.selectionMode,
+                    hostFragment.viewModel.selectionTool!!.selectedPaths.size
+            )
+        }
     }
 
     override fun getItemCount(): Int = imageAlbumItems.size

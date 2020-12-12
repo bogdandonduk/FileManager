@@ -2,7 +2,6 @@ package pro.filemanager.images
 
 import android.content.Context
 import android.os.Parcelable
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.android.parcel.Parcelize
@@ -22,7 +21,6 @@ import java.lang.IllegalStateException
 
 @Parcelize
 class ImageBrowserViewModel(val imageRepo: @RawValue ImageRepo, val albumItem: ImageAlbumItem?) : BaseViewModel(), ImageRepo.ItemObserver {
-
     var IOScope = CoroutineScope(IO)
     var MainScope: CoroutineScope? = CoroutineScope(Main)
 
@@ -141,14 +139,14 @@ class ImageBrowserViewModel(val imageRepo: @RawValue ImageRepo, val albumItem: I
         ApplicationLoader.transientParcelables.remove(UIManager.KEY_TRANSIENT_PARCELABLE_ALBUMS_MAIN_LIST_RV_STATE)
     }
 
-    override suspend fun assignItemsLive(context: Context) {
+    override suspend fun assignItemsLive(context: Context, forceLoad: Boolean) {
         if(itemsLive != null) {
             when(currentSortOrder) {
                 SortTool.SORT_ORDER_DATE_RECENT -> {
                     search(
                             if(albumItem != null) {
                                 val imageItems = mutableListOf<ImageItem>()
-                                imageRepo.loadItemsByDateRecent(context, false).forEach {
+                                imageRepo.loadItemsByDateRecent(context, true).forEach {
                                     if(File(it.data).parent == albumItem.data) {
                                         imageItems.add(it)
                                     }
@@ -156,13 +154,15 @@ class ImageBrowserViewModel(val imageRepo: @RawValue ImageRepo, val albumItem: I
                                 albumItem.containedImages = imageItems
                                 albumItem.containedImages
                             } else {
-                                imageRepo.loadItemsByDateRecent(context, false)
-                            })
+                                imageRepo.loadItemsByDateRecent(context, true)
+                            }
+                    )
                 }
                 SortTool.SORT_ORDER_DATE_OLDEST -> {
                     search(
                             if(albumItem != null) {
                                 val imageItems = mutableListOf<ImageItem>()
+                                imageRepo.loadItemsByDateRecent(context, forceLoad)
                                 imageRepo.loadItemsByDateOldest(context).forEach {
                                     if(File(it.data).parent == albumItem.data) {
                                         imageItems.add(it)
@@ -171,14 +171,16 @@ class ImageBrowserViewModel(val imageRepo: @RawValue ImageRepo, val albumItem: I
                                 albumItem.containedImages = imageItems
                                 albumItem.containedImages
                             } else {
+                                imageRepo.loadItemsByDateRecent(context, forceLoad)
                                 imageRepo.loadItemsByDateOldest(context)
-                            })
+                            }
+                    )
                 }
                 SortTool.SORT_ORDER_NAME_REVERSED -> {
                     search(
                             if(albumItem != null) {
                                 val imageItems = mutableListOf<ImageItem>()
-                                imageRepo.loadItemsByNameReversed(context, false).forEach {
+                                imageRepo.loadItemsByNameReversed(context, forceLoad).forEach {
                                     if(File(it.data).parent == albumItem.data) {
                                         imageItems.add(it)
                                     }
@@ -186,13 +188,15 @@ class ImageBrowserViewModel(val imageRepo: @RawValue ImageRepo, val albumItem: I
                                 albumItem.containedImages = imageItems
                                 albumItem.containedImages
                             } else {
-                                imageRepo.loadItemsByNameReversed(context, false)
-                            })
+                                imageRepo.loadItemsByNameReversed(context, forceLoad)
+                            }
+                    )
                 }
                 SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
                     search(
                             if(albumItem != null) {
                                 val imageItems = mutableListOf<ImageItem>()
+                                imageRepo.loadItemsByNameReversed(context, forceLoad)
                                 imageRepo.loadItemsByNameAlphabetic(context).forEach {
                                     if(File(it.data).parent == albumItem.data) {
                                         imageItems.add(it)
@@ -201,14 +205,16 @@ class ImageBrowserViewModel(val imageRepo: @RawValue ImageRepo, val albumItem: I
                                 albumItem.containedImages = imageItems
                                 albumItem.containedImages
                             } else {
+                                imageRepo.loadItemsByNameReversed(context, forceLoad)
                                 imageRepo.loadItemsByNameAlphabetic(context)
-                            })
+                            }
+                    )
                 }
                 SortTool.SORT_ORDER_SIZE_LARGEST -> {
                     search(
                             if(albumItem != null) {
                                 val imageItems = mutableListOf<ImageItem>()
-                                imageRepo.loadItemsBySizeLargest(context, false).forEach {
+                                imageRepo.loadItemsBySizeLargest(context, forceLoad).forEach {
                                     if(File(it.data).parent == albumItem.data) {
                                         imageItems.add(it)
                                     }
@@ -216,13 +222,15 @@ class ImageBrowserViewModel(val imageRepo: @RawValue ImageRepo, val albumItem: I
                                 albumItem.containedImages = imageItems
                                 albumItem.containedImages
                             } else {
-                                imageRepo.loadItemsBySizeLargest(context, false)
-                            })
+                                imageRepo.loadItemsBySizeLargest(context, forceLoad)
+                            }
+                    )
                 }
                 SortTool.SORT_ORDER_SIZE_SMALLEST -> {
                     search(
                             if(albumItem != null) {
                                 val imageItems = mutableListOf<ImageItem>()
+                                imageRepo.loadItemsBySizeLargest(context, forceLoad)
                                 imageRepo.loadItemsBySizeSmallest(context).forEach {
                                     if(File(it.data).parent == albumItem.data) {
                                         imageItems.add(it)
@@ -231,8 +239,10 @@ class ImageBrowserViewModel(val imageRepo: @RawValue ImageRepo, val albumItem: I
                                 albumItem.containedImages = imageItems
                                 albumItem.containedImages
                             } else {
+                                imageRepo.loadItemsBySizeLargest(context, forceLoad)
                                 imageRepo.loadItemsBySizeSmallest(context)
-                            })
+                            }
+                    )
                 }
                 else -> {
                     throw IllegalStateException("Invalid Sort Order")
@@ -250,7 +260,7 @@ class ImageBrowserViewModel(val imageRepo: @RawValue ImageRepo, val albumItem: I
     override fun onUpdate() {
         if(itemsLive != null)
             IOScope.launch {
-                assignItemsLive(ApplicationLoader.appContext)
+                assignItemsLive(ApplicationLoader.appContext, false)
             }
     }
 

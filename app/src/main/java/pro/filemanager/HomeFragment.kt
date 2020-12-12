@@ -93,7 +93,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         navController = Navigation.findNavController(binding.root)
 
-        activity.setSupportActionBar(binding.fragmentHomeLayoutBaseToolbarInclude?.layoutBaseToolbar)
+        activity.setSupportActionBar(binding.fragmentHomeLayoutBaseToolbarInclude.layoutBaseToolBarInclude.layoutBaseToolbar)
         activity.supportActionBar?.title = requireContext().resources.getString(R.string.title_multimedia)
 
         CoroutineScope(Main).launch {
@@ -109,18 +109,6 @@ class HomeFragment : Fragment() {
                     FileCore.KEY_ARGUMENT_PATH to FileCore.KEY_EXTERNAL_STORAGE,
                     FileCore.KEY_ARGUMENT_APP_BAR_TITLE to requireActivity().resources.getString(R.string.title_external_storage)
                 ))
-            }
-
-            binding.fragmentHomeAudiosBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
-                navController.navigate(R.id.action_homeFragment_to_audioBrowserFragment)
-            }
-
-            binding.fragmentHomeVideosBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
-                navController.navigate(R.id.action_homeFragment_to_videoBrowserFragment)
-            }
-
-            binding.fragmentHomeDocsBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
-                navController.navigate(R.id.action_homeFragment_to_docBrowserFragment)
             }
 
             binding.fragmentHomeImagesBtn.layoutHomeTileRootLayoutContent.setOnClickListener {

@@ -10,7 +10,10 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.provider.MediaStore
 import android.provider.Settings
+import android.widget.Button
+import android.widget.TextView
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.R
 
@@ -59,42 +62,80 @@ object PermissionWrapper {
 
     @SuppressLint("NewApi")
     fun showDeniedRationaleDialog(activity: Activity) {
-        AlertDialog.Builder(activity)
-                .setTitle(R.string.external_storage_denied_rationale_title)
-                .setMessage(R.string.external_storage_denied_rationale_message)
-                .setPositiveButton(R.string.permission_grant) { dialog: DialogInterface, _: Int ->
-                    dialog.dismiss()
-                    activity.requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_EXTERNAL_STORAGE)
-                }
-                .setNegativeButton(R.string.permission_deny) { dialog: DialogInterface, _: Int ->
-                    dialog.dismiss()
-                    activity.onBackPressed()
-                }
+        val dialog = AlertDialog.Builder(activity)
+                .setView(
+                        activity.layoutInflater.inflate(R.layout.layout_base_dialog, null).apply {
+                            findViewById<TextView>(R.id.layoutBaseDialogTitle).text = activity.resources.getString(R.string.external_storage_denied_rationale_title)
+
+                            findViewById<TextView>(R.id.layoutBaseDialogMessage).text = activity.resources.getString(R.string.external_storage_denied_rationale_message)
+
+                            findViewById<TextView>(R.id.layoutBaseDialogNegativeButton).apply {
+                                text = activity.resources.getString(R.string.permission_deny)
+                            }
+
+                            findViewById<TextView>(R.id.layoutBaseDialogPositiveButton).apply {
+                                text = activity.resources.getString(R.string.permission_grant)
+                            }
+                        }
+                )
                 .setOnCancelListener {
                     activity.onBackPressed()
                 }
                 .create()
-                .show()
+
+        dialog.setOnShowListener { dialogInterface ->
+            (dialogInterface as AlertDialog).findViewById<Button>(R.id.layoutBaseDialogPositiveButton).setOnClickListener {
+                dialogInterface.dismiss()
+                activity.requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_EXTERNAL_STORAGE)
+            }
+
+            dialogInterface.findViewById<Button>(R.id.layoutBaseDialogNegativeButton).setOnClickListener {
+                dialog.dismiss()
+                activity.onBackPressed()
+            }
+        }
+
+        dialog.window?.setBackgroundDrawableResource(R.drawable.bg_blank)
+        dialog.show()
     }
 
     fun showDoNotAskAgainSelectedRationaleDialog(activity: Activity) {
-        AlertDialog.Builder(activity)
-                .setTitle(R.string.external_storage_denied_rationale_title)
-                .setMessage(R.string.external_storage_do_not_ask_again_selected_rationale_message)
-                .setPositiveButton(R.string.permission_grant) { dialog: DialogInterface, _: Int ->
-                    dialog.dismiss()
-                    ApplicationLoader.isUserSentToAppDetailsSettings = true
-                    openAppDetailsSettings(activity)
-                }
-                .setNegativeButton(R.string.permission_deny) { dialog: DialogInterface, _: Int ->
-                    dialog.dismiss()
-                    activity.onBackPressed()
-                }
+        val dialog = AlertDialog.Builder(activity)
+                .setView(
+                        activity.layoutInflater.inflate(R.layout.layout_base_dialog, null).apply {
+                            findViewById<TextView>(R.id.layoutBaseDialogTitle).text = activity.resources.getString(R.string.external_storage_denied_rationale_title)
+
+                            findViewById<TextView>(R.id.layoutBaseDialogMessage).text = activity.resources.getString(R.string.external_storage_do_not_ask_again_selected_rationale_message)
+
+                            findViewById<TextView>(R.id.layoutBaseDialogNegativeButton).apply {
+                                text = activity.resources.getString(R.string.permission_deny)
+                            }
+
+                            findViewById<TextView>(R.id.layoutBaseDialogPositiveButton).apply {
+                                text = activity.resources.getString(R.string.permission_grant)
+                            }
+                        }
+                )
                 .setOnCancelListener {
                     activity.onBackPressed()
                 }
                 .create()
-                .show()
+
+        dialog.setOnShowListener { dialogInterface ->
+            (dialogInterface as AlertDialog).findViewById<Button>(R.id.layoutBaseDialogPositiveButton).setOnClickListener {
+                dialogInterface.dismiss()
+                ApplicationLoader.isUserSentToAppDetailsSettings = true
+                openAppDetailsSettings(activity)
+            }
+
+            dialogInterface.findViewById<Button>(R.id.layoutBaseDialogNegativeButton).setOnClickListener {
+                dialogInterface.dismiss()
+                activity.onBackPressed()
+            }
+        }
+
+        dialog.window?.setBackgroundDrawableResource(R.drawable.bg_blank)
+        dialog.show()
     }
 
     fun openAppDetailsSettings(context: Context) {

@@ -9,27 +9,6 @@
         android:label="@string/title_multimedia">
 
         <action
-            android:id="@+id/action_homeFragment_to_audioBrowserFragment"
-            app:destination="@id/audioBrowserFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
-            app:popEnterAnim="@anim/fragment_fade_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
-        <action
-            android:id="@+id/action_homeFragment_to_docBrowserFragment"
-            app:destination="@id/docBrowserFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
-            app:popEnterAnim="@anim/fragment_fade_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
-        <action
-            android:id="@+id/action_homeFragment_to_videoBrowserFragment"
-            app:destination="@id/videoBrowserFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
-            app:popEnterAnim="@anim/fragment_fade_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
-        <action
             android:id="@+id/action_homeFragment_to_fileBrowserFragment"
             app:destination="@id/fileBrowserFragment"
             app:enterAnim="@anim/fragment_open_enter"
@@ -44,25 +23,6 @@
             app:popEnterAnim="@anim/fragment_fade_enter"
             app:popExitAnim="@anim/fragment_open_exit" />
     </fragment>
-    <fragment
-        android:id="@+id/audioBrowserFragment"
-        android:name="pro.filemanager.audio.AudioBrowserFragment"
-        android:label="@string/title_audio" >
-        <action
-            android:id="@+id/action_audioBrowserFragment_to_audioAlbumsFragment"
-            app:destination="@id/audioAlbumsFragment" />
-        <action
-            android:id="@+id/action_audioBrowserFragment_self"
-            app:destination="@id/audioBrowserFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/docBrowserFragment"
-        android:name="pro.filemanager.docs.DocBrowserFragment"
-        android:label="@string/title_docs" />
-    <fragment
-        android:id="@+id/videoBrowserFragment"
-        android:name="pro.filemanager.video.VideoBrowserFragment"
-        android:label="@string/title_video" />
     <fragment
         android:id="@+id/fileBrowserFragment"
         android:name="pro.filemanager.files.FileBrowserFragment">
@@ -110,13 +70,5 @@
             app:exitAnim="@anim/fragment_fade_exit"
             app:popEnterAnim="@anim/fragment_fade_enter"
             app:popExitAnim="@anim/fragment_open_exit" />
-    </fragment>
-    <fragment
-        android:id="@+id/audioAlbumsFragment"
-        android:name="pro.filemanager.audio.albums.AudioAlbumsFragment"
-        android:label="AudioAlbumsFragment" >
-        <action
-            android:id="@+id/action_audioAlbumsFragment_to_audioBrowserFragment"
-            app:destination="@id/audioBrowserFragment" />
     </fragment>
 </navigation>

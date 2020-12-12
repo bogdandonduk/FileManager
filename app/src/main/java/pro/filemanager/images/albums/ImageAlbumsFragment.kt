@@ -2,17 +2,13 @@ package pro.filemanager.images.albums
 
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
 import android.widget.SearchView
 import androidx.activity.OnBackPressedCallback
-import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
@@ -23,14 +19,15 @@ import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
 import pro.filemanager.core.*
+import pro.filemanager.core.base.BaseAlbumItem
 import pro.filemanager.core.base.BaseFragment
+import pro.filemanager.core.base.BaseItem
+import pro.filemanager.core.tools.DeleteTool
 import pro.filemanager.core.tools.SelectionTool
-import pro.filemanager.core.tools.ShareTool
-import pro.filemanager.core.tools.sort.SortBottomModalSheetFragment
+import pro.filemanager.core.tools.info.InfoTool
 import pro.filemanager.core.tools.sort.SortTool
 import pro.filemanager.databinding.FragmentImageAlbumsBinding
 import pro.filemanager.images.ImageBrowserAdapter
-import java.lang.IllegalStateException
 
 class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>> {
 
@@ -39,6 +36,8 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
 
     lateinit var onBackCallback: OnBackPressedCallback
     lateinit var searchView: SearchView
+
+    var shouldScrollToTop = true
 
     override fun onChanged(t: MutableList<ImageAlbumItem>?) {
         if(binding.fragmentImageAlbumsList.adapter  != null) {
@@ -53,7 +52,9 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
             (binding.fragmentImageAlbumsList.adapter as ImageAlbumsAdapter).imageAlbumItems = t!!
             binding.fragmentImageAlbumsList.adapter!!.notifyDataSetChanged()
 
-            binding.fragmentImageAlbumsList.scrollToPosition(0)
+            if(shouldScrollToTop) binding.fragmentImageAlbumsList.scrollToPosition(0)
+
+            shouldScrollToTop = true
 
             viewModel.searchInProgress = false
         }
@@ -76,7 +77,7 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
 
         setHasOptionsMenu(true)
 
-        activity.setSupportActionBar(binding.fragmentImageAlbumsToolbarInclude.layoutBaseToolbar)
+        activity.setSupportActionBar(binding.fragmentImageAlbumsToolbarInclude.layoutBaseToolBarInclude.layoutBaseToolbar)
 
         onBackCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -156,50 +157,152 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
                                 viewModel.isSearchViewEnabled = true
                                 viewModel.setSearchText(it)
 
-                                viewModel.assignItemsLive(frContext)
+                                viewModel.assignItemsLive(frContext, false)
+                            }
+                        }
+
+                        if(binding.fragmentImageAlbumsList.adapter!!.itemCount <= 0) {
+                            viewModel.MainScope?.launch {
+                                viewModel.selectionTool!!.initSelectionState(
+                                        activity,
+                                        binding.fragmentImageAlbumsList.adapter!!,
+                                        binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumRootLayout,
+                                        binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout,
+                                        binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                        binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb,
+                                        viewModel.selectionTool!!.selectionMode,
+                                        viewModel.selectionTool!!.selectedPaths.size
+                                )
                             }
                         }
 
                         if(viewModel.selectionTool == null) viewModel.selectionTool = SelectionTool()
 
-                        viewModel.selectionTool!!.initOnBackCallback(
-                                activity,
-                                binding.fragmentImageAlbumsList.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                                binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                                binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                                binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
-                        )
-
-                        binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout.post {
-                            binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout.height.let {
-                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarShareTitle?.textSize = (it / 50).toFloat()
-                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarMoveTitle?.textSize = (it / 50).toFloat()
-                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarCopyTitle?.textSize = (it / 50).toFloat()
-                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarInfoTitle?.textSize = (it / 50).toFloat()
-                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarDeleteTitle?.textSize = (it / 50).toFloat()
+                        if(binding.fragmentImageAlbumsList.adapter!!.itemCount > 0) {
+                            for (i in 0 until binding.fragmentImageAlbumsList.adapter!!.itemCount) {
+                                viewModel.MainScope?.launch {
+                                    binding.fragmentImageAlbumsList.adapter!!.notifyItemChanged(i)
+                                }
                             }
+                        } else {
+                            viewModel.MainScope?.launch {
+                                viewModel.selectionTool!!.initSelectionState(
+                                        activity,
+                                        binding.fragmentImageAlbumsList.adapter!!,
+                                        binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumRootLayout,
+                                        binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout,
+                                        binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                        binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb,
+                                        viewModel.selectionTool!!.selectionMode,
+                                        viewModel.selectionTool!!.selectedPaths.size
+                                )
+                            }
+                        }
+
+                        binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumRootLayout.post {
+                            binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumRootLayout.height.let {
+                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumInfoTitle.textSize = (it / 50).toFloat()
+                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumDeleteTitle.textSize = (it / 50).toFloat()
+                            }
+                        }
+
+                        binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumRootLayout.post {
+                            binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumRootLayout.height.let {
+                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumInfoTitle.textSize = (it / 10).toFloat()
+                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumDeleteTitle.textSize = (it / 10).toFloat()
+                            }
+
+                            binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumRootLayout.visibility = View.GONE
                         }
 
                         if (viewModel.selectionTool!!.selectionMode) {
-                            if (viewModel.selectionTool!!.selectedPositions.isNotEmpty()) {
+                            if (viewModel.selectionTool!!.selectedPaths.isNotEmpty()) {
                                 activity.supportActionBar?.hide()
                                 binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout.visibility = View.VISIBLE
-                                binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.text = viewModel.selectionTool!!.selectedPositions.size.toString()
+                                binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb.text = viewModel.selectionTool!!.selectedPaths.size.toString()
                             }
 
                             binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
-                            binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout.visibility = View.VISIBLE
+                            binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumRootLayout.visibility = View.VISIBLE
                         }
 
-                        binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
-                            if (b) {
-                                viewModel.selectionTool!!.selectAll(binding.fragmentImageAlbumsList.adapter!!, binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
-                            } else {
-                                viewModel.selectionTool!!.unselectAll(binding.fragmentImageAlbumsList.adapter!!, binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb)
+                        binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
+                            if(this@ImageAlbumsFragment::viewModel.isInitialized && binding.fragmentImageAlbumsList.adapter != null) {
+                                viewModel.MainScope?.launch {
+                                    if(b) {
+                                        viewModel.selectionTool!!.selectAll(mutableListOf<String>().apply {
+                                            if(binding.fragmentImageAlbumsList.adapter != null) {
+                                                (binding.fragmentImageAlbumsList.adapter as ImageBrowserAdapter).imageItems.forEach {
+                                                    add(it.data)
+                                                }
+                                            }
+                                        }, binding.fragmentImageAlbumsList.adapter!!, viewModel.MainScope)
+                                    } else {
+                                        viewModel.selectionTool!!.unselectAll(binding.fragmentImageAlbumsList.adapter!!, viewModel.MainScope)
+                                    }
+                                }
                             }
                         }
 
+                        binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumInfoContainer.setOnClickListener {
+                            if(this@ImageAlbumsFragment::viewModel.isInitialized &&
+                                    !InfoTool.showingDialogInProgress &&
+                                    viewModel.selectionTool != null &&
+                                    !viewModel.selectionTool!!.selectedPaths.isNullOrEmpty() &&
+                                    binding.fragmentImageAlbumsList.adapter != null
+                            ) {
+                                ApplicationLoader.ApplicationIOScope.launch {
+                                    InfoTool.showInfoAlbumBottomModalSheetFragment(
+                                            activity.supportFragmentManager,
+                                            mutableListOf<BaseAlbumItem>().apply {
+                                                (binding.fragmentImageAlbumsList.adapter as ImageAlbumsAdapter).imageAlbumItems.forEach {
+                                                    if(viewModel.selectionTool!!.selectedPaths.contains(it.data)) {
+                                                        add(it)
+                                                    }
+                                                }
+                                            }
+                                    )
+                                }
+                            }
+                        }
+
+                        binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumDeleteContainer.setOnClickListener {
+                            try {
+                                if(this@ImageAlbumsFragment::viewModel.isInitialized &&
+                                        viewModel.selectionTool != null &&
+                                        viewModel.selectionTool!!.selectionMode &&
+                                        viewModel.selectionTool!!.selectedPaths.isNotEmpty() &&
+                                        binding.fragmentImageAlbumsList.adapter != null
+                                ) {
+                                    ApplicationLoader.ApplicationMainScope.launch {
+                                        DeleteTool.deleteAlbumsAndRefreshMediaStore(activity,
+                                                mutableListOf<String>().apply {
+                                                    viewModel.selectionTool!!.selectedPaths.forEach { path ->
+                                                        (binding.fragmentImageAlbumsList.adapter as ImageAlbumsAdapter).imageAlbumItems.forEach { albumItem ->
+                                                            if(albumItem.data == path) {
+                                                                albumItem.containedItems.forEach {
+                                                                    add(it.data)
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                viewModel.selectionTool!!.selectedPaths.size, viewModel) {
+                                            ApplicationLoader.ApplicationIOScope.launch {
+                                                shouldScrollToTop = false
+                                                viewModel.assignItemsLive(frContext, true)
+                                            }
+                                        }
+                                    }
+                                }
+                            } catch (thr: Throwable) {
+
+                            }
+                        }
+
+                        viewModel.shownDialogs.forEach {
+                            it.show()
+                        }
                     } catch (thr: Throwable) {
 
                     }
@@ -221,6 +324,13 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
             activity.onBackPressed()
         }
 
+        binding.fragmentImageAlbumsList.adapter.run {
+            if(this != null) {
+                (this as ImageAlbumsAdapter).imageAlbumItems.forEachIndexed { i: Int, _: ImageAlbumItem ->
+                    this.notifyItemChanged(i)
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -266,7 +376,7 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
                         if(this@ImageAlbumsFragment::viewModel.isInitialized) {
                             viewModel.IOScope.launch {
                                 viewModel.setSearchText(newText)
-                                viewModel.assignItemsLive(frContext)
+                                viewModel.assignItemsLive(frContext, false)
 
                                 ApplicationLoader.transientStrings[UIManager.KEY_TRANSIENT_STRINGS_ALBUMS_SEARCH_TEXT] = newText
                             }
@@ -280,28 +390,37 @@ class ImageAlbumsFragment : BaseFragment(), Observer<MutableList<ImageAlbumItem>
         }
 
         menu.findItem(R.id.mainToolbarMenuItemSort).setOnMenuItemClickListener {
-            if(this@ImageAlbumsFragment::viewModel.isInitialized && !SortTool.sortingInProgress) {
-                SortTool.sortingInProgress = true
-
-                val sortBottomModalSheetFragment = SortBottomModalSheetFragment()
-                    sortBottomModalSheetFragment.arguments = bundleOf(SortTool.KEY_ARGUMENT_SORTING_VIEW_MODEL to viewModel)
-
-                    sortBottomModalSheetFragment.show(requireActivity().supportFragmentManager, null)
+            if(this@ImageAlbumsFragment::viewModel.isInitialized && !SortTool.showingDialogInProgress) {
+                SortTool.showSortBottomModalSheetFragment(activity.supportFragmentManager, viewModel)
             }
 
             true
         }
 
         menu.findItem(R.id.mainToolbarMenuItemEdit).setOnMenuItemClickListener {
-
             if(this@ImageAlbumsFragment::viewModel.isInitialized && viewModel.selectionTool != null && binding.fragmentImageAlbumsList.adapter != null) {
-                viewModel.selectionTool!!.enterMode(activity,
-                        binding.fragmentImageAlbumsList.adapter!!,
-                        binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayoutSelectionCountCb,
-                        binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                        binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarRootLayout,
-                        binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout
-                )
+                viewModel.selectionTool!!.selectionMode = true
+
+                if(binding.fragmentImageAlbumsList.adapter!!.itemCount > 0) {
+                    for (i in 0 until binding.fragmentImageAlbumsList.adapter!!.itemCount) {
+                        viewModel.MainScope?.launch {
+                            binding.fragmentImageAlbumsList.adapter!!.notifyItemChanged(i)
+                        }
+                    }
+                } else {
+                    viewModel.MainScope?.launch {
+                        viewModel.selectionTool!!.initSelectionState(
+                                activity,
+                                binding.fragmentImageAlbumsList.adapter!!,
+                                binding.fragmentImageAlbumsBottomToolBarInclude.layoutBottomToolBarAlbumRootLayout,
+                                binding.fragmentImageAlbumsBottomTabsBarInclude.layoutBottomTabsBarRootLayout,
+                                binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                                binding.fragmentImageAlbumsToolbarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb,
+                                viewModel.selectionTool!!.selectionMode,
+                                viewModel.selectionTool!!.selectedPaths.size
+                        )
+                    }
+                }
             }
 
             true

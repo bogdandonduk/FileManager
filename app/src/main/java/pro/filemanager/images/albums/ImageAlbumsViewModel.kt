@@ -2,7 +2,6 @@ package pro.filemanager.images.albums
 
 import android.content.Context
 import android.os.Parcelable
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.android.parcel.Parcelize
@@ -201,25 +200,27 @@ class ImageAlbumsViewModel(var imageRepo: @RawValue ImageRepo) : BaseViewModel()
         }
     }
 
-    override suspend fun assignItemsLive(context: Context) {
+    override suspend fun assignItemsLive(context: Context, forceLoad: Boolean) {
         if(itemsLive != null) {
             when(gallerySortOrder) {
                 SortTool.SORT_ORDER_DATE_RECENT -> {
+                    imageRepo.loadItemsByDateRecent(context, forceLoad)
+                    imageRepo.splitAlbumsByDateRecent(context, forceLoad)
                     when(currentSortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
-                            search(imageRepo.splitAlbumsByDateRecentLoadAlbumsByDateRecent(context, false))
+                            search(imageRepo.splitAlbumsByDateRecentLoadAlbumsByDateRecent(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_DATE_OLDEST -> {
                             search(imageRepo.splitAlbumsByDateRecentLoadAlbumsByDateOldest(context))
                         }
                         SortTool.SORT_ORDER_NAME_REVERSED -> {
-                            search(imageRepo.splitAlbumsByDateRecentLoadAlbumsByNameReversed(context, false))
+                            search(imageRepo.splitAlbumsByDateRecentLoadAlbumsByNameReversed(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
                             search(imageRepo.splitAlbumsByDateRecentLoadAlbumsByNameAlphabetic(context))
                         }
                         SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                            search(imageRepo.splitAlbumsByDateRecentLoadAlbumsBySizeLargest(context, false))
+                            search(imageRepo.splitAlbumsByDateRecentLoadAlbumsBySizeLargest(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_SIZE_SMALLEST -> {
                             search(imageRepo.splitAlbumsByDateRecentLoadAlbumsBySizeSmallest(context))
@@ -230,21 +231,23 @@ class ImageAlbumsViewModel(var imageRepo: @RawValue ImageRepo) : BaseViewModel()
                     }
                 }
                 SortTool.SORT_ORDER_DATE_OLDEST -> {
+                    imageRepo.loadItemsByDateRecent(context, forceLoad)
+                    imageRepo.splitAlbumsByDateOldest(context, forceLoad)
                     when(currentSortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
-                            search(imageRepo.splitAlbumsByDateOldestLoadAlbumsByDateRecent(context, false))
+                            search(imageRepo.splitAlbumsByDateOldestLoadAlbumsByDateRecent(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_DATE_OLDEST -> {
                             search(imageRepo.splitAlbumsByDateOldestLoadAlbumsByDateOldest(context))
                         }
                         SortTool.SORT_ORDER_NAME_REVERSED -> {
-                            search(imageRepo.splitAlbumsByDateOldestLoadAlbumsByNameReversed(context, false))
+                            search(imageRepo.splitAlbumsByDateOldestLoadAlbumsByNameReversed(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
                             search(imageRepo.splitAlbumsByDateOldestLoadAlbumsByNameAlphabetic(context))
                         }
                         SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                            search(imageRepo.splitAlbumsByDateOldestLoadAlbumsBySizeLargest(context, false))
+                            search(imageRepo.splitAlbumsByDateOldestLoadAlbumsBySizeLargest(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_SIZE_SMALLEST -> {
                             search(imageRepo.splitAlbumsByDateOldestLoadAlbumsBySizeSmallest(context))
@@ -255,21 +258,23 @@ class ImageAlbumsViewModel(var imageRepo: @RawValue ImageRepo) : BaseViewModel()
                     }
                 }
                 SortTool.SORT_ORDER_SIZE_LARGEST -> {
+                    imageRepo.loadItemsBySizeLargest(context, forceLoad)
+                    imageRepo.splitAlbumsBySizeLargest(context, forceLoad)
                     when(currentSortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
-                            search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsByDateRecent(context, false))
+                            search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsByDateRecent(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_DATE_OLDEST -> {
                             search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsByDateOldest(context))
                         }
                         SortTool.SORT_ORDER_NAME_REVERSED -> {
-                            search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsByNameReversed(context, false))
+                            search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsByNameReversed(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
                             search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsByNameAlphabetic(context))
                         }
                         SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                            search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsBySizeLargest(context, false))
+                            search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsBySizeLargest(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_SIZE_SMALLEST -> {
                             search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsBySizeSmallest(context))
@@ -280,21 +285,23 @@ class ImageAlbumsViewModel(var imageRepo: @RawValue ImageRepo) : BaseViewModel()
                     }
                 }
                 SortTool.SORT_ORDER_SIZE_SMALLEST -> {
+                    imageRepo.loadItemsBySizeLargest(context, forceLoad)
+                    imageRepo.splitAlbumsBySizeSmallest(context, forceLoad)
                     when(currentSortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
-                            search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByDateRecent(context, false))
+                            search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByDateRecent(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_DATE_OLDEST -> {
                             search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByDateOldest(context))
                         }
                         SortTool.SORT_ORDER_NAME_REVERSED -> {
-                            search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByNameReversed(context, false))
+                            search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByNameReversed(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
                             search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByNameAlphabetic(context))
                         }
                         SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                            search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsBySizeLargest(context, false))
+                            search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsBySizeLargest(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_SIZE_SMALLEST -> {
                             search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsBySizeSmallest(context))
@@ -305,21 +312,23 @@ class ImageAlbumsViewModel(var imageRepo: @RawValue ImageRepo) : BaseViewModel()
                     }
                 }
                 SortTool.SORT_ORDER_NAME_REVERSED -> {
+                    imageRepo.loadItemsByNameReversed(context, forceLoad)
+                    imageRepo.splitAlbumsByNameReversed(context, forceLoad)
                     when(currentSortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
-                            search(imageRepo.splitAlbumsByNameReversedLoadAlbumsByDateRecent(context, false))
+                            search(imageRepo.splitAlbumsByNameReversedLoadAlbumsByDateRecent(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_DATE_OLDEST -> {
                             search(imageRepo.splitAlbumsByNameReversedLoadAlbumsByDateOldest(context))
                         }
                         SortTool.SORT_ORDER_NAME_REVERSED -> {
-                            search(imageRepo.splitAlbumsByNameReversedLoadAlbumsByNameReversed(context, false))
+                            search(imageRepo.splitAlbumsByNameReversedLoadAlbumsByNameReversed(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
                             search(imageRepo.splitAlbumsByNameReversedLoadAlbumsByNameAlphabetic(context))
                         }
                         SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                            search(imageRepo.splitAlbumsByNameReversedLoadAlbumsBySizeLargest(context, false))
+                            search(imageRepo.splitAlbumsByNameReversedLoadAlbumsBySizeLargest(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_SIZE_SMALLEST -> {
                             search(imageRepo.splitAlbumsByNameReversedLoadAlbumsBySizeSmallest(context))
@@ -330,21 +339,23 @@ class ImageAlbumsViewModel(var imageRepo: @RawValue ImageRepo) : BaseViewModel()
                     }
                 }
                 SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
+                    imageRepo.loadItemsByNameReversed(context, forceLoad)
+                    imageRepo.splitAlbumsByNameAlphabetic(context, forceLoad)
                     when(currentSortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
-                            search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByDateRecent(context, false))
+                            search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByDateRecent(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_DATE_OLDEST -> {
                             search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByDateOldest(context))
                         }
                         SortTool.SORT_ORDER_NAME_REVERSED -> {
-                            search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByNameReversed(context, false))
+                            search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByNameReversed(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
                             search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByNameAlphabetic(context))
                         }
                         SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                            search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsBySizeLargest(context, false))
+                            search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsBySizeLargest(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_SIZE_SMALLEST -> {
                             search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsBySizeSmallest(context))
@@ -370,7 +381,7 @@ class ImageAlbumsViewModel(var imageRepo: @RawValue ImageRepo) : BaseViewModel()
     override fun onUpdate() {
         if(itemsLive != null)
             IOScope.launch {
-                assignItemsLive(ApplicationLoader.appContext)
+                assignItemsLive(ApplicationLoader.appContext, false)
             }
     }
 

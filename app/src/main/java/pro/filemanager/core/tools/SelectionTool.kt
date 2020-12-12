@@ -1,12 +1,14 @@
 package pro.filemanager.core.tools
 
 import android.graphics.Color
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import androidx.annotation.IntDef
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
@@ -22,149 +24,67 @@ class SelectionTool {
     }
 
     var selectionMode = false
-    val selectedPositions = mutableListOf<Int>()
+    val selectedPaths = mutableListOf<String>()
 
     fun handleClickInViewHolder(
             @ClickType clickType: Int,
             position: Int,
+            path: String,
             adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
-            activity: HomeActivity,
-            selectionCheckBox: CheckBox,
-            selectionCheckBoxLayout: ViewGroup,
-            toolbarLayout: ViewGroup,
-            tabsBarLayout: ViewGroup,
-            offAction: Runnable = Runnable {}) {
+            offAction: Runnable = Runnable {}
+    ) {
         if(clickType == CLICK_SHORT) {
             if(!selectionMode)
                 offAction.run()
             else {
-                if(!selectedPositions.contains(position)) {
-                    selectedPositions.add(position)
-                    adapter.notifyItemChanged(position)
-                    selectionCheckBox.text = selectedPositions.size.toString()
-
-                    if(selectedPositions.size == 1) {
-                        toolbarLayout.visibility = View.VISIBLE
-                    }
+                if(!selectedPaths.contains(path)) {
+                    selectedPaths.add(path)
                 } else {
-                    selectedPositions.remove(position)
-
-                    if(selectedPositions.isNotEmpty()) {
-                        adapter.notifyItemChanged(position)
-                        selectionCheckBox.text = selectedPositions.size.toString()
-                    } else {
-                        adapter.notifyItemChanged(position)
-                        selectionCheckBox.text = selectedPositions.size.toString()
-
-                        toolbarLayout.visibility = View.GONE
-                    }
+                    selectedPaths.remove(path)
                 }
 
+                adapter.notifyItemChanged(position)
             }
         } else if(clickType == CLICK_LONG){
             if(!selectionMode) {
                 selectionMode = true
-                selectedPositions.add(position)
+                selectedPaths.add(path)
 
                 for (i in 0 until adapter.itemCount) {
                     ApplicationLoader.ApplicationMainScope.launch {
                         adapter.notifyItemChanged(i)
                     }
                 }
-
-                initOnBackCallback(activity, adapter, selectionCheckBox, selectionCheckBoxLayout, toolbarLayout, tabsBarLayout)
-
-                activity.supportActionBar?.hide()
-                selectionCheckBoxLayout.visibility = View.VISIBLE
-                selectionCheckBox.text = selectedPositions.size.toString()
-
-                tabsBarLayout.visibility = View.GONE
-                toolbarLayout.visibility = View.VISIBLE
             } else {
-                if(!selectedPositions.contains(position)) {
-                    selectedPositions.add(position)
-                    adapter.notifyItemChanged(position)
-                    selectionCheckBox.text = selectedPositions.size.toString()
-
-                    if(selectedPositions.size == 1) {
-                        toolbarLayout.visibility = View.VISIBLE
-                    }
+                if(!selectedPaths.contains(path)) {
+                    selectedPaths.add(path)
                 } else {
-                    selectedPositions.remove(position)
-
-                    if(selectedPositions.isNotEmpty()) {
-                        adapter.notifyItemChanged(position)
-                        selectionCheckBox.text = selectedPositions.size.toString()
-                    } else {
-                        adapter.notifyItemChanged(position)
-                        selectionCheckBox.text = selectedPositions.size.toString()
-
-                        toolbarLayout.visibility = View.GONE
-                    }
+                    selectedPaths.remove(path)
                 }
             }
-
         }
     }
 
-    fun enterMode(activity: HomeActivity,
-                  adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                  selectionCheckBox: CheckBox,
-                  selectionCheckBoxLayout: ViewGroup,
-                  toolbarLayout: ViewGroup,
-                  tabsBarLayout: ViewGroup
-    ) {
-        if(!selectionMode) {
-
-            selectionMode = true
-
-            for (i in 0 until adapter.itemCount) {
-                ApplicationLoader.ApplicationMainScope.launch {
-                    adapter.notifyItemChanged(i)
-                }
-            }
-
-            initOnBackCallback(activity, adapter, selectionCheckBox, selectionCheckBoxLayout, toolbarLayout, tabsBarLayout)
-
-            activity.supportActionBar?.hide()
-            selectionCheckBoxLayout.visibility = View.VISIBLE
-            selectionCheckBox.text = selectedPositions.size.toString()
-
-            tabsBarLayout.visibility = View.GONE
-            toolbarLayout.visibility = View.VISIBLE
-        }
-    }
-
-    fun selectAll(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                  selectionCheckBox: CheckBox) {
-        selectionCheckBox.text = adapter.itemCount.toString()
+    fun selectAll(items: MutableList<String>, adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, scope: CoroutineScope?) {
+        selectedPaths.clear()
+        selectedPaths.addAll(items)
 
         for (i in 0 until adapter.itemCount) {
-            ApplicationLoader.ApplicationMainScope.launch {
-                if(!selectedPositions.contains(i)) {
-                    selectedPositions.add(i)
-
-                    adapter.notifyItemChanged(i)
-                }
+            scope?.launch {
+                adapter.notifyItemChanged(i)
             }
         }
 
     }
 
-    fun unselectAll(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
-                    selectionCheckBox: CheckBox) {
-        selectionCheckBox.text = (0).toString()
+    fun unselectAll(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, scope: CoroutineScope?) {
+        selectedPaths.clear()
 
         for (i in 0 until adapter.itemCount) {
-            ApplicationLoader.ApplicationMainScope.launch {
-                if(selectedPositions.contains(i)) {
-                    selectedPositions.remove(i)
-
-                    adapter.notifyItemChanged(i)
-                }
+            scope?.launch {
+                adapter.notifyItemChanged(i)
             }
         }
-
     }
 
     fun initOnBackCallback(
@@ -173,11 +93,11 @@ class SelectionTool {
             selectionCheckBox: CheckBox,
             selectionCheckBoxLayout: ViewGroup,
             toolbarLayout: ViewGroup,
-            tabsBarLayout: ViewGroup) {
+            tabsBarLayout: ViewGroup
+    ) {
          activity.currentOnBackBehavior = if(selectionMode)
              Runnable {
-
-                 selectedPositions.clear()
+                 selectedPaths.clear()
                  selectionMode = false
 
                  for (i in 0 until adapter.itemCount) {
@@ -197,12 +117,18 @@ class SelectionTool {
 
                  activity.currentOnBackBehavior = null
              }
+
          else null
     }
 
-    fun differentiateItem(position: Int, thumbnail: ImageView, checkMark: ImageView, uncheckedMark: ImageView) {
+    fun differentiateItem(
+            path: String,
+            thumbnail: ImageView,
+            checkMark: ImageView,
+            uncheckedMark: ImageView,
+    ) {
         if(selectionMode) {
-            if(selectedPositions.contains(position)) {
+            if(selectedPaths.contains(path)) {
                 checkMark.visibility = View.VISIBLE
                 uncheckedMark.visibility = View.INVISIBLE
 
@@ -214,7 +140,6 @@ class SelectionTool {
                 checkMark.visibility = View.VISIBLE
                 checkMark.animate().scaleX(1f).setDuration(150).start()
                 checkMark.animate().scaleY(1f).setDuration(150).start()
-
             } else {
                 thumbnail.colorFilter = null
 
@@ -226,6 +151,37 @@ class SelectionTool {
 
             checkMark.visibility = View.INVISIBLE
             uncheckedMark.visibility = View.INVISIBLE
+        }
+    }
+
+    fun initSelectionState(
+            activity: HomeActivity,
+            adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
+            toolbarLayout: ViewGroup,
+            tabsBarLayout: ViewGroup,
+            selectionCheckBoxLayout: ViewGroup,
+            selectionCheckBox: CheckBox,
+            selectionMode: Boolean,
+            selectedItemsCount: Int
+    ) {
+        if(selectionMode) {
+            if(activity.currentOnBackBehavior == null) initOnBackCallback(activity, adapter, selectionCheckBox, selectionCheckBoxLayout, toolbarLayout, tabsBarLayout)
+
+            if(activity.supportActionBar != null && activity.supportActionBar!!.isShowing) activity.supportActionBar!!.hide()
+
+            if(selectionCheckBoxLayout.visibility != View.VISIBLE) selectionCheckBoxLayout.visibility = View.VISIBLE
+
+            selectionCheckBox.text = selectedItemsCount.toString()
+
+            if(tabsBarLayout.visibility == View.VISIBLE) tabsBarLayout.visibility = View.GONE
+            if(toolbarLayout.visibility != View.VISIBLE) toolbarLayout.visibility = View.VISIBLE
+        } else {
+            if(activity.supportActionBar != null && !activity.supportActionBar!!.isShowing) activity.supportActionBar!!.show()
+
+            if(selectionCheckBoxLayout.visibility == View.VISIBLE) selectionCheckBoxLayout.visibility = View.GONE
+
+            if(tabsBarLayout.visibility != View.VISIBLE) tabsBarLayout.visibility = View.VISIBLE
+            if(toolbarLayout.visibility == View.VISIBLE) toolbarLayout.visibility = View.GONE
         }
     }
 }

@@ -4,14 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
-import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import pro.filemanager.core.tools.sort.SortTool
 import pro.filemanager.images.albums.ImageAlbumItem
 import java.io.File
+import java.io.Serializable
 import java.util.*
 
 /**
@@ -174,9 +171,9 @@ class ImageRepo private constructor() {
                             ImageItem(
                                 cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
                                 cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
-                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)).toLong(),
-                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
-                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
+                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
+                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
+                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
                             )
                         )
 
@@ -186,7 +183,6 @@ class ImageRepo private constructor() {
                 }
 
                 cursor.close()
-
                 //
 
                 loadingItemsSortedByDateRecentInProgress = false // turn "loading already in progress" indicator off
@@ -203,7 +199,6 @@ class ImageRepo private constructor() {
                 while(loadingItemsSortedByDateRecentInProgress && System.currentTimeMillis() < timeout) {
                     delay(25) // delaying the containing coroutine, waiting out "loading already in progress" indicator or timeout going off. 40 cycles in a second
                 }
-
                 // return items when they are ready from previous fetching that we were waiting out
                 loadedItemsSortedByDateRecent ?: throw IllegalStateException("Something went wrong while fetching audios from MediaStore") // No idea what happened. Most likely, error from MediaStore
 
@@ -237,9 +232,9 @@ class ImageRepo private constructor() {
                             ImageItem(
                                 cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
                                 cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
-                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)).toLong(),
-                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
-                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
+                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
+                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
+                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
                             )
                         )
 
@@ -295,9 +290,9 @@ class ImageRepo private constructor() {
                             ImageItem(
                                 cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
                                 cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
-                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)).toLong(),
-                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
-                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
+                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
+                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
+                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
                             )
                         )
 
@@ -312,6 +307,8 @@ class ImageRepo private constructor() {
                 loadingItemsSortedByNameReversedInProgress = false
 
                 loadedItemsSortedByNameReversed = imageItems
+
+//                if(forceLoad) notifyItemObservers()
 
                 loadedItemsSortedByNameReversed!!
             } else {

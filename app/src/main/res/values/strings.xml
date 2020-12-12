@@ -2,7 +2,7 @@
     <string name="app_name">File Manager</string>
 
     <string name="external_storage_denied_rationale_title">No Storage Permission</string>
-    <string name="external_storage_denied_rationale_message">Please grant it for this app to function</string>
+    <string name="external_storage_denied_rationale_message">Please grant it to access file system</string>
     <string name="permission_grant">GRANT</string>
     <string name="permission_deny">DENY</string>
 
@@ -28,11 +28,12 @@
 
     <string name="title_search">Search</string>
     <string name="title_sort">Sort</string>
+    <string name="title_sort_by">Sort By</string>
 
     <string name="title_internal_storage">Internal Storage</string>
     <string name="title_external_storage">SD Card</string>
 
-    <string name="external_storage_do_not_ask_again_selected_rationale_message">Please grant it from application details settings</string>
+    <string name="external_storage_do_not_ask_again_selected_rationale_message">Please grant it to access file system (from app settings)</string>
     <string name="title_settings">Settings</string>
     <string name="title_edit">Edit</string>
 
@@ -40,12 +41,31 @@
     <string name="sort_option_date_oldest">Date (Oldest)</string>
     <string name="sort_option_size_largest">Size (Largest)</string>
     <string name="sort_option_size_smallest">Size (Smallest)</string>
-    <string name="sort_option_name_alphabetic">Name (Alphabet)</string>
+    <string name="sort_option_name_alphabetic">Name (Alphabetic)</string>
     <string name="sort_option_name_reversed">Name (Reversed)</string>
     <string name="toolbar_delete">Delete</string>
     <string name="toolbar_share">Share</string>
     <string name="toolbar_copy">Copy</string>
     <string name="toolbar_move">Move</string>
     <string name="toolbar_info">Info</string>
+    <string name="title_details">Details</string>
+    <string name="toolbar_rename">Rename</string>
+    <string name="title_are_you_sure">Are you sure?</string>
+    <string name="title_confirm">Confirm</string>
+    <string name="title_go_back">Go Back</string>
+    <string name="title_cancel">Cancel</string>
+    <string name="title_deletion_prompt_multiple_items">%1$s items will be deleted forever</string>
+    <string name="title_deletion_prompt_single_item">%1$s item will be deleted forever</string>
+    <string name="title_deletion_prompt_multiple_albums">%1$s albums and all items inside will be deleted forever</string>
+    <string name="title_deletion_prompt_single_album">%1$s album and all items inside will be deleted forever</string>
+
+    <string name="warning_items_size_too_large">Size of items is too large</string>
+    <string name="info_path">Path:</string>
+    <string name="info_size">Size:</string>
+    <string name="info_total_size">Total size:</string>
+    <string name="info_name">Name:</string>
+    <string name="info_date_added">Date added:</string>
+    <string name="info_total_quantity">Total:</string>
+    <string name="info_total_quantity_content">%1$s items</string>
 
 </resources>

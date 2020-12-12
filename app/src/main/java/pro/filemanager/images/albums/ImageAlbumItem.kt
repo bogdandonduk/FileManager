@@ -2,15 +2,20 @@ package pro.filemanager.images.albums
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
+import pro.filemanager.core.base.BaseAlbumItem
 import pro.filemanager.images.ImageItem
 import java.io.File
 import java.io.Serializable
 
 @Parcelize
 data class ImageAlbumItem(
-        val data: String,
-        val displayName: String = File(data).name,
+        override val data: String,
+        override val displayName: String = File(data).name,
         var containedImages: MutableList<ImageItem> = mutableListOf(),
-        var totalSize: Long = 0
-) : Parcelable, Serializable
+        override var totalSize: Long = 0
+) : BaseAlbumItem(
+        data,
+        displayName,
+        containedImages,
+        totalSize
+), Parcelable, Serializable
