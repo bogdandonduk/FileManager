@@ -8,6 +8,19 @@
     android:paddingLeft="1dp"
     android:paddingBottom="1dp">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutVideoItemRootLayoutBgRippleHolder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:elevation="3dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/layoutVideoItemRootLayoutGl25ph"
         android:layout_width="wrap_content"
@@ -83,6 +96,7 @@
         android:id="@+id/layoutVideoItemIconCheck"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:padding="2dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/layoutVideoItemRootLayoutGl25ph"
         app:layout_constraintEnd_toEndOf="parent"
@@ -94,6 +108,7 @@
         android:id="@+id/layoutVideoItemIconUnchecked"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:padding="2dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/layoutVideoItemRootLayoutGl25ph"
         app:layout_constraintEnd_toEndOf="parent"

@@ -84,12 +84,12 @@ object PermissionWrapper {
                 .create()
 
         dialog.setOnShowListener { dialogInterface ->
-            (dialogInterface as AlertDialog).findViewById<Button>(R.id.layoutBaseDialogPositiveButton).setOnClickListener {
+            (dialogInterface as AlertDialog).findViewById<TextView>(R.id.layoutBaseDialogPositiveButton).setOnClickListener {
                 dialogInterface.dismiss()
                 activity.requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_EXTERNAL_STORAGE)
             }
 
-            dialogInterface.findViewById<Button>(R.id.layoutBaseDialogNegativeButton).setOnClickListener {
+            dialogInterface.findViewById<TextView>(R.id.layoutBaseDialogNegativeButton).setOnClickListener {
                 dialog.dismiss()
                 activity.onBackPressed()
             }
@@ -122,13 +122,13 @@ object PermissionWrapper {
                 .create()
 
         dialog.setOnShowListener { dialogInterface ->
-            (dialogInterface as AlertDialog).findViewById<Button>(R.id.layoutBaseDialogPositiveButton).setOnClickListener {
+            (dialogInterface as AlertDialog).findViewById<TextView>(R.id.layoutBaseDialogPositiveButton).setOnClickListener {
                 dialogInterface.dismiss()
                 ApplicationLoader.isUserSentToAppDetailsSettings = true
                 openAppDetailsSettings(activity)
             }
 
-            dialogInterface.findViewById<Button>(R.id.layoutBaseDialogNegativeButton).setOnClickListener {
+            dialogInterface.findViewById<TextView>(R.id.layoutBaseDialogNegativeButton).setOnClickListener {
                 dialogInterface.dismiss()
                 activity.onBackPressed()
             }

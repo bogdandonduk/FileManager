@@ -65,8 +65,7 @@
             app:layout_constraintEnd_toStartOf="@+id/layoutHomeTileRootLayoutContentGl60pv"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/layoutHomeTileRootLayoutContentGl30pv"
-            app:layout_constraintTop_toTopOf="@+id/layoutHomeTileRootLayoutContentGl20ph"
-            app:srcCompat="@android:drawable/ic_media_play" />
+            app:layout_constraintTop_toTopOf="@+id/layoutHomeTileRootLayoutContentGl20ph" />
 
         <TextView
             android:id="@+id/layoutHomeTileTitle"

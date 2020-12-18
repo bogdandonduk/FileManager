@@ -28,7 +28,8 @@
 
     <string name="title_search">Search</string>
     <string name="title_sort">Sort</string>
-    <string name="title_sort_by">Sort By</string>
+    <string name="title_sort_by">Sort by</string>
+    <string name="title_rename_to">Rename to</string>
 
     <string name="title_internal_storage">Internal Storage</string>
     <string name="title_external_storage">SD Card</string>
@@ -36,6 +37,8 @@
     <string name="external_storage_do_not_ask_again_selected_rationale_message">Please grant it to access file system (from app settings)</string>
     <string name="title_settings">Settings</string>
     <string name="title_edit">Edit</string>
+    <string name="title_rename_enter_valid">Enter valid file name</string>
+    <string name="title_file_already_exists">File with given name already exists</string>
 
     <string name="sort_option_date_recent">Date (Recent)</string>
     <string name="sort_option_date_oldest">Date (Oldest)</string>
@@ -67,5 +70,10 @@
     <string name="info_date_added">Date added:</string>
     <string name="info_total_quantity">Total:</string>
     <string name="info_total_quantity_content">%1$s items</string>
+    <string name="title_no_images">No Images</string>
+    <string name="title_no_folders">No Folders</string>
+    <string name="title_no_audio">No Audio</string>
+    <string name="title_no_video">No Audio</string>
 
+    <string name="title_search_hint">Search …</string>
 </resources>

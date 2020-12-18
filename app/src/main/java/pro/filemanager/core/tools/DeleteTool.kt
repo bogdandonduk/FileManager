@@ -18,7 +18,7 @@ import java.time.format.TextStyle
 
 object DeleteTool {
 
-    var showingDialogInProgress = false
+    var inProgressDialogCode: Int? = null
 
     fun deleteItemsAndRefreshMediaStore(activity: HomeActivity, paths: MutableList<String>, refreshAction: Runnable) {
         val dialog = AlertDialog.Builder(activity)
@@ -48,14 +48,14 @@ object DeleteTool {
 
                 }
                 .setOnDismissListener {
-                    showingDialogInProgress = false
+                    inProgressDialogCode = null
                 }
                 .create()
 
         dialog.setOnShowListener { dialogInterface ->
-            showingDialogInProgress = true
+            inProgressDialogCode = 1
 
-            (dialogInterface as AlertDialog).findViewById<Button>(R.id.layoutBaseDialogPositiveButton).setOnClickListener {
+            (dialogInterface as AlertDialog).findViewById<TextView>(R.id.layoutBaseDialogPositiveButton).setOnClickListener {
                 dialogInterface.dismiss()
 
                 try {
@@ -72,7 +72,7 @@ object DeleteTool {
                 activity.onBackPressed()
             }
 
-            dialogInterface.findViewById<Button>(R.id.layoutBaseDialogNegativeButton).setOnClickListener {
+            dialogInterface.findViewById<TextView>(R.id.layoutBaseDialogNegativeButton).setOnClickListener {
                 dialogInterface.dismiss()
             }
         }
@@ -81,7 +81,7 @@ object DeleteTool {
         dialog.show()
     }
     
-    fun deleteAlbumsAndRefreshMediaStore(activity: HomeActivity, paths: MutableList<String>, albumsCount: Int, refreshAction: Runnable) {
+    fun deleteFoldersAndRefreshMediaStore(activity: HomeActivity, paths: MutableList<String>, albumsCount: Int, refreshAction: Runnable) {
         val dialog = AlertDialog.Builder(activity)
                 .setView(
                         activity.layoutInflater.inflate(R.layout.layout_base_dialog, null).apply {
@@ -108,14 +108,14 @@ object DeleteTool {
                     it.dismiss()
                 }
                 .setOnDismissListener {
-                    showingDialogInProgress = false
+                    inProgressDialogCode = null
                 }
                 .create()
 
         dialog.setOnShowListener { dialogInterface ->
-            showingDialogInProgress = true
+            inProgressDialogCode = 2
 
-            (dialogInterface as AlertDialog).findViewById<Button>(R.id.layoutBaseDialogPositiveButton).setOnClickListener {
+            (dialogInterface as AlertDialog).findViewById<TextView>(R.id.layoutBaseDialogPositiveButton).setOnClickListener {
                 dialogInterface.dismiss()
 
                 try {
@@ -132,7 +132,7 @@ object DeleteTool {
                 activity.onBackPressed()
             }
 
-            dialogInterface.findViewById<Button>(R.id.layoutBaseDialogNegativeButton).setOnClickListener {
+            dialogInterface.findViewById<TextView>(R.id.layoutBaseDialogNegativeButton).setOnClickListener {
                 dialogInterface.dismiss()
             }
         }

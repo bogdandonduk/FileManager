@@ -8,7 +8,7 @@
         <item android:id="@+id/audioBrowserFragment" android:title="@string/title_audio" />
         <item android:id="@+id/videoBrowserFragment" android:title="@string/title_video" />
         <item android:id="@+id/docBrowserFragment" android:title="@string/title_docs" />
-        <item android:id="@+id/imageBrowserFragment" android:title="@string/title_images" />
+        <item android:id="@+id/imageLibraryFragment" android:title="@string/title_images" />
 
     </group>
 </menu>

@@ -1,30 +1,35 @@
 package pro.filemanager.core.tools.info
 
-import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
-import pro.filemanager.core.base.BaseAlbumItem
+import pro.filemanager.core.base.BaseFolderItem
 import pro.filemanager.core.base.BaseItem
 
 object InfoTool {
-    const val KEY_ARGUMENT_INFO_ITEMS = "infoItems"
+
+    @Volatile var lastItems = mutableListOf<BaseItem>()
+    @Volatile var lastAlbums = mutableListOf<BaseFolderItem>()
 
     @Volatile var showingDialogInProgress = false
 
     fun showInfoItemBottomModalSheetFragment(fm: FragmentManager, items: MutableList<BaseItem>) {
-        showingDialogInProgress = true
+        if(!showingDialogInProgress) {
+            showingDialogInProgress = true
 
-        val sheet = InfoItemBottomModalSheetFragment()
-            sheet.arguments = bundleOf(KEY_ARGUMENT_INFO_ITEMS to items.toTypedArray())
+            lastItems.clear()
+            lastItems.addAll(items)
 
-        sheet.show(fm, null)
+            InfoItemBottomModalSheetFragment().show(fm, null)
+        }
     }
 
-    fun showInfoAlbumBottomModalSheetFragment(fm: FragmentManager, items: MutableList<BaseAlbumItem>) {
-        showingDialogInProgress = true
+    fun showInfoAlbumBottomModalSheetFragment(fm: FragmentManager, folderItems: MutableList<BaseFolderItem>) {
+        if(!showingDialogInProgress) {
+            showingDialogInProgress = true
 
-        val sheet = InfoAlbumBottomModalSheetFragment()
-            sheet.arguments = bundleOf(KEY_ARGUMENT_INFO_ITEMS to items.toTypedArray())
+            lastAlbums.clear()
+            lastAlbums.addAll(folderItems)
 
-        sheet.show(fm, null)
+            InfoAlbumBottomModalSheetFragment().show(fm, null)
+        }
     }
 }

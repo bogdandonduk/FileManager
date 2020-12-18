@@ -38,7 +38,7 @@ class FileBrowserFragment() : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentFileBrowserBinding.inflate(inflater, container, false)
 
         return binding.root

@@ -52,6 +52,18 @@
             app:layout_constraintStart_toStartOf="@+id/layoutAudioAlbumItemContentLayoutGl10pv"
             app:layout_constraintTop_toTopOf="parent">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutAudioAlbumItemThumbnailLayoutBgRippleHolder"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="?attr/selectableItemBackground"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/layoutAudioAlbumItemThumbnailLayoutGl75pv"
                 android:layout_width="wrap_content"
@@ -94,12 +106,13 @@
                 android:id="@+id/layoutAudioAlbumItemIconUnchecked"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:padding="2dp"
                 android:visibility="invisible"
                 app:layout_constraintBottom_toTopOf="@+id/layoutAudioAlbumItemThumbnailLayoutGl25ph"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/layoutAudioAlbumItemThumbnailLayoutGl75pv"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/bg_checkbox" />
+                app:srcCompat="@drawable/ic_circle" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

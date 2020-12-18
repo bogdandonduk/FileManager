@@ -25,7 +25,7 @@
             app:layout_constraintGuide_percent="0.5" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutBottomTabsBarGalleryTitleContainer"
+            android:id="@+id/layoutBottomTabsBarLibraryTitleContainer"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="?attr/selectableItemBackground"
@@ -35,7 +35,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/layoutBottomBarGalleryTitle"
+                android:id="@+id/layoutBottomTabsBarLibraryTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -47,7 +47,7 @@
                 tools:text="@string/title_gallery" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layoutBottomBarGalleryTitleIndicator"
+                android:id="@+id/layoutBottomTabsBarLibraryTitleIndicator"
                 android:layout_width="0dp"
                 android:layout_height="2dp"
                 android:background="@android:color/white"
@@ -60,7 +60,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutBottomTabsBarAlbumsTitleContainer"
+            android:id="@+id/layoutBottomTabsBarFoldersTitleContainer"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="?attr/selectableItemBackground"
@@ -70,7 +70,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/layoutBottomTabsBarAlbumsTitle"
+                android:id="@+id/layoutBottomTabsBarFoldersTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -82,7 +82,7 @@
                 tools:text="@string/title_folders" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layoutBottomTabsBarAlbumsTitleIndicator"
+                android:id="@+id/layoutBottomTabsBarFoldersTitleIndicator"
                 android:layout_width="0dp"
                 android:layout_height="2dp"
                 android:background="@android:color/white"

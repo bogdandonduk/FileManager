@@ -16,12 +16,12 @@
             app:popEnterAnim="@anim/fragment_fade_enter"
             app:popExitAnim="@anim/fragment_open_exit" />
         <action
-            android:id="@+id/action_homeFragment_to_imageBrowserFragment"
-            app:destination="@id/imageBrowserFragment"
+            android:id="@+id/action_homeFragment_to_imageLibraryFragment"
+            app:destination="@id/imageLibraryFragment"
             app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
+            app:exitAnim="@anim/fragment_close_exit"
             app:popEnterAnim="@anim/fragment_fade_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
+            app:popExitAnim="@anim/fragment_fade_exit" />
     </fragment>
     <fragment
         android:id="@+id/fileBrowserFragment"
@@ -38,37 +38,32 @@
             app:argType="string" />
     </fragment>
     <fragment
-        android:id="@+id/imageBrowserFragment"
-        android:name="pro.filemanager.images.ImageBrowserFragment"
-        android:label="ImageBrowserFragment" >
-        <argument
-            android:name="Album"
-            app:argType="pro.filemanager.images.albums.ImageAlbumItem" />
+        android:id="@+id/imageLibraryFragment"
+        android:name="pro.filemanager.images.ImageLibraryFragment"
+        android:label="ImageLibraryFragment">
         <action
-            android:id="@+id/action_imageBrowserFragment_to_imageAlbumsFragment"
-            app:destination="@id/imageAlbumsFragment"
+            android:id="@+id/action_imageLibraryFragment_to_imageFoldersFragment"
+            app:destination="@id/imageFoldersFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
+            app:launchSingleTop="true"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_imageBrowserFragment_self"
-            app:destination="@id/imageBrowserFragment"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right"
-            app:popEnterAnim="@anim/slide_in_right"
-            app:popExitAnim="@anim/slide_out_left" />
+        <argument
+            android:name="ImageFolder"
+            app:argType="pro.filemanager.images.folders.ImageFolderItem" />
     </fragment>
     <fragment
-        android:id="@+id/imageAlbumsFragment"
-        android:name="pro.filemanager.images.albums.ImageAlbumsFragment"
-        android:label="ImageAlbumsFragment" >
+        android:id="@+id/imageFoldersFragment"
+        android:name="pro.filemanager.images.folders.ImageFoldersFragment"
+        android:label="ImageFoldersFragment">
         <action
-            android:id="@+id/action_imageAlbumsFragment_to_imageBrowserFragment"
-            app:destination="@id/imageBrowserFragment"
+            android:id="@+id/action_imageFoldersFragment_to_imageLibraryFragment"
+            app:destination="@id/imageLibraryFragment"
             app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:launchSingleTop="true"
             app:popEnterAnim="@anim/fragment_fade_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
+            app:popExitAnim="@anim/fragment_fade_exit" />
     </fragment>
 </navigation>

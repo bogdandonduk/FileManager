@@ -7,11 +7,13 @@ import java.io.Serializable
 
 @Parcelize
 data class ImageItem(
-        override val data: String,
-        override val displayName: String,
-        override val size: Long,
-        override val dateModified: Long,
-        override val dateAdded: Long
+        override var data: String,
+        override var displayName: String,
+        override var size: Long,
+        override var dateModified: Long,
+        override var dateAdded: Long,
+        val width: Int,
+        val height: Int
 ) : BaseItem(
         data,
         displayName,

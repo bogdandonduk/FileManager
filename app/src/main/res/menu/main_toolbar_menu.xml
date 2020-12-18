@@ -7,7 +7,7 @@
         android:icon="@drawable/ic_search_black_24dp"
         android:title="@string/title_search"
         app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/mainToolbarMenuItemSort"
         android:icon="@drawable/ic_baseline_sort_24"

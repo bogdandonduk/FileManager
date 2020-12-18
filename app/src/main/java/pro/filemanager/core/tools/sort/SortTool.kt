@@ -1,7 +1,6 @@
 package pro.filemanager.core.tools.sort
 
 import android.content.Context
-import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,8 +15,14 @@ import java.util.*
 
 object SortTool {
 
-    const val KEY_SP_IMAGE_BROWSER_SORT_ORDER = "imageBrowserSortOrder"
-    const val KEY_SP_IMAGE_ALBUMS_SORT_ORDER = "imageAlbumsSortOrder"
+    const val KEY_SP_IMAGE_LIBRARY_SORT_ORDER = "imageBrowserSortOrder"
+    const val KEY_SP_IMAGE_FOLDERS_SORT_ORDER = "imageAlbumsSortOrder"
+
+    const val KEY_SP_AUDIO_BROWSER_SORT_ORDER = "audioBrowserSortOrder"
+    const val KEY_SP_AUDIO_ALBUMS_SORT_ORDER = "audioAlbumsSortOrder"
+
+    const val KEY_SP_VIDEO_BROWSER_SORT_ORDER = "videoBrowserSortOrder"
+    const val KEY_SP_VIDEO_ALBUMS_SORT_ORDER = "videoAlbumsSortOrder"
 
     const val SORT_ORDER_DATE_RECENT = "dateRecent"
     const val SORT_ORDER_DATE_OLDEST = "dateOldest"
@@ -111,11 +116,13 @@ object SortTool {
     }
 
     fun showSortBottomModalSheetFragment(fm: FragmentManager, viewModel: BaseViewModel) {
-        showingDialogInProgress = true
+        if(!showingDialogInProgress) {
+            showingDialogInProgress = true
 
-        sortingViewModel = viewModel
+            sortingViewModel = viewModel
 
-        SortBottomModalSheetFragment().show(fm, null)
+            SortBottomModalSheetFragment().show(fm, null)
+        }
     }
 
     fun sortFilesBySizeLargest(files: MutableList<File>) : MutableList<File> {

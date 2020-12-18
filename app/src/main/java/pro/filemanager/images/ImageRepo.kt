@@ -3,12 +3,15 @@ package pro.filemanager.images
 import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
+import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import kotlinx.coroutines.delay
 import pro.filemanager.core.tools.sort.SortTool
-import pro.filemanager.images.albums.ImageAlbumItem
+import pro.filemanager.images.folders.ImageFolderItem
 import java.io.File
-import java.io.Serializable
+import java.nio.file.Files
+import java.nio.file.attribute.BasicFileAttributes
 import java.util.*
 
 /**
@@ -45,35 +48,35 @@ class ImageRepo private constructor() {
     @Volatile private var loadingItemsSortedBySizeLargestInProgress = false
     @Volatile private var loadingItemsSortedByNameReversedInProgress = false
 
-    @Volatile private var splitAlbumsSortedByDateRecent: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedByDateRecentLoadedByDateRecent: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedByDateRecentLoadedBySizeLargest: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedByDateRecentLoadedByNameReversed: MutableList<ImageAlbumItem>? = null
+    @Volatile private var splitAlbumsSortedByDateRecent: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedByDateRecentLoadedByDateRecent: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedByDateRecentLoadedBySizeLargest: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedByDateRecentLoadedByNameReversed: MutableList<ImageFolderItem>? = null
 
-    @Volatile private var splitAlbumsSortedByDateOldest: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedByDateOldestLoadedByDateRecent: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedByDateOldestLoadedBySizeLargest: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedByDateOldestLoadedByNameReversed: MutableList<ImageAlbumItem>? = null
+    @Volatile private var splitAlbumsSortedByDateOldest: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedByDateOldestLoadedByDateRecent: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedByDateOldestLoadedBySizeLargest: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedByDateOldestLoadedByNameReversed: MutableList<ImageFolderItem>? = null
 
-    @Volatile private var splitAlbumsSortedBySizeLargest: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedBySizeLargestLoadedByDateRecent: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedBySizeLargestLoadedBySizeLargest: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedBySizeLargestLoadedByNameReversed: MutableList<ImageAlbumItem>? = null
+    @Volatile private var splitAlbumsSortedBySizeLargest: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedBySizeLargestLoadedByDateRecent: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedBySizeLargestLoadedBySizeLargest: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedBySizeLargestLoadedByNameReversed: MutableList<ImageFolderItem>? = null
 
-    @Volatile private var splitAlbumsSortedBySizeSmallest: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedBySizeSmallestLoadedByDateRecent: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedBySizeSmallestLoadedBySizeLargest: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedBySizeSmallestLoadedByNameReversed: MutableList<ImageAlbumItem>? = null
+    @Volatile private var splitAlbumsSortedBySizeSmallest: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedBySizeSmallestLoadedByDateRecent: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedBySizeSmallestLoadedBySizeLargest: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedBySizeSmallestLoadedByNameReversed: MutableList<ImageFolderItem>? = null
 
-    @Volatile private var splitAlbumsSortedByNameReversed: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedByNameReversedLoadedByDateRecent: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedByNameReversedLoadedBySizeLargest: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedByNameReversedLoadedByNameReversed: MutableList<ImageAlbumItem>? = null
+    @Volatile private var splitAlbumsSortedByNameReversed: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedByNameReversedLoadedByDateRecent: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedByNameReversedLoadedBySizeLargest: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedByNameReversedLoadedByNameReversed: MutableList<ImageFolderItem>? = null
 
-    @Volatile private var splitAlbumsSortedByNameAlphabetic: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedByNameAlphabeticLoadedByDateRecent: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedByNameAlphabeticLoadedBySizeLargest: MutableList<ImageAlbumItem>? = null
-    @Volatile private var splitAlbumsSortedByNameAlphabeticLoadedByNameReversed: MutableList<ImageAlbumItem>? = null
+    @Volatile private var splitAlbumsSortedByNameAlphabetic: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedByNameAlphabeticLoadedByDateRecent: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedByNameAlphabeticLoadedBySizeLargest: MutableList<ImageFolderItem>? = null
+    @Volatile private var splitAlbumsSortedByNameAlphabeticLoadedByNameReversed: MutableList<ImageFolderItem>? = null
 
     @Volatile private var splittingAlbumsSortedByDateRecentInProgress = false
     @Volatile private var loadingSplitAlbumsSortedByDateRecentByDateRecentInProgress = false
@@ -156,11 +159,13 @@ class ImageRepo private constructor() {
 
                 // Block of MediaStore fetching to ImageItem objects
                 val cursor: Cursor = context.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, arrayOf(
-                    MediaStore.Images.ImageColumns.DATA,
-                    MediaStore.Images.ImageColumns.DISPLAY_NAME,
-                    MediaStore.Images.ImageColumns.SIZE,
-                    MediaStore.Images.ImageColumns.DATE_MODIFIED,
-                    MediaStore.Images.ImageColumns.DATE_ADDED
+                        MediaStore.Images.ImageColumns.DATA,
+                        MediaStore.Images.ImageColumns.DISPLAY_NAME,
+                        MediaStore.Images.ImageColumns.SIZE,
+                        MediaStore.Images.ImageColumns.DATE_MODIFIED,
+                        MediaStore.Images.ImageColumns.DATE_ADDED,
+                        MediaStore.Images.ImageColumns.WIDTH,
+                        MediaStore.Images.ImageColumns.HEIGHT
                 ), null, null, MediaStore.Images.ImageColumns.DATE_ADDED + " DESC", null)!!
 
                 val imageItems = mutableListOf<ImageItem>()
@@ -168,22 +173,49 @@ class ImageRepo private constructor() {
                 if(cursor.moveToFirst()) {
                     while(!cursor.isAfterLast) {
                         imageItems.add(
-                            ImageItem(
-                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
-                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
-                            )
+                                ImageItem(
+                                        cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
+                                        cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
+                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
+                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
+                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED)),
+                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH)),
+                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT))
+                                )
                         )
 
                         cursor.moveToNext()
                     }
-
                 }
 
                 cursor.close()
                 //
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val sortedDates = mutableListOf<Long>().apply {
+                        imageItems.forEach {
+                            add(Files.readAttributes(File(it.data).toPath(), BasicFileAttributes::class.java).creationTime().toMillis().apply {
+                                it.dateAdded = this
+                            })
+                        }
+                    }
+
+                    Collections.sort(sortedDates, Collections.reverseOrder())
+
+                    val newImageItems = mutableListOf<ImageItem>()
+
+                    sortedDates.forEach { sortedDate ->
+                        imageItems.forEach {
+                            if(it.dateAdded == sortedDate && !newImageItems.contains(it)) {
+                                newImageItems.add(it)
+                            }
+                        }
+                    }
+
+                    imageItems.clear()
+
+                    imageItems.addAll(newImageItems)
+                }
 
                 loadingItemsSortedByDateRecentInProgress = false // turn "loading already in progress" indicator off
 
@@ -200,7 +232,7 @@ class ImageRepo private constructor() {
                     delay(25) // delaying the containing coroutine, waiting out "loading already in progress" indicator or timeout going off. 40 cycles in a second
                 }
                 // return items when they are ready from previous fetching that we were waiting out
-                loadedItemsSortedByDateRecent ?: throw IllegalStateException("Something went wrong while fetching audios from MediaStore") // No idea what happened. Most likely, error from MediaStore
+                loadedItemsSortedByDateRecent ?: throw IllegalStateException("Something went wrong while fetching images from MediaStore") // No idea what happened. Most likely, error from MediaStore
 
             }
         }
@@ -217,11 +249,13 @@ class ImageRepo private constructor() {
                 loadingItemsSortedBySizeLargestInProgress = true
 
                 val cursor: Cursor = context.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, arrayOf(
-                    MediaStore.Images.ImageColumns.DATA,
-                    MediaStore.Images.ImageColumns.DISPLAY_NAME,
-                    MediaStore.Images.ImageColumns.SIZE,
-                    MediaStore.Images.ImageColumns.DATE_MODIFIED,
-                    MediaStore.Images.ImageColumns.DATE_ADDED
+                        MediaStore.Images.ImageColumns.DATA,
+                        MediaStore.Images.ImageColumns.DISPLAY_NAME,
+                        MediaStore.Images.ImageColumns.SIZE,
+                        MediaStore.Images.ImageColumns.DATE_MODIFIED,
+                        MediaStore.Images.ImageColumns.DATE_ADDED,
+                        MediaStore.Images.ImageColumns.WIDTH,
+                        MediaStore.Images.ImageColumns.HEIGHT
                 ), null, null, MediaStore.Images.ImageColumns.SIZE + " DESC", null)!!
 
                 val imageItems = mutableListOf<ImageItem>()
@@ -229,13 +263,15 @@ class ImageRepo private constructor() {
                 if(cursor.moveToFirst()) {
                     while(!cursor.isAfterLast) {
                         imageItems.add(
-                            ImageItem(
-                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
-                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
-                            )
+                                ImageItem(
+                                        cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
+                                        cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
+                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
+                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
+                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED)),
+                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH)),
+                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT))
+                                )
                         )
 
                         cursor.moveToNext()
@@ -274,11 +310,13 @@ class ImageRepo private constructor() {
                 loadingItemsSortedByNameReversedInProgress= true
 
                 val cursor: Cursor = context.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, arrayOf(
-                    MediaStore.Images.ImageColumns.DATA,
-                    MediaStore.Images.ImageColumns.DISPLAY_NAME,
-                    MediaStore.Images.ImageColumns.SIZE,
-                    MediaStore.Images.ImageColumns.DATE_MODIFIED,
-                    MediaStore.Images.ImageColumns.DATE_ADDED
+                        MediaStore.Images.ImageColumns.DATA,
+                        MediaStore.Images.ImageColumns.DISPLAY_NAME,
+                        MediaStore.Images.ImageColumns.SIZE,
+                        MediaStore.Images.ImageColumns.DATE_MODIFIED,
+                        MediaStore.Images.ImageColumns.DATE_ADDED,
+                        MediaStore.Images.ImageColumns.WIDTH,
+                        MediaStore.Images.ImageColumns.HEIGHT
                 ), null, null, MediaStore.Images.ImageColumns.DISPLAY_NAME + " DESC", null)!!
 
                 val imageItems = mutableListOf<ImageItem>()
@@ -287,13 +325,15 @@ class ImageRepo private constructor() {
 
                     while(!cursor.isAfterLast) {
                         imageItems.add(
-                            ImageItem(
-                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
-                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
-                            )
+                                ImageItem(
+                                        cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
+                                        cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
+                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
+                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
+                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED)),
+                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH)),
+                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT))
+                                )
                         )
 
                         cursor.moveToNext()
@@ -344,7 +384,7 @@ class ImageRepo private constructor() {
 
     // refer to similar loadItems(context: Context, forceLoad: Boolean) : MutableList<ImageItems> method's similar comments
     // quite heavy operation running for about 475 ms on a new young CPU
-    suspend fun splitAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByDateRecent.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByDateRecent!!
         } else {
@@ -368,7 +408,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByDateRecentLoadAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateRecentLoadAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByDateRecentLoadedByDateRecent.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByDateRecentLoadedByDateRecent!!
         } else {
@@ -392,7 +432,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByDateRecentLoadAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateRecentLoadAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByDateRecentLoadedBySizeLargest.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByDateRecentLoadedBySizeLargest!!
         } else {
@@ -400,7 +440,7 @@ class ImageRepo private constructor() {
                 loadingSplitAlbumsSortedByDateRecentBySizeLargestInProgress = true
 
                 val sizeLongs = mutableListOf<Long>()
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 val rawItems = splitAlbumsByDateRecent(context, false).onEach { albumItem ->
                     albumItem.containedImages.forEach {
@@ -416,7 +456,7 @@ class ImageRepo private constructor() {
 
                 sizeLongs.forEach { size ->
                     rawItems.forEach {
-                        if(it.totalSize == size) {
+                        if(it.totalSize == size && !finalItems.contains(it)) {
                             finalItems.add(it)
                         }
                     }
@@ -439,7 +479,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByDateRecentLoadAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateRecentLoadAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByDateRecentLoadedByNameReversed.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByDateRecentLoadedByNameReversed!!
         } else {
@@ -447,7 +487,7 @@ class ImageRepo private constructor() {
                 loadingSplitAlbumsSortedByDateRecentByNameReversedInProgress = true
 
                 val titleFiles = mutableListOf<File>()
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 val rawItems = splitAlbumsByDateRecent(context, false)
 
@@ -480,25 +520,25 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByDateRecentLoadAlbumsByDateOldest(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateRecentLoadAlbumsByDateOldest(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsByDateRecentLoadAlbumsByDateRecent(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsByDateRecentLoadAlbumsBySizeSmallest(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateRecentLoadAlbumsBySizeSmallest(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsByDateRecentLoadAlbumsBySizeLargest(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsByDateRecentLoadAlbumsByNameAlphabetic(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateRecentLoadAlbumsByNameAlphabetic(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsByDateRecentLoadAlbumsByNameReversed(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsByDateOldest(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateOldest(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByDateOldest.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByDateOldest!!
         } else {
@@ -522,14 +562,14 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByDateOldestLoadAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateOldestLoadAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByDateOldestLoadedByDateRecent.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByDateOldestLoadedByDateRecent!!
         } else {
             if(!loadingSplitAlbumsSortedByDateOldestByDateRecentInProgress) {
                 loadingSplitAlbumsSortedByDateOldestByDateRecentInProgress = true
 
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 val rawItems = splitAlbumsByDateOldest(context, false)
 
@@ -558,7 +598,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByDateOldestLoadAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateOldestLoadAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByDateOldestLoadedBySizeLargest.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByDateOldestLoadedBySizeLargest!!
         } else {
@@ -566,7 +606,7 @@ class ImageRepo private constructor() {
                 loadingSplitAlbumsSortedByDateOldestBySizeLargestInProgress = true
 
                 val sizeLongs = mutableListOf<Long>()
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 val rawItems = splitAlbumsByDateOldest(context, false).onEach { albumItem ->
                     albumItem.containedImages.forEach {
@@ -582,7 +622,7 @@ class ImageRepo private constructor() {
 
                 sizeLongs.forEach { size ->
                     rawItems.forEach {
-                        if(it.totalSize == size) {
+                        if(it.totalSize == size && !finalItems.contains(it)) {
                             finalItems.add(it)
                         }
                     }
@@ -605,7 +645,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByDateOldestLoadAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateOldestLoadAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByDateOldestLoadedByNameReversed.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByDateOldestLoadedByNameReversed!!
         } else {
@@ -613,7 +653,7 @@ class ImageRepo private constructor() {
                 loadingSplitAlbumsSortedByDateOldestByNameReversedInProgress = true
 
                 val titleFiles = mutableListOf<File>()
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 val rawItems = splitAlbumsByDateOldest(context, false)
 
@@ -646,25 +686,25 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByDateOldestLoadAlbumsByDateOldest(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateOldestLoadAlbumsByDateOldest(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsByDateOldestLoadAlbumsByDateRecent(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsByDateOldestLoadAlbumsBySizeSmallest(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateOldestLoadAlbumsBySizeSmallest(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsByDateOldestLoadAlbumsBySizeLargest(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsByDateOldestLoadAlbumsByNameAlphabetic(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByDateOldestLoadAlbumsByNameAlphabetic(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsByDateOldestLoadAlbumsByNameReversed(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedBySizeLargest.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedBySizeLargest!!
         } else {
@@ -688,7 +728,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsBySizeLargestLoadAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeLargestLoadAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedBySizeLargestLoadedByDateRecent.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedBySizeLargestLoadedByDateRecent!!
         } else {
@@ -697,7 +737,7 @@ class ImageRepo private constructor() {
 
                 val rawItems = splitAlbumsBySizeLargest(context, false)
 
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 splitAlbumsByDateRecent(context, false).forEach { albumItem ->
                     rawItems.forEach {
@@ -724,7 +764,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsBySizeLargestLoadAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeLargestLoadAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedBySizeLargestLoadedBySizeLargest.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedBySizeLargestLoadedBySizeLargest!!
         } else {
@@ -732,7 +772,7 @@ class ImageRepo private constructor() {
                 loadingSplitAlbumsSortedBySizeLargestBySizeLargestInProgress = true
 
                 val sizeLongs = mutableListOf<Long>()
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 val rawItems = splitAlbumsBySizeLargest(context, false).onEach { albumItem ->
                     albumItem.containedImages.forEach {
@@ -748,7 +788,7 @@ class ImageRepo private constructor() {
 
                 sizeLongs.forEach { size ->
                     rawItems.forEach {
-                        if(it.totalSize == size) {
+                        if(it.totalSize == size && !finalItems.contains(it)) {
                             finalItems.add(it)
                         }
                     }
@@ -771,7 +811,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsBySizeLargestLoadAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeLargestLoadAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedBySizeLargestLoadedByNameReversed.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedBySizeLargestLoadedByNameReversed!!
         } else {
@@ -779,7 +819,7 @@ class ImageRepo private constructor() {
                 loadingSplitAlbumsSortedBySizeLargestByNameReversedInProgress = true
 
                 val titleFiles = mutableListOf<File>()
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 val rawItems = splitAlbumsBySizeLargest(context, false)
 
@@ -812,25 +852,25 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsBySizeLargestLoadAlbumsByDateOldest(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeLargestLoadAlbumsByDateOldest(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsBySizeLargestLoadAlbumsByDateRecent(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsBySizeLargestLoadAlbumsBySizeSmallest(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeLargestLoadAlbumsBySizeSmallest(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsBySizeLargestLoadAlbumsBySizeLargest(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsBySizeLargestLoadAlbumsByNameAlphabetic(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeLargestLoadAlbumsByNameAlphabetic(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsBySizeLargestLoadAlbumsByNameReversed(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsBySizeSmallest(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeSmallest(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedBySizeSmallest.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedBySizeSmallest!!
         } else {
@@ -854,7 +894,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsBySizeSmallestLoadAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeSmallestLoadAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedBySizeSmallestLoadedByDateRecent.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedBySizeSmallestLoadedByDateRecent!!
         } else {
@@ -863,7 +903,7 @@ class ImageRepo private constructor() {
 
                 val rawItems = splitAlbumsBySizeSmallest(context, false)
 
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 splitAlbumsByDateRecent(context, false).forEach { albumItem ->
                     rawItems.forEach {
@@ -890,7 +930,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsBySizeSmallestLoadAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeSmallestLoadAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedBySizeSmallestLoadedBySizeLargest.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedBySizeSmallestLoadedBySizeLargest!!
         } else {
@@ -898,7 +938,7 @@ class ImageRepo private constructor() {
                 loadingSplitAlbumsSortedBySizeSmallestBySizeLargestInProgress = true
 
                 val sizeLongs = mutableListOf<Long>()
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 val rawItems = splitAlbumsBySizeSmallest(context, false).onEach { albumItem ->
                     albumItem.containedImages.forEach {
@@ -914,7 +954,7 @@ class ImageRepo private constructor() {
 
                 sizeLongs.forEach { size ->
                     rawItems.forEach {
-                        if(it.totalSize == size) {
+                        if(it.totalSize == size && !finalItems.contains(it)) {
                             finalItems.add(it)
                         }
                     }
@@ -937,7 +977,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsBySizeSmallestLoadAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeSmallestLoadAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedBySizeSmallestLoadedByNameReversed.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedBySizeSmallestLoadedByNameReversed!!
         } else {
@@ -945,7 +985,7 @@ class ImageRepo private constructor() {
                 loadingSplitAlbumsSortedBySizeSmallestByNameReversedInProgress = true
 
                 val titleFiles = mutableListOf<File>()
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 val rawItems = splitAlbumsBySizeSmallest(context, false)
 
@@ -978,25 +1018,25 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsBySizeSmallestLoadAlbumsByDateOldest(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeSmallestLoadAlbumsByDateOldest(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsBySizeSmallestLoadAlbumsByDateRecent(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsBySizeSmallestLoadAlbumsBySizeSmallest(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeSmallestLoadAlbumsBySizeSmallest(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsBySizeSmallestLoadAlbumsBySizeLargest(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsBySizeSmallestLoadAlbumsByNameAlphabetic(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsBySizeSmallestLoadAlbumsByNameAlphabetic(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsBySizeSmallestLoadAlbumsByNameReversed(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByNameReversed.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByNameReversed!!
         } else {
@@ -1020,7 +1060,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByNameReversedLoadAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameReversedLoadAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByNameReversedLoadedByDateRecent.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByNameReversedLoadedByDateRecent!!
         } else {
@@ -1029,7 +1069,7 @@ class ImageRepo private constructor() {
 
                 val rawItems = splitAlbumsByNameReversed(context, false)
 
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 splitAlbumsByDateRecent(context, false).forEach { albumItem ->
                     rawItems.forEach {
@@ -1056,7 +1096,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByNameReversedLoadAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameReversedLoadAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByNameReversedLoadedBySizeLargest.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByNameReversedLoadedBySizeLargest!!
         } else {
@@ -1064,7 +1104,7 @@ class ImageRepo private constructor() {
                 loadingSplitAlbumsSortedByNameReversedBySizeLargestInProgress = true
 
                 val sizeLongs = mutableListOf<Long>()
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 val rawItems = splitAlbumsByNameReversed(context, false).onEach { albumItem ->
                     albumItem.containedImages.forEach {
@@ -1080,7 +1120,7 @@ class ImageRepo private constructor() {
 
                 sizeLongs.forEach { size ->
                     rawItems.forEach {
-                        if(it.totalSize == size) {
+                        if(it.totalSize == size && !finalItems.contains(it)) {
                             finalItems.add(it)
                         }
                     }
@@ -1103,7 +1143,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByNameReversedLoadAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameReversedLoadAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByNameReversedLoadedByNameReversed.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByNameReversedLoadedByNameReversed!!
         } else {
@@ -1111,7 +1151,7 @@ class ImageRepo private constructor() {
                 loadingSplitAlbumsSortedByNameReversedByNameReversedInProgress = true
 
                 val titleFiles = mutableListOf<File>()
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 val rawItems = splitAlbumsByNameReversed(context, false)
 
@@ -1144,25 +1184,25 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByNameReversedLoadAlbumsByDateOldest(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameReversedLoadAlbumsByDateOldest(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsByNameReversedLoadAlbumsByDateRecent(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsByNameReversedLoadAlbumsBySizeSmallest(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameReversedLoadAlbumsBySizeSmallest(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsByNameReversedLoadAlbumsBySizeLargest(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsByNameReversedLoadAlbumsByNameAlphabetic(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameReversedLoadAlbumsByNameAlphabetic(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsByNameReversedLoadAlbumsByNameReversed(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsByNameAlphabetic(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameAlphabetic(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByNameAlphabetic.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByNameAlphabetic!!
         } else {
@@ -1186,7 +1226,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByNameAlphabeticLoadAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameAlphabeticLoadAlbumsByDateRecent(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByNameAlphabeticLoadedByDateRecent.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByNameAlphabeticLoadedByDateRecent!!
         } else {
@@ -1195,7 +1235,7 @@ class ImageRepo private constructor() {
 
                 val rawItems = splitAlbumsByNameAlphabetic(context, false)
 
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 splitAlbumsByDateRecent(context, false).forEach { albumItem ->
                     rawItems.forEach {
@@ -1222,7 +1262,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByNameAlphabeticLoadAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameAlphabeticLoadAlbumsBySizeLargest(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByNameAlphabeticLoadedBySizeLargest.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByNameAlphabeticLoadedBySizeLargest!!
         } else {
@@ -1230,7 +1270,7 @@ class ImageRepo private constructor() {
                 loadingSplitAlbumsSortedByNameAlphabeticBySizeLargestInProgress = true
 
                 val sizeLongs = mutableListOf<Long>()
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 val rawItems = splitAlbumsByNameAlphabetic(context, false).onEach { albumItem ->
                     albumItem.containedImages.forEach {
@@ -1246,7 +1286,7 @@ class ImageRepo private constructor() {
 
                 sizeLongs.forEach { size ->
                     rawItems.forEach {
-                        if(it.totalSize == size) {
+                        if(it.totalSize == size && !finalItems.contains(it)) {
                             finalItems.add(it)
                         }
                     }
@@ -1269,7 +1309,7 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByNameAlphabeticLoadAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameAlphabeticLoadAlbumsByNameReversed(context: Context, forceLoad: Boolean) : MutableList<ImageFolderItem> {
         return if(!splitAlbumsSortedByNameAlphabeticLoadedByNameReversed.isNullOrEmpty() && !forceLoad) {
             splitAlbumsSortedByNameAlphabeticLoadedByNameReversed!!
         } else {
@@ -1277,7 +1317,7 @@ class ImageRepo private constructor() {
                 loadingSplitAlbumsSortedByNameAlphabeticByNameReversedInProgress = true
 
                 val titleFiles = mutableListOf<File>()
-                val finalItems = mutableListOf<ImageAlbumItem>()
+                val finalItems = mutableListOf<ImageFolderItem>()
 
                 val rawItems = splitAlbumsByNameAlphabetic(context, false)
 
@@ -1310,22 +1350,22 @@ class ImageRepo private constructor() {
         }
     }
 
-    suspend fun splitAlbumsByNameAlphabeticLoadAlbumsByDateOldest(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameAlphabeticLoadAlbumsByDateOldest(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsByNameAlphabeticLoadAlbumsByDateRecent(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsByNameAlphabeticLoadAlbumsBySizeSmallest(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameAlphabeticLoadAlbumsBySizeSmallest(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsByNameAlphabeticLoadAlbumsBySizeLargest(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
-    suspend fun splitAlbumsByNameAlphabeticLoadAlbumsByNameAlphabetic(context: Context) : MutableList<ImageAlbumItem> {
+    suspend fun splitAlbumsByNameAlphabeticLoadAlbumsByNameAlphabetic(context: Context) : MutableList<ImageFolderItem> {
         val items = splitAlbumsByNameAlphabeticLoadAlbumsByNameReversed(context, false)
 
-        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageAlbumItem> else mutableListOf()
+        return if(!items.isNullOrEmpty()) items.reversed() as MutableList<ImageFolderItem> else mutableListOf()
     }
 
     // that very preloading magic, executes for 2-5 seconds
@@ -1368,7 +1408,7 @@ class ImageRepo private constructor() {
     }
 
     // algo for grouping images into albums that are just their parent folders in essence
-    fun splitIntoAlbums(imageItems: MutableList<ImageItem>) : MutableList<ImageAlbumItem> {
+    fun splitIntoAlbums(imageItems: MutableList<ImageItem>) : MutableList<ImageFolderItem> {
 
         //  mediator procedure for finding paths of folders containing ImageItems
         val parentPaths = mutableListOf<String>()
@@ -1383,7 +1423,7 @@ class ImageRepo private constructor() {
 
         // initial collecting of album items
         val albumItems = MutableList(parentPaths.size) {
-            ImageAlbumItem(parentPaths[it])
+            ImageFolderItem(parentPaths[it])
         }
 
         // loop for every AlbumItem to populate its contained ImageItems

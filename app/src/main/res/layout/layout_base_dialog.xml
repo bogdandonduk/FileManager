@@ -28,6 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:padding="10dp"
             app:layout_constraintGuide_percent="0.85" />
 
         <androidx.constraintlayout.widget.Guideline
@@ -80,14 +81,15 @@
             app:layout_constraintTop_toBottomOf="@+id/layoutBaseDialogTitleContainer"
             tools:text="@string/external_storage_denied_rationale_message" />
 
-        <Button
+        <TextView
             android:id="@+id/layoutBaseDialogNegativeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp"
             android:background="?attr/selectableItemBackground"
-            android:padding="10dp"
+            android:padding="15dp"
+            android:textAllCaps="true"
             android:textColor="@android:color/holo_blue_bright"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -95,14 +97,15 @@
             app:layout_constraintTop_toBottomOf="@+id/layoutBaseDialogMessage"
             tools:text="@string/permission_deny" />
 
-        <Button
+        <TextView
             android:id="@+id/layoutBaseDialogPositiveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp"
             android:background="?attr/selectableItemBackground"
-            android:padding="10dp"
+            android:padding="15dp"
+            android:textAllCaps="true"
             android:textColor="@android:color/holo_blue_bright"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -2,6 +2,8 @@ package pro.filemanager.core.tools.info
 
 import android.content.DialogInterface
 import android.graphics.Color
+import android.os.Build
+import android.os.Build.VERSION.SDK
 import android.os.Bundle
 import android.text.format.Formatter
 import android.util.Log
@@ -11,11 +13,18 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.R
 import pro.filemanager.core.base.BaseBottomSheetDialogFragment
 import pro.filemanager.core.base.BaseItem
 import pro.filemanager.databinding.LayoutInfoItemBottomModalSheetBinding
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.attribute.BasicFileAttributes
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -49,13 +58,37 @@ class InfoItemBottomModalSheetFragment : BaseBottomSheetDialogFragment() {
             setPadding(5, 0, 5, 0)
         }
 
-        requireArguments().getParcelableArray(InfoTool.KEY_ARGUMENT_INFO_ITEMS)?.apply {
+        val items = mutableListOf<BaseItem>().apply {
+            addAll(InfoTool.lastItems)
+        }
+
+        InfoTool.lastItems.clear()
+
+        items.apply {
             if(this.size == 1) {
-                binding.layoutInfoBottomModalSheetContentLayoutName.text = (this[0] as BaseItem).displayName
-                binding.layoutInfoBottomModalSheetContentLayoutPath.text = (this[0] as BaseItem).data
-                binding.layoutInfoBottomModalSheetContentLayoutSize.text = Formatter.formatFileSize(frContext, (this[0] as BaseItem).size)
-                binding.layoutInfoBottomModalSheetContentLayoutDateAdded.text = SimpleDateFormat("HH:mm:ss, dd.MM.yyyy", Locale.ROOT).format(Date((this[0] as BaseItem).dateAdded * 1000))
+                binding.layoutInfoBottomModalSheetContentLayoutName.text = this[0].displayName
+                binding.layoutInfoBottomModalSheetContentLayoutPath.text = this[0].data
+                binding.layoutInfoBottomModalSheetContentLayoutSize.text = Formatter.formatFileSize(frContext, this[0].size)
+                binding.layoutInfoBottomModalSheetContentLayoutDateAdded.text = SimpleDateFormat("HH:mm:ss, dd.MM.yyyy", Locale.ROOT).format(
+                        Date(
+                                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    Files.readAttributes(File(this[0].data).toPath(), BasicFileAttributes::class.java).creationTime().toMillis()
+                                } else this[0].size * 1000
+                        )
+                )
             } else {
+                ApplicationLoader.ApplicationDefaultScope.launch {
+                    var totalSize = 0L
+
+                    forEach {
+                        totalSize += it.size
+                    }
+
+                    withContext(Main) {
+                        binding.layoutInfoBottomModalSheetContentLayoutSize.text = Formatter.formatFileSize(frContext, totalSize)
+                    }
+                }
+
                 binding.layoutInfoBottomModalSheetContentLayoutNameTitle.visibility = View.GONE
                 binding.layoutInfoBottomModalSheetContentLayoutName.visibility = View.GONE
                 binding.layoutInfoBottomModalSheetContentLayoutPathTitle.visibility = View.GONE
@@ -67,16 +100,7 @@ class InfoItemBottomModalSheetFragment : BaseBottomSheetDialogFragment() {
                 binding.layoutInfoBottomModalSheetContentLayoutTotalQuantity.text = String.format(frContext.resources.getString(R.string.info_total_quantity_content), this.size)
                 binding.layoutInfoBottomModalSheetContentLayoutTotalQuantity.visibility = View.VISIBLE
                 binding.layoutInfoBottomModalSheetContentLayoutSizeTitle.text = frContext.resources.getString(R.string.info_total_size)
-
-                var totalSize = 0L
-
-                this.forEach {
-                    totalSize += (it as BaseItem).size
-                }
-
-                binding.layoutInfoBottomModalSheetContentLayoutSize.text = Formatter.formatFileSize(frContext, totalSize)
             }
         }
     }
-
 }

@@ -1,15 +1,12 @@
 package pro.filemanager
 
 import android.os.Bundle
-import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import pro.filemanager.core.PermissionWrapper
 import pro.filemanager.core.tools.ShareTool
-import pro.filemanager.core.tools.sort.SortBottomModalSheetFragment
 import pro.filemanager.databinding.ActivityHomeBinding
 import pro.filemanager.files.FileCore
 

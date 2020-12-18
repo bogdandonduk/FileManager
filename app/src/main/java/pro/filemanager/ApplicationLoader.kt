@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.FileObserver
 import android.os.Parcelable
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.images.ImageRepo
@@ -19,10 +20,13 @@ class ApplicationLoader : Application() {
 
         val ApplicationIOScope = CoroutineScope(IO)
         val ApplicationMainScope = CoroutineScope(Main)
+        val ApplicationDefaultScope = CoroutineScope(Default)
 
         val transientParcelables: MutableMap<String, Parcelable?> = mutableMapOf()
         val transientStrings: MutableMap<String, String?> = mutableMapOf()
-        var isUserSentToAppDetailsSettings = false
+
+        @Volatile var isUserSentToAppDetailsSettings = false
+        @Volatile var folderFragmentImmediateAction: Runnable? = null
 
         lateinit var fileObserver: FileObserver
 

@@ -29,6 +29,7 @@
             android:button="@drawable/bg_checkbox"
             android:paddingStart="10dp"
             android:textColor="@android:color/white"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/layoutSelectionBarContentLayoutGl5pv"
             app:layout_constraintTop_toTopOf="parent"

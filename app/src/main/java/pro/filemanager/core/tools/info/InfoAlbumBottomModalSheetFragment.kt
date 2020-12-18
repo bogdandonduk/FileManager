@@ -9,12 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import pro.filemanager.ApplicationLoader
 import pro.filemanager.R
-import pro.filemanager.core.base.BaseAlbumItem
+import pro.filemanager.core.base.BaseFolderItem
 import pro.filemanager.core.base.BaseBottomSheetDialogFragment
-import pro.filemanager.core.base.BaseItem
 import pro.filemanager.databinding.LayoutInfoAlbumBottomModalSheetBinding
-import java.util.*
 
 class InfoAlbumBottomModalSheetFragment : BaseBottomSheetDialogFragment() {
 
@@ -46,37 +48,56 @@ class InfoAlbumBottomModalSheetFragment : BaseBottomSheetDialogFragment() {
             setPadding(5, 0, 5, 0)
         }
 
-        requireArguments().getParcelableArray(InfoTool.KEY_ARGUMENT_INFO_ITEMS)?.apply {
-            if(this.size == 1) {
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutName.text = (this[0] as BaseAlbumItem).displayName
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutPath.text = (this[0] as BaseAlbumItem).data
+        val albums = mutableListOf<BaseFolderItem>().apply {
+            addAll(InfoTool.lastAlbums)
+        }
 
-                (this[0] as BaseAlbumItem).apply {
-                    containedItems.forEach {
-                        this.containedItems.forEach {
-                            this.totalSize += it.size
-                        }
+        InfoTool.lastAlbums.clear()
+
+        albums.let { albumItems ->
+            if(albumItems.size == 1) {
+                ApplicationLoader.ApplicationDefaultScope.launch {
+                    var totalSize = 0L
+
+                    albumItems[0].containedItems.forEach {
+                        totalSize += it.size
+                    }
+
+                    withContext(Main) {
+                        binding.layoutInfoAlbumBottomModalSheetContentLayoutSize.text = Formatter.formatFileSize(frContext, albumItems[0].totalSize)
                     }
                 }
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutSize.text = Formatter.formatFileSize(frContext, (this[0] as BaseAlbumItem).totalSize)
+
+                binding.layoutInfoAlbumBottomModalSheetContentLayoutName.text = albumItems[0].displayName
+                binding.layoutInfoAlbumBottomModalSheetContentLayoutPath.text = albumItems[0].data
+                binding.layoutInfoAlbumBottomModalSheetContentLayoutTotalQuantity.text = albumItems[0].containedItems.size.toString()
+
             } else {
+                ApplicationLoader.ApplicationDefaultScope.launch {
+                    var totalQuantity = 0
+                    var totalSize = 0L
+
+                    albumItems.forEach { album ->
+                        totalQuantity += album.containedItems.size
+                        album.containedItems.forEach {
+                            totalSize += it.size
+                        }
+                    }
+
+                    withContext(Main) {
+                        binding.layoutInfoAlbumBottomModalSheetContentLayoutTotalQuantity.text = String.format(frContext.resources.getString(R.string.info_total_quantity_content), totalQuantity)
+                        binding.layoutInfoAlbumBottomModalSheetContentLayoutSize.text = Formatter.formatFileSize(frContext, totalSize)
+                    }
+                }
+
                 binding.layoutInfoAlbumBottomModalSheetContentLayoutNameTitle.visibility = View.GONE
                 binding.layoutInfoAlbumBottomModalSheetContentLayoutName.visibility = View.GONE
                 binding.layoutInfoAlbumBottomModalSheetContentLayoutPathTitle.visibility = View.GONE
                 binding.layoutInfoAlbumBottomModalSheetContentLayoutPath.visibility = View.GONE
 
                 binding.layoutInfoAlbumBottomModalSheetContentLayoutTotalQuantityTitle.visibility = View.VISIBLE
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutTotalQuantity.text = String.format(frContext.resources.getString(R.string.info_total_quantity_content), this.size)
                 binding.layoutInfoAlbumBottomModalSheetContentLayoutTotalQuantity.visibility = View.VISIBLE
                 binding.layoutInfoAlbumBottomModalSheetContentLayoutSizeTitle.text = frContext.resources.getString(R.string.info_total_size)
-
-                var totalSize = 0L
-
-                this.forEach {
-                    totalSize += (it as BaseAlbumItem).totalSize
-                }
-
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutSize.text = Formatter.formatFileSize(frContext, totalSize)
             }
         }
     }
