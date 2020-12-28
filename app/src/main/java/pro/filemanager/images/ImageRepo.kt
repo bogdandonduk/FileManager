@@ -3,15 +3,13 @@ package pro.filemanager.images
 import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
-import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import pro.filemanager.ApplicationLoader
 import pro.filemanager.core.tools.sort.SortTool
 import pro.filemanager.images.folders.ImageFolderItem
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.attribute.BasicFileAttributes
 import java.util.*
 
 /**
@@ -163,26 +161,28 @@ class ImageRepo private constructor() {
                         MediaStore.Images.ImageColumns.DISPLAY_NAME,
                         MediaStore.Images.ImageColumns.SIZE,
                         MediaStore.Images.ImageColumns.DATE_MODIFIED,
-                        MediaStore.Images.ImageColumns.DATE_ADDED,
                         MediaStore.Images.ImageColumns.WIDTH,
                         MediaStore.Images.ImageColumns.HEIGHT
-                ), null, null, MediaStore.Images.ImageColumns.DATE_ADDED + " DESC", null)!!
+                ), null, null, MediaStore.Images.ImageColumns.DATE_MODIFIED + " DESC", null)!!
 
                 val imageItems = mutableListOf<ImageItem>()
 
                 if(cursor.moveToFirst()) {
                     while(!cursor.isAfterLast) {
-                        imageItems.add(
-                                ImageItem(
-                                        cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
-                                        cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
-                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
-                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
-                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED)),
-                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH)),
-                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT))
+                        File(cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))).let {
+                            if(it.exists() && !it.isDirectory) {
+                                imageItems.add(
+                                        ImageItem(
+                                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
+                                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
+                                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
+                                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
+                                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH)),
+                                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT))
+                                        )
                                 )
-                        )
+                            }
+                        }
 
                         cursor.moveToNext()
                     }
@@ -190,32 +190,6 @@ class ImageRepo private constructor() {
 
                 cursor.close()
                 //
-
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    val sortedDates = mutableListOf<Long>().apply {
-                        imageItems.forEach {
-                            add(Files.readAttributes(File(it.data).toPath(), BasicFileAttributes::class.java).creationTime().toMillis().apply {
-                                it.dateAdded = this
-                            })
-                        }
-                    }
-
-                    Collections.sort(sortedDates, Collections.reverseOrder())
-
-                    val newImageItems = mutableListOf<ImageItem>()
-
-                    sortedDates.forEach { sortedDate ->
-                        imageItems.forEach {
-                            if(it.dateAdded == sortedDate && !newImageItems.contains(it)) {
-                                newImageItems.add(it)
-                            }
-                        }
-                    }
-
-                    imageItems.clear()
-
-                    imageItems.addAll(newImageItems)
-                }
 
                 loadingItemsSortedByDateRecentInProgress = false // turn "loading already in progress" indicator off
 
@@ -253,7 +227,6 @@ class ImageRepo private constructor() {
                         MediaStore.Images.ImageColumns.DISPLAY_NAME,
                         MediaStore.Images.ImageColumns.SIZE,
                         MediaStore.Images.ImageColumns.DATE_MODIFIED,
-                        MediaStore.Images.ImageColumns.DATE_ADDED,
                         MediaStore.Images.ImageColumns.WIDTH,
                         MediaStore.Images.ImageColumns.HEIGHT
                 ), null, null, MediaStore.Images.ImageColumns.SIZE + " DESC", null)!!
@@ -262,17 +235,20 @@ class ImageRepo private constructor() {
 
                 if(cursor.moveToFirst()) {
                     while(!cursor.isAfterLast) {
-                        imageItems.add(
-                                ImageItem(
-                                        cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
-                                        cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
-                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
-                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
-                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED)),
-                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH)),
-                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT))
+                        File(cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))).let {
+                            if(it.exists() && !it.isDirectory) {
+                                imageItems.add(
+                                        ImageItem(
+                                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
+                                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
+                                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
+                                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
+                                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH)),
+                                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT))
+                                        )
                                 )
-                        )
+                            }
+                        }
 
                         cursor.moveToNext()
                     }
@@ -314,7 +290,6 @@ class ImageRepo private constructor() {
                         MediaStore.Images.ImageColumns.DISPLAY_NAME,
                         MediaStore.Images.ImageColumns.SIZE,
                         MediaStore.Images.ImageColumns.DATE_MODIFIED,
-                        MediaStore.Images.ImageColumns.DATE_ADDED,
                         MediaStore.Images.ImageColumns.WIDTH,
                         MediaStore.Images.ImageColumns.HEIGHT
                 ), null, null, MediaStore.Images.ImageColumns.DISPLAY_NAME + " DESC", null)!!
@@ -324,17 +299,20 @@ class ImageRepo private constructor() {
                 if(cursor.moveToFirst()) {
 
                     while(!cursor.isAfterLast) {
-                        imageItems.add(
-                                ImageItem(
-                                        cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
-                                        cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
-                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
-                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
-                                        cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED)),
-                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH)),
-                                        cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT))
+                        File(cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))).let {
+                            if(it.exists() && !it.isDirectory) {
+                                imageItems.add(
+                                        ImageItem(
+                                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)),
+                                                cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME)),
+                                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE)),
+                                                cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED)),
+                                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH)),
+                                                cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT))
+                                        )
                                 )
-                        )
+                            }
+                        }
 
                         cursor.moveToNext()
                     }
@@ -347,8 +325,6 @@ class ImageRepo private constructor() {
                 loadingItemsSortedByNameReversedInProgress = false
 
                 loadedItemsSortedByNameReversed = imageItems
-
-//                if(forceLoad) notifyItemObservers()
 
                 loadedItemsSortedByNameReversed!!
             } else {
@@ -1369,46 +1345,69 @@ class ImageRepo private constructor() {
     }
 
     // that very preloading magic, executes for 2-5 seconds
-    suspend fun loadAll(context: Context, forceLoad: Boolean) {
+    suspend fun loadAll(context: Context, forceLoad: Boolean, notify: Boolean = false) {
 
         loadItemsByDateRecent(context, forceLoad)
         loadItemsBySizeLargest(context, forceLoad)
         loadItemsByNameReversed(context, forceLoad)
 
-        splitAlbumsByDateRecent(context, forceLoad)
-        splitAlbumsByDateRecentLoadAlbumsByDateRecent(context, forceLoad)
-        splitAlbumsByDateRecentLoadAlbumsBySizeLargest(context, forceLoad)
-        splitAlbumsByDateRecentLoadAlbumsByNameReversed(context, forceLoad)
+        if(notify) notifyItemObservers()
 
-        splitAlbumsByDateOldest(context, forceLoad)
-        splitAlbumsByDateOldestLoadAlbumsByDateRecent(context, forceLoad)
-        splitAlbumsByDateOldestLoadAlbumsBySizeLargest(context, forceLoad)
-        splitAlbumsByDateOldestLoadAlbumsByNameReversed(context, forceLoad)
+        ApplicationLoader.ApplicationIOScope.launch {
+            splitAlbumsByDateRecent(context, forceLoad)
+            splitAlbumsByDateRecentLoadAlbumsByDateRecent(context, forceLoad)
+            splitAlbumsByDateRecentLoadAlbumsBySizeLargest(context, forceLoad)
+            splitAlbumsByDateRecentLoadAlbumsByNameReversed(context, forceLoad)
 
-        splitAlbumsBySizeLargest(context, forceLoad)
-        splitAlbumsBySizeLargestLoadAlbumsByDateRecent(context, forceLoad)
-        splitAlbumsBySizeLargestLoadAlbumsBySizeLargest(context, forceLoad)
-        splitAlbumsBySizeLargestLoadAlbumsByNameReversed(context, forceLoad)
+            if(notify) notifyAlbumObservers()
+        }
 
-        splitAlbumsBySizeSmallest(context, forceLoad)
-        splitAlbumsBySizeSmallestLoadAlbumsByDateRecent(context, forceLoad)
-        splitAlbumsBySizeSmallestLoadAlbumsBySizeLargest(context, forceLoad)
-        splitAlbumsBySizeSmallestLoadAlbumsByNameReversed(context, forceLoad)
+        ApplicationLoader.ApplicationIOScope.launch {
+            splitAlbumsByDateOldest(context, forceLoad)
+            splitAlbumsByDateOldestLoadAlbumsByDateRecent(context, forceLoad)
+            splitAlbumsByDateOldestLoadAlbumsBySizeLargest(context, forceLoad)
+            splitAlbumsByDateOldestLoadAlbumsByNameReversed(context, forceLoad)
 
-        splitAlbumsByNameReversed(context, forceLoad)
-        splitAlbumsByNameReversedLoadAlbumsByDateRecent(context, forceLoad)
-        splitAlbumsByNameReversedLoadAlbumsBySizeLargest(context, forceLoad)
-        splitAlbumsByNameReversedLoadAlbumsByNameReversed(context, forceLoad)
+            if(notify) notifyAlbumObservers()
+        }
 
-        splitAlbumsByNameAlphabetic(context, forceLoad)
-        splitAlbumsByNameAlphabeticLoadAlbumsByDateRecent(context, forceLoad)
-        splitAlbumsByNameAlphabeticLoadAlbumsBySizeLargest(context, forceLoad)
-        splitAlbumsByNameAlphabeticLoadAlbumsByNameReversed(context, forceLoad)
+        ApplicationLoader.ApplicationIOScope.launch {
+            splitAlbumsBySizeLargest(context, forceLoad)
+            splitAlbumsBySizeLargestLoadAlbumsByDateRecent(context, forceLoad)
+            splitAlbumsBySizeLargestLoadAlbumsBySizeLargest(context, forceLoad)
+            splitAlbumsBySizeLargestLoadAlbumsByNameReversed(context, forceLoad)
+        }
 
+        ApplicationLoader.ApplicationIOScope.launch {
+            splitAlbumsBySizeSmallest(context, forceLoad)
+            splitAlbumsBySizeSmallestLoadAlbumsByDateRecent(context, forceLoad)
+            splitAlbumsBySizeSmallestLoadAlbumsBySizeLargest(context, forceLoad)
+            splitAlbumsBySizeSmallestLoadAlbumsByNameReversed(context, forceLoad)
+
+            if(notify) notifyAlbumObservers()
+        }
+
+        ApplicationLoader.ApplicationIOScope.launch {
+            splitAlbumsByNameReversed(context, forceLoad)
+            splitAlbumsByNameReversedLoadAlbumsByDateRecent(context, forceLoad)
+            splitAlbumsByNameReversedLoadAlbumsBySizeLargest(context, forceLoad)
+            splitAlbumsByNameReversedLoadAlbumsByNameReversed(context, forceLoad)
+
+            if(notify) notifyAlbumObservers()
+        }
+
+        ApplicationLoader.ApplicationIOScope.launch {
+            splitAlbumsByNameAlphabetic(context, forceLoad)
+            splitAlbumsByNameAlphabeticLoadAlbumsByDateRecent(context, forceLoad)
+            splitAlbumsByNameAlphabeticLoadAlbumsBySizeLargest(context, forceLoad)
+            splitAlbumsByNameAlphabeticLoadAlbumsByNameReversed(context, forceLoad)
+
+            if(notify) notifyAlbumObservers()
+        }
     }
 
     // algo for grouping images into albums that are just their parent folders in essence
-    fun splitIntoAlbums(imageItems: MutableList<ImageItem>) : MutableList<ImageFolderItem> {
+    private fun splitIntoAlbums(imageItems: MutableList<ImageItem>) : MutableList<ImageFolderItem> {
 
         //  mediator procedure for finding paths of folders containing ImageItems
         val parentPaths = mutableListOf<String>()

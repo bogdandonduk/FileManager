@@ -1,6 +1,8 @@
 package pro.filemanager.core.tools
 
+import android.content.Context
 import android.graphics.Color
+import android.os.Vibrator
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -26,8 +28,11 @@ class SelectionTool {
     var selectionMode = false
     val selectedPaths = mutableListOf<String>()
 
+    var selectionCheckBoxSticky = false
+
     fun handleClickInViewHolder(
             @ClickType clickType: Int,
+            context: Context,
             position: Int,
             path: String,
             adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
@@ -46,8 +51,10 @@ class SelectionTool {
 
                 adapter.notifyItemChanged(position)
             }
-        } else if(clickType == CLICK_LONG){
+        } else if(clickType == CLICK_LONG) {
             if(!selectionMode) {
+                (context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator).vibrate(50)
+
                 selectionMode = true
                 selectedPaths.add(path)
 
@@ -69,8 +76,8 @@ class SelectionTool {
     }
 
     fun updateAll(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
-        for (i in 0 until adapter.itemCount) {
-            adapter.notifyItemChanged(i)
+        repeat(adapter.itemCount) {
+            adapter.notifyItemChanged(it - 1)
         }
     }
 
@@ -170,6 +177,8 @@ class SelectionTool {
 
             tabsBarLayout.visibility = View.GONE
             toolbarLayout.visibility = View.VISIBLE
+
+            updateAll(adapter)
         } else {
             activity.supportActionBar!!.show()
 
@@ -177,6 +186,20 @@ class SelectionTool {
 
             tabsBarLayout.visibility = View.VISIBLE
             toolbarLayout.visibility = View.GONE
+
+            updateAll(adapter)
+        }
+    }
+
+    fun initSelectionCheckBox(selectionCheckBox: CheckBox, totalItemCount: Int) {
+        if(selectedPaths.size == totalItemCount && totalItemCount > 0 && !selectionCheckBox.isChecked) {
+            selectionCheckBoxSticky = true
+            selectionCheckBox.toggle()
+            selectionCheckBoxSticky = false
+        } else if(selectedPaths.size != totalItemCount && totalItemCount > 0 && totalItemCount > 0 && selectionCheckBox.isChecked) {
+            selectionCheckBoxSticky = true
+            selectionCheckBox.toggle()
+            selectionCheckBoxSticky = false
         }
     }
 }

@@ -14,16 +14,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.R
-import pro.filemanager.core.base.BaseFolderItem
-import pro.filemanager.core.base.BaseBottomSheetDialogFragment
-import pro.filemanager.databinding.LayoutInfoAlbumBottomModalSheetBinding
+import pro.filemanager.core.generics.BaseFolderItem
+import pro.filemanager.core.generics.BaseBottomSheetDialogFragment
+import pro.filemanager.databinding.LayoutInfoFolderBottomModalSheetBinding
 
-class InfoAlbumBottomModalSheetFragment : BaseBottomSheetDialogFragment() {
+class InfoFolderBottomModalSheetFragment : BaseBottomSheetDialogFragment() {
 
-    lateinit var binding: LayoutInfoAlbumBottomModalSheetBinding
+    lateinit var binding: LayoutInfoFolderBottomModalSheetBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = LayoutInfoAlbumBottomModalSheetBinding.inflate(inflater, container, false)
+        binding = LayoutInfoFolderBottomModalSheetBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -64,13 +64,13 @@ class InfoAlbumBottomModalSheetFragment : BaseBottomSheetDialogFragment() {
                     }
 
                     withContext(Main) {
-                        binding.layoutInfoAlbumBottomModalSheetContentLayoutSize.text = Formatter.formatFileSize(frContext, albumItems[0].totalSize)
+                        binding.layoutInfoFolderBottomModalSheetContentLayoutSize.text = Formatter.formatFileSize(frContext, albumItems[0].totalSize)
                     }
                 }
 
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutName.text = albumItems[0].displayName
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutPath.text = albumItems[0].data
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutTotalQuantity.text = albumItems[0].containedItems.size.toString()
+                binding.layoutInfoFolderBottomModalSheetContentLayoutName.text = albumItems[0].displayName
+                binding.layoutInfoFolderBottomModalSheetContentLayoutPath.text = albumItems[0].data
+                binding.layoutInfoFolderBottomModalSheetContentLayoutTotalQuantity.text = albumItems[0].containedItems.size.toString()
 
             } else {
                 ApplicationLoader.ApplicationDefaultScope.launch {
@@ -85,19 +85,19 @@ class InfoAlbumBottomModalSheetFragment : BaseBottomSheetDialogFragment() {
                     }
 
                     withContext(Main) {
-                        binding.layoutInfoAlbumBottomModalSheetContentLayoutTotalQuantity.text = String.format(frContext.resources.getString(R.string.info_total_quantity_content), totalQuantity)
-                        binding.layoutInfoAlbumBottomModalSheetContentLayoutSize.text = Formatter.formatFileSize(frContext, totalSize)
+                        binding.layoutInfoFolderBottomModalSheetContentLayoutTotalQuantity.text = String.format(frContext.resources.getString(R.string.info_total_quantity_content), totalQuantity)
+                        binding.layoutInfoFolderBottomModalSheetContentLayoutSize.text = Formatter.formatFileSize(frContext, totalSize)
                     }
                 }
 
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutNameTitle.visibility = View.GONE
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutName.visibility = View.GONE
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutPathTitle.visibility = View.GONE
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutPath.visibility = View.GONE
+                binding.layoutInfoFolderBottomModalSheetContentLayoutNameTitle.visibility = View.GONE
+                binding.layoutInfoFolderBottomModalSheetContentLayoutName.visibility = View.GONE
+                binding.layoutInfoFolderBottomModalSheetContentLayoutPathTitle.visibility = View.GONE
+                binding.layoutInfoFolderBottomModalSheetContentLayoutPath.visibility = View.GONE
 
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutTotalQuantityTitle.visibility = View.VISIBLE
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutTotalQuantity.visibility = View.VISIBLE
-                binding.layoutInfoAlbumBottomModalSheetContentLayoutSizeTitle.text = frContext.resources.getString(R.string.info_total_size)
+                binding.layoutInfoFolderBottomModalSheetContentLayoutTotalQuantityTitle.visibility = View.VISIBLE
+                binding.layoutInfoFolderBottomModalSheetContentLayoutTotalQuantity.visibility = View.VISIBLE
+                binding.layoutInfoFolderBottomModalSheetContentLayoutSizeTitle.text = frContext.resources.getString(R.string.info_total_size)
             }
         }
     }

@@ -2,28 +2,23 @@ package pro.filemanager.images
 
 import android.content.Context
 import android.os.Parcelable
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
-import pro.filemanager.core.*
-import pro.filemanager.core.base.BaseViewModel
+import pro.filemanager.core.generics.BaseViewModel
 import pro.filemanager.core.tools.SearchTool
 import pro.filemanager.core.tools.sort.SortTool
+import pro.filemanager.core.ui.UIManager
+import pro.filemanager.core.wrappers.PreferencesWrapper
 import pro.filemanager.images.folders.ImageFolderItem
 import java.io.File
 import java.lang.IllegalStateException
 
 @Parcelize
-class ImageLibraryViewModel(val imageRepo: @RawValue ImageRepo, val folderItem: ImageFolderItem?) : BaseViewModel(), ImageRepo.ItemObserver {
-    var IOScope = CoroutineScope(IO)
-    var MainScope: CoroutineScope? = CoroutineScope(Main)
-
+class ImageLibraryViewModel(val context: @RawValue Context, val imageRepo: @RawValue ImageRepo, val folderItem: ImageFolderItem?) : BaseViewModel(), ImageRepo.ItemObserver {
     var searchInProgress = false
 
     private var itemsLive: MutableLiveData<MutableList<ImageItem>>? = null
@@ -35,6 +30,7 @@ class ImageLibraryViewModel(val imageRepo: @RawValue ImageRepo, val folderItem: 
         imageRepo.observe(this)
 
         currentSortOrder = PreferencesWrapper.getString(ApplicationLoader.appContext, SortTool.KEY_SP_IMAGE_LIBRARY_SORT_ORDER, SortTool.SORT_ORDER_DATE_RECENT)
+
     }
 
     private suspend fun initItemsLive(context: Context) {
@@ -133,7 +129,6 @@ class ImageLibraryViewModel(val imageRepo: @RawValue ImageRepo, val folderItem: 
         if(isPersistable) {
             PreferencesWrapper.putString(context, SortTool.KEY_SP_IMAGE_LIBRARY_SORT_ORDER, sortOrder)
         }
-
     }
 
     override suspend fun assignItemsLive(context: Context, forceLoad: Boolean) {
@@ -274,9 +269,9 @@ class ImageLibraryViewModel(val imageRepo: @RawValue ImageRepo, val folderItem: 
         }
 
         if(folderItem == null) {
-            ApplicationLoader.transientStrings.remove(UIManager.KEY_TRANSIENT_STRINGS_LIBRARY_SEARCH_TEXT)
-            ApplicationLoader.transientStrings.remove(UIManager.KEY_TRANSIENT_STRINGS_FOLDERS_SEARCH_TEXT)
-            ApplicationLoader.transientParcelables.remove(UIManager.KEY_TRANSIENT_PARCELABLE_FOLDERS_MAIN_LIST_RV_STATE)
+            ApplicationLoader.transientStrings.remove(UIManager.KEY_TRANSIENT_STRINGS_IMAGE_LIBRARY_SEARCH_TEXT)
+            ApplicationLoader.transientStrings.remove(UIManager.KEY_TRANSIENT_STRINGS_IMAGE_FOLDERS_SEARCH_TEXT)
+            ApplicationLoader.transientParcelables.remove(UIManager.KEY_TRANSIENT_PARCELABLE_IMAGE_FOLDERS_MAIN_LIST_RV_STATE)
         }
     }
 

@@ -47,7 +47,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutBaseDialogTitleContainer"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             app:layout_constraintEnd_toStartOf="@+id/layoutBaseDialogRootLayoutGl85pv"
@@ -60,6 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:elevation="3dp"
+                android:gravity="center"
                 android:shadowColor="@android:color/white"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
@@ -70,22 +71,33 @@
                 tools:text="@string/external_storage_denied_rationale_title" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/layoutBaseDialogMessage"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutBaseDialogMessageContainer"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:textColor="@android:color/white"
             app:layout_constraintEnd_toStartOf="@+id/layoutBaseDialogRootLayoutGl90pv"
             app:layout_constraintStart_toStartOf="@+id/layoutBaseDialogRootLayoutGl10pv"
-            app:layout_constraintTop_toBottomOf="@+id/layoutBaseDialogTitleContainer"
-            tools:text="@string/external_storage_denied_rationale_message" />
+            app:layout_constraintTop_toBottomOf="@+id/layoutBaseDialogTitleContainer">
+
+            <TextView
+                android:id="@+id/layoutBaseDialogMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/external_storage_denied_rationale_message" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/layoutBaseDialogNegativeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="15dp"
             android:background="?attr/selectableItemBackground"
             android:padding="15dp"
@@ -94,14 +106,14 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/layoutBaseDialogPositiveButton"
-            app:layout_constraintTop_toBottomOf="@+id/layoutBaseDialogMessage"
+            app:layout_constraintTop_toBottomOf="@+id/layoutBaseDialogMessageContainer"
             tools:text="@string/permission_deny" />
 
         <TextView
             android:id="@+id/layoutBaseDialogPositiveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="15dp"
             android:background="?attr/selectableItemBackground"
             android:padding="15dp"
@@ -110,7 +122,7 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/layoutBaseDialogRootLayoutGl90pv"
-            app:layout_constraintTop_toBottomOf="@+id/layoutBaseDialogMessage"
+            app:layout_constraintTop_toBottomOf="@+id/layoutBaseDialogMessageContainer"
             tools:text="@string/permission_grant" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,48 +1,44 @@
 package pro.filemanager.images.folders
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.signature.MediaStoreSignature
 import kotlinx.coroutines.launch
 import pro.filemanager.R
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.LayoutImageFolderItemBinding
 import pro.filemanager.files.FileCore
 import pro.filemanager.images.ImageCore
+import pro.filemanager.images.ImageItem
 
-class ImageFoldersAdapter(val context: Context, var imageFolderItems: MutableList<ImageFolderItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageFoldersFragment) : RecyclerView.Adapter<ImageFoldersAdapter.ImageFolderItemViewHolder>() {
+class ImageFoldersAdapter(val context: Context, var imageFolderItems: MutableList<ImageFolderItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageFoldersFragment) : ListAdapter<ImageFolderItem, ImageFoldersAdapter.ImageFolderItemViewHolder>(object : DiffUtil.ItemCallback<ImageFolderItem>() {
+    override fun areItemsTheSame(oldItem: ImageFolderItem, newItem: ImageFolderItem): Boolean {
+        return oldItem.data == newItem.data
+    }
+
+    override fun areContentsTheSame(oldItem: ImageFolderItem, newItem: ImageFolderItem): Boolean {
+        return oldItem.equals(newItem)
+    }
+}) {
     var lastSelectionModeState = false
 
-    class ImageAlbumsAdapterDiffCallback(
-            val oldItems: MutableList<ImageFolderItem>,
-            val newItems: MutableList<ImageFolderItem>
-    ) : DiffUtil.Callback() {
-        override fun getOldListSize(): Int = oldItems.size
-
-        override fun getNewListSize(): Int = newItems.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                oldItems[oldItemPosition].data == newItems[newItemPosition].data
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = oldItems[oldItemPosition].equals(newItems[newItemPosition])
+    init {
+        submitList(imageFolderItems)
     }
 
-    fun submitItems(newItems: MutableList<ImageFolderItem>) {
-        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(ImageAlbumsAdapterDiffCallback(imageFolderItems, newItems), true)
+    override fun submitList(list: MutableList<ImageFolderItem>?) {
+        super.submitList(list)
 
-        imageFolderItems = newItems
-
-        diffResult.dispatchUpdatesTo(this)
-    }
-
-    fun submitItemsWithoutDiff(newItems: MutableList<ImageFolderItem>) {
-        imageFolderItems = newItems
-
-        notifyDataSetChanged()
+        repeat(itemCount) {
+            notifyItemChanged(it - 1)
+        }
     }
 
     class ImageFolderItemViewHolder(val context: Context, val binding: LayoutImageFolderItemBinding, val hostFragment: ImageFoldersFragment, val adapter: ImageFoldersAdapter) : RecyclerView.ViewHolder(binding.root) {
@@ -56,14 +52,17 @@ class ImageFoldersAdapter(val context: Context, var imageFolderItems: MutableLis
                             @Suppress("UNCHECKED_CAST")
                             hostFragment.viewModel.selectionTool.handleClickInViewHolder(
                                     SelectionTool.CLICK_SHORT,
+                                    context,
                                     adapterPosition,
                                     item.data,
-                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>
+                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
                             ) {
                                 hostFragment.navController.navigate(R.id.action_imageFoldersFragment_to_imageLibraryFragment, bundleOf(
-                                        FileCore.KEY_ARGUMENT_ALBUM_PARCELABLE to item
+                                        FileCore.KEY_ARGUMENT_FOLDER_PARCELABLE to item
                                 ))
                             }
+
+                            hostFragment.viewModel.selectionTool.initSelectionCheckBox(hostFragment.binding.fragmentImageFoldersAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb, adapter.itemCount)
                         }
                     }
                 }
@@ -71,9 +70,14 @@ class ImageFoldersAdapter(val context: Context, var imageFolderItems: MutableLis
                 setOnLongClickListener {
                     if(this@ImageFolderItemViewHolder::item.isInitialized) {
                         hostFragment.viewModel.MainScope?.launch {
+                            if(!hostFragment.viewModel.selectionTool.selectionMode) {
+                                hostFragment.binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersRootLayout.visibility = View.VISIBLE
+                            }
+
                             @Suppress("UNCHECKED_CAST")
                             hostFragment.viewModel.selectionTool.handleClickInViewHolder(
                                     SelectionTool.CLICK_LONG,
+                                    context,
                                     adapterPosition,
                                     item.data,
                                     adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
@@ -90,6 +94,8 @@ class ImageFoldersAdapter(val context: Context, var imageFolderItems: MutableLis
                                         )
                                     }
                             )
+
+                            hostFragment.viewModel.selectionTool.initSelectionCheckBox(hostFragment.binding.fragmentImageFoldersAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb, adapter.itemCount)
                         }
                     }
 
@@ -105,17 +111,17 @@ class ImageFoldersAdapter(val context: Context, var imageFolderItems: MutableLis
 
 
     override fun onBindViewHolder(holder: ImageFolderItemViewHolder, position: Int) {
-        holder.item = imageFolderItems[position]
+        holder.item = currentList[position]
 
         hostFragment.viewModel.MainScope?.launch {
-            if (!holder.item.containedItems.first().data.endsWith(".gif", true)) {
+            if (!holder.item.containedItems[0].data.endsWith(".gif", true)) {
                 ImageCore.glideBitmapRequestBuilder
-                        .load(holder.item.containedItems.first().data)
+                        .load(holder.item.containedItems[0].data)
                         .override(holder.binding.layoutImageFolderItemContentLayout.width, holder.binding.layoutImageFolderItemThumbnail.height)
                         .into(holder.binding.layoutImageFolderItemThumbnail)
             } else {
                 ImageCore.glideGifRequestBuilder
-                        .load(holder.item.containedItems.first().data)
+                        .load(holder.item.containedItems[0].data).signature(MediaStoreSignature(ImageCore.MIME_TYPE, holder.item.containedImages[0].dateModified, 0))
                         .override(holder.binding.layoutImageFolderItemThumbnail.width, holder.binding.layoutImageFolderItemThumbnail.height)
                         .into(holder.binding.layoutImageFolderItemThumbnail)
             }
@@ -140,7 +146,7 @@ class ImageFoldersAdapter(val context: Context, var imageFolderItems: MutableLis
                     hostFragment.viewModel.selectionTool.selectedPaths.size.toString()
         }
 
-        if(lastSelectionModeState != hostFragment.viewModel.selectionTool.selectionMode) {
+        if(lastSelectionModeState != hostFragment.viewModel.selectionTool.selectionMode && hostFragment.viewModel.selectionTool.selectedPaths.size == itemCount) {
             lastSelectionModeState = hostFragment.viewModel.selectionTool.selectionMode
 
             hostFragment.viewModel.MainScope?.launch {
@@ -159,6 +165,6 @@ class ImageFoldersAdapter(val context: Context, var imageFolderItems: MutableLis
         }
     }
 
-    override fun getItemCount(): Int = imageFolderItems.size
+    override fun getItemCount(): Int = currentList.size
 
 }

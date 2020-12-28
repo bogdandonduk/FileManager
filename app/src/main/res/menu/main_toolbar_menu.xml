@@ -3,24 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/mainToolbarMenuItemSearch"
-        android:icon="@drawable/ic_search_black_24dp"
-        android:title="@string/title_search"
-        app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/mainToolbarMenuItemSort"
         android:icon="@drawable/ic_baseline_sort_24"
         android:title="@string/title_sort"
         app:showAsAction="always" />
-
     <item
-        android:id="@+id/mainToolbarMenuItemEdit"
-        android:title="@string/title_edit"
-        app:showAsAction="never" />
+        android:id="@+id/mainToolbarMenuItemSearch"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="@string/title_search"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always" />
 
-    <item
-        android:id="@+id/mainToolbarMenuItemSettings"
-        android:title="@string/title_settings"
-        app:showAsAction="never" />
 </menu>

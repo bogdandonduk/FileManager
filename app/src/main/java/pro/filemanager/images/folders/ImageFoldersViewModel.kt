@@ -8,18 +8,14 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 import kotlinx.coroutines.*
 import pro.filemanager.ApplicationLoader
-import pro.filemanager.core.PreferencesWrapper
-import pro.filemanager.core.base.BaseViewModel
+import pro.filemanager.core.wrappers.PreferencesWrapper
+import pro.filemanager.core.generics.BaseViewModel
 import pro.filemanager.core.tools.SearchTool
 import pro.filemanager.core.tools.sort.SortTool
 import pro.filemanager.images.ImageRepo
 
 @Parcelize
-class ImageFoldersViewModel(var imageRepo: @RawValue ImageRepo) : BaseViewModel(), ImageRepo.AlbumObserver {
-
-    var IOScope = CoroutineScope(Dispatchers.IO)
-    var MainScope: CoroutineScope? = CoroutineScope(Dispatchers.Main)
-
+class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawValue ImageRepo) : BaseViewModel(), ImageRepo.AlbumObserver {
     private var itemsLive: MutableLiveData<MutableList<ImageFolderItem>>? = null
 
     var searchInProgress = false
@@ -39,7 +35,7 @@ class ImageFoldersViewModel(var imageRepo: @RawValue ImageRepo) : BaseViewModel(
     private suspend fun initItemsLive(context: Context) {
         if(itemsLive == null) {
             itemsLive = MutableLiveData(
-                    when (librarySortOrder) {
+                    when(librarySortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
                             when (currentSortOrder) {
                                 SortTool.SORT_ORDER_DATE_RECENT -> {
@@ -199,8 +195,7 @@ class ImageFoldersViewModel(var imageRepo: @RawValue ImageRepo) : BaseViewModel(
     }
 
     override suspend fun assignItemsLive(context: Context, forceLoad: Boolean) {
-        if(itemsLive != null) {
-            when(librarySortOrder) {
+        when(librarySortOrder) {
                 SortTool.SORT_ORDER_DATE_RECENT -> {
                     if(forceLoad) {
                         imageRepo.loadItemsByDateRecent(context, true)
@@ -322,7 +317,7 @@ class ImageFoldersViewModel(var imageRepo: @RawValue ImageRepo) : BaseViewModel(
                     }
                 }
                 SortTool.SORT_ORDER_NAME_REVERSED -> {
-                    if(forceLoad) {
+                    if (forceLoad) {
                         imageRepo.loadItemsByNameReversed(context, true)
                         imageRepo.splitAlbumsByNameReversed(context, true)
                     }
@@ -385,20 +380,20 @@ class ImageFoldersViewModel(var imageRepo: @RawValue ImageRepo) : BaseViewModel(
                     throw IllegalStateException("Invalid Sort Order")
                 }
             }
-        }
     }
 
-    suspend fun getItemsLive() : LiveData<MutableList<ImageFolderItem>> {
-        initItemsLive(ApplicationLoader.appContext)
+    suspend fun getItemsLive(context: Context) : LiveData<MutableList<ImageFolderItem>> {
+        initItemsLive(context)
 
         return itemsLive!!
     }
 
     override fun onUpdate() {
-        if(itemsLive != null)
+        if(itemsLive != null) {
             IOScope.launch {
                 assignItemsLive(ApplicationLoader.appContext, false)
             }
+        }
     }
 
     override fun onCleared() {
@@ -412,7 +407,6 @@ class ImageFoldersViewModel(var imageRepo: @RawValue ImageRepo) : BaseViewModel(
         } catch (thr: Throwable) {
 
         }
-
     }
 
     override fun setSortOrder(context: Context, sortOrder: String, isPersistable: Boolean) {

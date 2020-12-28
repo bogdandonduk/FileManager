@@ -2,7 +2,7 @@ package pro.filemanager.images.folders
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
-import pro.filemanager.core.base.BaseFolderItem
+import pro.filemanager.core.generics.BaseFolderItem
 import pro.filemanager.images.ImageItem
 import java.io.File
 import java.io.Serializable

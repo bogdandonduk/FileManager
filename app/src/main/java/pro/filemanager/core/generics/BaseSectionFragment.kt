@@ -1,63 +1,35 @@
-package pro.filemanager.core.base
+package pro.filemanager.core.generics
 
-import android.content.Context
 import android.graphics.Typeface
-import android.os.Bundle
-import android.os.Handler
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.launch
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
-import pro.filemanager.core.PermissionWrapper
-import pro.filemanager.core.tools.SelectionTool
-import java.util.function.BiConsumer
+import pro.filemanager.core.wrappers.PermissionWrapper
 
-open class BaseSectionFragment : Fragment() {
+open class BaseSectionFragment : BaseFragment() {
 
-    open lateinit var frContext: Context
-    open lateinit var activity: HomeActivity
-    open lateinit var navController: NavController
-    open lateinit var stabilizingToast: Toast // temporary
+    lateinit var pinchZoomGestureDetector: ScaleGestureDetector
 
-    @Volatile var shouldUseDiffUtil = false
-    @Volatile var shouldScrollToTop = true
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        activity = requireActivity() as HomeActivity
-
-        frContext =
-                try {
-                    requireContext()
-                } catch(thr: Throwable) {
-                    activity.applicationContext
-                } finally {
-                    ApplicationLoader.appContext
-                }
-
-        stabilizingToast = Toast.makeText(frContext, "Stabilizing", Toast.LENGTH_SHORT)
-    }
+    var translucentStatusBar = false
+    var tabsBarVisible = false
+    var toolBarVisible = false
 
     open fun launchCore() {
 
     }
 
-    open fun notifyListEmpty(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>, text: TextView) {
-        if(adapter.itemCount == 0)
-            text.visibility = View.VISIBLE
-        else
+    open fun notifyListEmpty(adapterItemCount: Int, text: TextView) {
+        if(adapterItemCount > 0)
             text.visibility = View.GONE
+        else
+            text.visibility = View.VISIBLE
     }
 
     open fun initTabsBar(
@@ -74,10 +46,10 @@ open class BaseSectionFragment : Fragment() {
     ) {
         tabsBarLayout.post {
             tabsBarLayout.height.let {
-                libraryTitle.textSize = (it / 8).toFloat()
+                libraryTitle.textSize = (it / 10).toFloat()
                 libraryTitle.text = libraryText
 
-                foldersTitle.textSize = (it / 8).toFloat()
+                foldersTitle.textSize = (it / 10).toFloat()
                 foldersTitle.text = resources.getText(R.string.title_folders)
             }
 
@@ -148,7 +120,7 @@ open class BaseSectionFragment : Fragment() {
         }
     }
 
-    fun setAppBarTitle(activity: HomeActivity, title: String) {
-        activity.supportActionBar?.title = title
+    open fun updateListState() {
+
     }
 }

@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.images.ImageRepo
 import kotlinx.coroutines.launch
-import pro.filemanager.core.PermissionWrapper
+import pro.filemanager.core.wrappers.PermissionWrapper
 import pro.filemanager.files.FileCore
 
 class ApplicationLoader : Application() {
@@ -62,7 +62,5 @@ class ApplicationLoader : Application() {
 //        fileObserver = pro.filemanager.core.FileObserver(path)
 //
 //        fileObserver.startWatching()
-
     }
-
 }

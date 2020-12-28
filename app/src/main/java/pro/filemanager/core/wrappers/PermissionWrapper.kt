@@ -1,4 +1,4 @@
-package pro.filemanager.core
+package pro.filemanager.core.wrappers
 
 import android.app.Activity
 import android.os.Build
@@ -6,13 +6,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.provider.MediaStore
 import android.provider.Settings
-import android.widget.Button
 import android.widget.TextView
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.R

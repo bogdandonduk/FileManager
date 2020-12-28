@@ -22,7 +22,7 @@ object FileCore {
     const val KEY_ARGUMENT_PATH = "path"
     const val KEY_ARGUMENT_APP_BAR_TITLE = "appBarTitle"
 
-    const val KEY_ARGUMENT_ALBUM_PARCELABLE = "chosenAlbum"
+    const val KEY_ARGUMENT_FOLDER_PARCELABLE = "chosenFolder"
 
     const val KEY_INTERNAL_STORAGE = "internal"
     const val KEY_EXTERNAL_STORAGE = "external"

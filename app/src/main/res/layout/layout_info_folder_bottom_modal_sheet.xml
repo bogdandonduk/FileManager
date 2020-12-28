@@ -2,14 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutInfoAlbumBottomModalSheetRootLayout"
+    android:id="@+id/layoutInfoFolderBottomModalSheetRootLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_rounded_bottom_sheet"
     android:paddingBottom="25dp">
 
     <TextView
-        android:id="@+id/layoutInfoAlbumBottomModalSheetRootLayoutTitle"
+        android:id="@+id/layoutInfoFolderBottomModalSheetRootLayoutTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
@@ -22,28 +22,28 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutInfoAlbumBottomModalSheetRootLayoutGl10pv"
+        android:id="@+id/layoutInfoFolderBottomModalSheetRootLayoutGl10pv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.1" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutInfoAlbumBottomModalSheetRootLayoutGl90pv"
+        android:id="@+id/layoutInfoFolderBottomModalSheetRootLayoutGl90pv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.9" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutInfoAlbumBottomModalSheetContentPreLayout"
+        android:id="@+id/layoutInfoFolderBottomModalSheetContentPreLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/layoutInfoAlbumBottomModalSheetRootLayoutGl90pv"
-        app:layout_constraintStart_toStartOf="@+id/layoutInfoAlbumBottomModalSheetRootLayoutGl10pv"
-        app:layout_constraintTop_toBottomOf="@+id/layoutInfoAlbumBottomModalSheetRootLayoutTitle">
+        app:layout_constraintEnd_toStartOf="@+id/layoutInfoFolderBottomModalSheetRootLayoutGl90pv"
+        app:layout_constraintStart_toStartOf="@+id/layoutInfoFolderBottomModalSheetRootLayoutGl10pv"
+        app:layout_constraintTop_toBottomOf="@+id/layoutInfoFolderBottomModalSheetRootLayoutTitle">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -53,12 +53,12 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layoutInfoAlbumBottomModalSheetContentLayout"
+                android:id="@+id/layoutInfoFolderBottomModalSheetContentLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/layoutInfoAlbumBottomModalSheetContentLayoutTotalQuantityTitle"
+                    android:id="@+id/layoutInfoFolderBottomModalSheetContentLayoutTotalQuantityTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/info_total_quantity"
@@ -68,7 +68,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/layoutInfoAlbumBottomModalSheetContentLayoutTotalQuantity"
+                    android:id="@+id/layoutInfoFolderBottomModalSheetContentLayoutTotalQuantity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -77,21 +77,21 @@
                     android:textStyle="bold"
                     android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/layoutInfoAlbumBottomModalSheetContentLayoutTotalQuantityTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutInfoFolderBottomModalSheetContentLayoutTotalQuantityTitle"
                     tools:text="2 items" />
 
                 <TextView
-                    android:id="@+id/layoutInfoAlbumBottomModalSheetContentLayoutNameTitle"
+                    android:id="@+id/layoutInfoFolderBottomModalSheetContentLayoutNameTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="@string/info_name"
                     android:textColor="@android:color/white"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/layoutInfoAlbumBottomModalSheetContentLayoutTotalQuantity" />
+                    app:layout_constraintTop_toBottomOf="@id/layoutInfoFolderBottomModalSheetContentLayoutTotalQuantity" />
 
                 <TextView
-                    android:id="@+id/layoutInfoAlbumBottomModalSheetContentLayoutName"
+                    android:id="@+id/layoutInfoFolderBottomModalSheetContentLayoutName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -99,21 +99,21 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/layoutInfoAlbumBottomModalSheetContentLayoutNameTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutInfoFolderBottomModalSheetContentLayoutNameTitle"
                     tools:text="John Paesano - We Started This Together.mp3" />
 
                 <TextView
-                    android:id="@+id/layoutInfoAlbumBottomModalSheetContentLayoutPathTitle"
+                    android:id="@+id/layoutInfoFolderBottomModalSheetContentLayoutPathTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="@string/info_path"
                     android:textColor="@android:color/white"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/layoutInfoAlbumBottomModalSheetContentLayoutName" />
+                    app:layout_constraintTop_toBottomOf="@+id/layoutInfoFolderBottomModalSheetContentLayoutName" />
 
                 <TextView
-                    android:id="@+id/layoutInfoAlbumBottomModalSheetContentLayoutPath"
+                    android:id="@+id/layoutInfoFolderBottomModalSheetContentLayoutPath"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -121,21 +121,21 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/layoutInfoAlbumBottomModalSheetContentLayoutPathTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutInfoFolderBottomModalSheetContentLayoutPathTitle"
                     tools:text="/storage/emulated/0" />
 
                 <TextView
-                    android:id="@+id/layoutInfoAlbumBottomModalSheetContentLayoutSizeTitle"
+                    android:id="@+id/layoutInfoFolderBottomModalSheetContentLayoutSizeTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="@string/info_size"
                     android:textColor="@android:color/white"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/layoutInfoAlbumBottomModalSheetContentLayoutPath" />
+                    app:layout_constraintTop_toBottomOf="@+id/layoutInfoFolderBottomModalSheetContentLayoutPath" />
 
                 <TextView
-                    android:id="@+id/layoutInfoAlbumBottomModalSheetContentLayoutSize"
+                    android:id="@+id/layoutInfoFolderBottomModalSheetContentLayoutSize"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -143,7 +143,7 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/layoutInfoAlbumBottomModalSheetContentLayoutSizeTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutInfoFolderBottomModalSheetContentLayoutSizeTitle"
                     tools:text="23 MB" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

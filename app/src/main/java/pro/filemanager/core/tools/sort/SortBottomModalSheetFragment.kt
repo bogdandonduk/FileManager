@@ -16,7 +16,7 @@ import pro.filemanager.databinding.LayoutSortBottomModalSheetBinding
 class SortBottomModalSheetFragment : BottomSheetDialogFragment() {
 
     lateinit var binding: LayoutSortBottomModalSheetBinding
-    val optionItems = mutableListOf<OptionItem>()
+    val optionItems = mutableListOf<SortOptionItem>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = LayoutSortBottomModalSheetBinding.inflate(inflater, container, false)

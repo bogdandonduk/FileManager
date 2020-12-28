@@ -1,8 +1,12 @@
 <resources>
     <style name="Theme.FileManager" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:windowBackground">@drawable/bg_home</item>
-        <item name="android:statusBarColor">@color/appBar</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="android:editTextColor">@android:color/white</item>
+        <item name="android:textColorHint">@color/hintTextColor</item>
+        <item name="android:fastScrollThumbDrawable">@drawable/scrollbar_thumb</item>
+        <item name="android:splitMotionEvents">false</item>
     </style>
 
 </resources>

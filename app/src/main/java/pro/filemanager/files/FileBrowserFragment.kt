@@ -15,7 +15,7 @@ import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
 import pro.filemanager.core.SimpleInjector
-import pro.filemanager.core.UIManager
+import pro.filemanager.core.ui.UIManager
 import pro.filemanager.databinding.FragmentFileBrowserBinding
 import java.io.File
 import java.lang.Exception
@@ -107,7 +107,7 @@ class FileBrowserFragment() : Fragment() {
     }
 
     fun initAdapter(files: Array<File>) {
-        binding.fragmentFileBrowserList.layoutManager = GridLayoutManager(requireContext(), UIManager.getItemGridSpanNumber(requireActivity()))
+        binding.fragmentFileBrowserList.layoutManager = GridLayoutManager(requireContext(), UIManager.getImageLibraryGridSpanNumber(requireActivity()))
         (binding.fragmentFileBrowserList.layoutManager as GridLayoutManager).onRestoreInstanceState(viewModel.mainListRvState)
 
         mainAdapter = FileBrowserAdapter(requireActivity(), files, layoutInflater, this@FileBrowserFragment)

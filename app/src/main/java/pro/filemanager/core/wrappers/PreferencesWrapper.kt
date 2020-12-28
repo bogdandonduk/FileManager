@@ -1,4 +1,4 @@
-package pro.filemanager.core
+package pro.filemanager.core.wrappers
 
 import android.content.Context
 

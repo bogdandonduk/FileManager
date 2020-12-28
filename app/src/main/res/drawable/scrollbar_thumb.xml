@@ -1,0 +1,35 @@
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:name="vector"
+    android:width="25dp"
+    android:height="40dp"
+    android:viewportWidth="25"
+    android:viewportHeight="40">
+    <group android:name="group_1">
+        <group android:name="group">
+            <path
+                android:name="path_3"
+                android:pathData="M 12.5 2 C 14.753 2 16.917 2.896 18.51 4.49 C 20.104 6.083 21 8.247 21 10.5 L 21 25.5 C 21 27.753 20.104 29.917 18.51 31.51 C 16.917 33.104 14.753 34 12.5 34 C 10.247 34 8.083 33.104 6.49 31.51 C 4.896 29.917 4 27.753 4 25.5 L 4 10.5 C 4 8.247 4.896 6.083 6.49 4.49 C 8.083 2.896 10.247 2 12.5 2"
+                android:fillColor="#303030"
+                android:strokeWidth="1"/>
+        </group>
+        <path
+            android:name="path"
+            android:pathData="M 12.5 2.25 C 14.687 2.25 16.787 3.12 18.334 4.666 C 19.88 6.213 20.75 8.313 20.75 10.5 L 20.75 25.5 C 20.75 27.687 19.88 29.787 18.334 31.334 C 16.787 32.88 14.687 33.75 12.5 33.75 C 10.313 33.75 8.213 32.88 6.666 31.334 C 5.12 29.787 4.25 27.687 4.25 25.5 L 4.25 10.5 C 4.25 8.313 5.12 6.213 6.666 4.666 C 8.213 3.12 10.313 2.25 12.5 2.25"
+            android:fillColor="#303030"
+            android:strokeColor="#303030"
+            android:strokeWidth="0.5"/>
+        <path
+            android:name="path_1"
+            android:pathData="M 12.5 2.25 C 14.687 2.25 16.787 3.12 18.334 4.666 C 19.88 6.213 20.75 8.313 20.75 10.5 L 20.75 25.5 C 20.75 27.687 19.88 29.787 18.334 31.334 C 16.787 32.88 14.687 33.75 12.5 33.75 C 10.313 33.75 8.213 32.88 6.666 31.334 C 5.12 29.787 4.25 27.687 4.25 25.5 L 4.25 10.5 C 4.25 8.313 5.12 6.213 6.666 4.666 C 8.213 3.12 10.313 2.25 12.5 2.25"
+            android:fillColor="#303030"
+            android:strokeColor="#303030"
+            android:strokeWidth="0.5"/>
+        <path
+            android:name="path_2"
+            android:pathData="M 9.6 13.015 L 12.6 10.015 L 15.6 13.015 M 15.6 23.015 L 12.6 26.015 L 9.6 23.015"
+            android:fillColor="#303030"
+            android:strokeColor="#fff"
+            android:strokeWidth="1"/>
+    </group>
+</vector>

@@ -3,27 +3,23 @@ package pro.filemanager.core.tools.info
 import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Build
-import android.os.Build.VERSION.SDK
 import android.os.Bundle
 import android.text.format.Formatter
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.R
-import pro.filemanager.core.base.BaseBottomSheetDialogFragment
-import pro.filemanager.core.base.BaseItem
+import pro.filemanager.core.generics.BaseBottomSheetDialogFragment
+import pro.filemanager.core.generics.BaseItem
 import pro.filemanager.databinding.LayoutInfoItemBottomModalSheetBinding
 import java.io.File
 import java.nio.file.Files
-import java.nio.file.Paths
 import java.nio.file.attribute.BasicFileAttributes
 import java.text.SimpleDateFormat
 import java.util.*
@@ -69,13 +65,7 @@ class InfoItemBottomModalSheetFragment : BaseBottomSheetDialogFragment() {
                 binding.layoutInfoBottomModalSheetContentLayoutName.text = this[0].displayName
                 binding.layoutInfoBottomModalSheetContentLayoutPath.text = this[0].data
                 binding.layoutInfoBottomModalSheetContentLayoutSize.text = Formatter.formatFileSize(frContext, this[0].size)
-                binding.layoutInfoBottomModalSheetContentLayoutDateAdded.text = SimpleDateFormat("HH:mm:ss, dd.MM.yyyy", Locale.ROOT).format(
-                        Date(
-                                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    Files.readAttributes(File(this[0].data).toPath(), BasicFileAttributes::class.java).creationTime().toMillis()
-                                } else this[0].size * 1000
-                        )
-                )
+                binding.layoutInfoBottomModalSheetContentLayoutDateAdded.text = SimpleDateFormat("HH:mm:ss, dd.MM.yyyy", Locale.ROOT).format(Date(this[0].dateModified * 1000))
             } else {
                 ApplicationLoader.ApplicationDefaultScope.launch {
                     var totalSize = 0L

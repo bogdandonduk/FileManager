@@ -1,5 +1,7 @@
 package pro.filemanager.images.folders
 
+import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.EditorInfo
@@ -14,22 +16,21 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.google.android.material.appbar.AppBarLayout
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.R
 import pro.filemanager.core.*
-import pro.filemanager.core.base.BaseFolderItem
-import pro.filemanager.core.base.BaseSectionFragment
-import pro.filemanager.core.tools.DeleteTool
+import pro.filemanager.core.generics.BaseFolderItem
+import pro.filemanager.core.generics.BaseSectionFragment
 import pro.filemanager.core.tools.info.InfoTool
-import pro.filemanager.core.tools.rename.RenameTool
 import pro.filemanager.core.tools.sort.SortTool
+import pro.filemanager.core.ui.UIManager
+import pro.filemanager.core.wrappers.PreferencesWrapper
 import pro.filemanager.databinding.FragmentImageFoldersBinding
-import pro.filemanager.images.ImageRepo
-import pro.filemanager.images.folders.ImageFolderItem
-import pro.filemanager.images.folders.ImageFoldersAdapter
-import pro.filemanager.images.folders.ImageFoldersViewModel
+import pro.filemanager.images.ImageLibraryAdapter
+import kotlin.math.abs
 
 class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFolderItem>> {
 
@@ -41,7 +42,7 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
 
     lateinit var searchView: SearchView
 
-    override fun onChanged(t: MutableList<ImageFolderItem>?) {
+    override fun onChanged(newItems: MutableList<ImageFolderItem>?) {
         if(binding.fragmentImageFoldersList.adapter != null) {
             try {
                 viewModel.MainScope?.cancel()
@@ -50,19 +51,15 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
 
             }
 
-            if(shouldUseDiffUtil) {
-                (binding.fragmentImageFoldersList.adapter as ImageFoldersAdapter).submitItems(t!!)
-            } else {
-                (binding.fragmentImageFoldersList.adapter as ImageFoldersAdapter).submitItemsWithoutDiff(t!!)
-            }
+            activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
-            if(shouldScrollToTop) binding.fragmentImageFoldersList.scrollToPosition(0)
+            if(viewModel.shouldScrollToTop) (binding.fragmentImageFoldersList.adapter as ImageFoldersAdapter).submitList(null)
+            (binding.fragmentImageFoldersList.adapter as ImageFoldersAdapter).submitList(newItems)
 
-            shouldScrollToTop = true
-            shouldUseDiffUtil = false
+            viewModel.shouldScrollToTop = false
             viewModel.searchInProgress = false
 
-            notifyListEmpty(binding.fragmentImageFoldersList.adapter!!, binding.fragmentImageFoldersNoFoldersTitle)
+            notifyListEmpty(newItems!!.size, binding.fragmentImageFoldersNoFoldersTitle)
         }
     }
 
@@ -83,6 +80,16 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
             setHasOptionsMenu(true)
 
             activity.setSupportActionBar(binding.fragmentImageFoldersAppBarInclude.layoutBaseToolBarInclude.layoutBaseToolbar)
+            activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            activity.supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_ios_24)
+
+            binding.fragmentImageFoldersAppBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
+                if(abs(verticalOffset) == appBarLayout.height && !translucentStatusBar) {
+                    activity.window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                } else if(verticalOffset == 0 && !translucentStatusBar){
+                    activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                }
+            })
 
             activity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(ApplicationLoader.folderFragmentImmediateAction == null) {
                 override fun handleOnBackPressed() {
@@ -94,20 +101,79 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
 
             ApplicationLoader.folderFragmentImmediateAction?.run() ?: launchCore()
             onBackCallback.isEnabled = true
+
+            pinchZoomGestureDetector = ScaleGestureDetector(frContext, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                override fun onScale(detector: ScaleGestureDetector?): Boolean {
+                    if (detector != null) {
+                        if (detector.scaleFactor > 1) {
+                            if (activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                                if((binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount != 6) {
+                                    UIManager.setImageLibraryGridSpanNumberLandscape(activity, 6)
+                                    viewModel.MainScope?.launch {
+                                        (binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount = 6
+                                        (binding.fragmentImageFoldersList.adapter as ImageLibraryAdapter).run {
+                                            submitList(currentList)
+                                        }
+                                    }
+                                }
+                            } else {
+                                if((binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount != 4) {
+                                    UIManager.setImageLibraryGridSpanNumberPortrait(activity, 4)
+                                    viewModel.MainScope?.launch {
+                                        (binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount = 4
+                                        (binding.fragmentImageFoldersList.adapter as ImageLibraryAdapter).run {
+                                            submitList(currentList)
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            if (activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                                if((binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount != 10) {
+                                    UIManager.setImageLibraryGridSpanNumberLandscape(activity, 10)
+                                    viewModel.MainScope?.launch {
+                                        (binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount = 10
+                                        (binding.fragmentImageFoldersList.adapter as ImageLibraryAdapter).run {
+                                            submitList(currentList)
+                                        }
+                                    }
+                                }
+                            } else {
+                                if((binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount != 6) {
+                                    UIManager.setImageLibraryGridSpanNumberPortrait(activity, 6)
+                                    viewModel.MainScope?.launch {
+                                        (binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount = 6
+                                        (binding.fragmentImageFoldersList.adapter as ImageLibraryAdapter).run {
+                                            submitList(currentList)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    return true
+                }
+
+                override fun onScaleBegin(detector: ScaleGestureDetector?): Boolean {
+                    return true
+                }
+
+                override fun onScaleEnd(detector: ScaleGestureDetector?) {
+
+                }
+            })
         } catch(thr: Throwable) {
 
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initList(imageFolderItems: MutableList<ImageFolderItem>) {
-        binding.fragmentImageFoldersList.layoutManager = GridLayoutManager(context, UIManager.getAlbumGridSpanNumber(requireActivity()))
+        binding.fragmentImageFoldersList.layoutManager = GridLayoutManager(context, UIManager.getImageFoldersGridSpanNumber(requireActivity()))
 
-        ApplicationLoader.transientParcelables[UIManager.KEY_TRANSIENT_PARCELABLE_FOLDERS_MAIN_LIST_RV_STATE].let {
-            if(it != null) {
-                binding.fragmentImageFoldersList.layoutManager?.onRestoreInstanceState(it)
-                ApplicationLoader.transientParcelables.remove(UIManager.KEY_TRANSIENT_PARCELABLE_FOLDERS_MAIN_LIST_RV_STATE)
-            } else
-                binding.fragmentImageFoldersList.layoutManager?.onRestoreInstanceState(viewModel.mainListRvState)
+        ApplicationLoader.transientParcelables[UIManager.KEY_TRANSIENT_PARCELABLE_IMAGE_FOLDERS_MAIN_LIST_RV_STATE].let {
+            if(it != null) binding.fragmentImageFoldersList.layoutManager?.onRestoreInstanceState(it)
         }
 
         binding.fragmentImageFoldersList.adapter = ImageFoldersAdapter(requireActivity(), imageFolderItems, layoutInflater, this@ImageFoldersFragment)
@@ -119,30 +185,79 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
         (binding.fragmentImageFoldersList.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
         binding.fragmentImageFoldersList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dx > 0 || dy > 0) {
-                    if(this@ImageFoldersFragment::viewModel.isInitialized && !viewModel.selectionTool.selectionMode)
-                        binding.fragmentImageFoldersBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
+                if(dx > 0 || dy > 0) {
+                    if(this@ImageFoldersFragment::viewModel.isInitialized) {
+                        if(tabsBarVisible) {
+                            if (!viewModel.selectionTool.selectionMode) {
+                                binding.fragmentImageFoldersBottomTabsBarInclude.layoutBottomTabsBarRootLayout.animate().alpha(0f).setDuration(300).start()
+                                activity.handler.postDelayed({
+                                    binding.fragmentImageFoldersBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
+                                }, 300)
+                            }
+                            tabsBarVisible = false
+                        }
+
+                        if(toolBarVisible) {
+                            binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersRootLayout.animate().alpha(0f).setDuration(300).start()
+                            activity.handler.postDelayed({
+                                binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersRootLayout.visibility = View.GONE
+                            }, 300)
+                            toolBarVisible = false
+                        }
+
+                        binding.fragmentImageFoldersScrollBtnIcon.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24)
+
+                        binding.fragmentImageFoldersScrollBtn.setOnClickListener {
+                            binding.fragmentImageFoldersList.scrollToPosition(if(binding.fragmentImageFoldersList.adapter!!.itemCount > 0) binding.fragmentImageFoldersList.adapter!!.itemCount - 1 else 0)
+                        }
+                    }
                 } else {
-                    if(this@ImageFoldersFragment::viewModel.isInitialized && !viewModel.selectionTool.selectionMode)
-                        binding.fragmentImageFoldersBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.VISIBLE
+                    if (this@ImageFoldersFragment::viewModel.isInitialized) {
+                        if(!viewModel.selectionTool.selectionMode) binding.fragmentImageFoldersBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.VISIBLE
+                        if(viewModel.selectionTool.selectionMode) binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersRootLayout.visibility = View.VISIBLE
+
+                        if(!tabsBarVisible) {
+                            if (!viewModel.selectionTool.selectionMode) binding.fragmentImageFoldersBottomTabsBarInclude.layoutBottomTabsBarRootLayout.animate().alpha(1f).setDuration(300).start()
+                            tabsBarVisible = true
+                        }
+
+                        if(!toolBarVisible) {
+                            binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersRootLayout.animate().alpha(1f).setDuration(300).start()
+                            toolBarVisible = true
+                        }
+
+                        binding.fragmentImageFoldersScrollBtnIcon.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24)
+
+                        binding.fragmentImageFoldersScrollBtn.setOnClickListener {
+                            binding.fragmentImageFoldersList.scrollToPosition(0)
+                        }
+                    }
                 }
             }
         })
 
-        notifyListEmpty(binding.fragmentImageFoldersList.adapter!!, binding.fragmentImageFoldersNoFoldersTitle)
+        binding.fragmentImageFoldersList.setOnTouchListener { _, event ->
+            pinchZoomGestureDetector.onTouchEvent(event)
+            false
+        }
+
+        notifyListEmpty(imageFolderItems.size, binding.fragmentImageFoldersNoFoldersTitle)
     }
 
     override fun launchCore() {
         activity.requestExternalStoragePermission {
             ApplicationLoader.ApplicationIOScope.launch {
-                viewModel = ViewModelProvider(this@ImageFoldersFragment, SimpleInjector.provideImageFoldersViewModelFactory()).get(ImageFoldersViewModel::class.java)
+                viewModel = ViewModelProvider(this@ImageFoldersFragment, SimpleInjector.provideImageFoldersViewModelFactory(frContext)).get(ImageFoldersViewModel::class.java)
 
                 withContext(Main) {
-                    viewModel.getItemsLive().observe(viewLifecycleOwner, this@ImageFoldersFragment)
+                    viewModel.librarySortOrder = PreferencesWrapper.getString(frContext, SortTool.KEY_SP_IMAGE_LIBRARY_SORT_ORDER, SortTool.SORT_ORDER_DATE_RECENT)
+                    viewModel.getItemsLive(frContext).observe(viewLifecycleOwner, this@ImageFoldersFragment)
 
-                    initList(viewModel.getItemsLive().value!!)
+                    initList(viewModel.getItemsLive(frContext).value!!)
+
+                    binding.fragmentImageFoldersListProgressBar.visibility = View.GONE
+                    viewModel.assignItemsLive(frContext, false)
 
                     initSelectionState(
                             viewModel,
@@ -157,19 +272,22 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
                     initSelectionBar(
                             binding.fragmentImageFoldersAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb
                     ) { _: CompoundButton, b: Boolean ->
-                        viewModel.MainScope?.launch {
-                            if(b) {
-                                viewModel.selectionTool.selectAll(mutableListOf<String>().apply {
-                                    if(binding.fragmentImageFoldersList.adapter != null) {
-                                        (binding.fragmentImageFoldersList.adapter as ImageFoldersAdapter).imageFolderItems.forEach {
-                                            add(it.data)
+                        if(!viewModel.selectionTool.selectionCheckBoxSticky) {
+                            viewModel.MainScope?.launch {
+                                if(b) {
+                                    viewModel.selectionTool.selectAll(mutableListOf<String>().apply {
+                                        if(binding.fragmentImageFoldersList.adapter != null) {
+                                            (binding.fragmentImageFoldersList.adapter as ImageFoldersAdapter).currentList.forEach {
+                                                add(it.data)
+                                            }
                                         }
-                                    }
-                                }, binding.fragmentImageFoldersList.adapter!!)
-                            } else {
-                                viewModel.selectionTool.unselectAll(binding.fragmentImageFoldersList.adapter!!)
+                                    }, binding.fragmentImageFoldersList.adapter!!)
+                                } else {
+                                    viewModel.selectionTool.unselectAll(binding.fragmentImageFoldersList.adapter!!)
+                                }
                             }
                         }
+
                     }
 
                     initTabsBar(
@@ -194,27 +312,9 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
                     initToolBar(
                             binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersRootLayout,
                             mutableListOf<ViewGroup>().apply {
-                                add(binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersRenameContainer)
                                 add(binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersInfoContainer)
-                                add(binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersDeleteContainer)
                             },
                             mutableListOf<View.OnClickListener>().apply {
-                                add {
-                                    if(viewModel.selectionTool.selectedPaths.size == 1) {
-                                        RenameTool.showRenameBottomModalSheetFragment(activity.supportFragmentManager, viewModel.selectionTool.selectedPaths[0]) {
-                                            try {
-                                                shouldUseDiffUtil = true
-                                                shouldScrollToTop = false
-                                                ApplicationLoader.ApplicationIOScope.launch {
-                                                    viewModel.assignItemsLive(frContext, true)
-                                                    ImageRepo.getSingleton().loadAll(frContext, true)
-                                                }
-                                            } catch(thr: Throwable) {
-
-                                            }
-                                        }
-                                    }
-                                }
                                 add {
                                     if(viewModel.selectionTool.selectedPaths.isNotEmpty()) {
                                         InfoTool.showInfoAlbumBottomModalSheetFragment(
@@ -229,49 +329,13 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
                                         )
                                     }
                                 }
-                                add {
-                                    if(viewModel.selectionTool.selectedPaths.isNotEmpty()) {
-                                        try {
-                                            ApplicationLoader.ApplicationMainScope.launch {
-                                                DeleteTool.deleteFoldersAndRefreshMediaStore(
-                                                        activity,
-                                                        mutableListOf<String>().apply {
-                                                            viewModel.selectionTool.selectedPaths.forEach { path ->
-                                                                (binding.fragmentImageFoldersList.adapter as ImageFoldersAdapter).imageFolderItems.forEach { folder ->
-                                                                    if(folder.data == path)
-                                                                        folder.containedImages.forEach {
-                                                                            add(it.data)
-                                                                        }
-                                                                }
-                                                            }
-                                                        },
-                                                        viewModel.selectionTool.selectedPaths.size
-                                                ) {
-                                                    shouldScrollToTop = false
-
-                                                    ApplicationLoader.ApplicationIOScope.launch {
-                                                        viewModel.assignItemsLive(frContext, true)
-                                                        ImageRepo.getSingleton().loadAll(frContext, true)
-                                                    }
-                                                }
-                                            }
-                                        } catch(thr: Throwable) {
-
-                                        }
-                                    }
-                                }
                             },
                             mutableListOf<TextView>().apply {
-                                add(binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersRenameTitle)
                                 add(binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersInfoTitle)
-                                add(binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersDeleteTitle)
                             }
                     )
-
-                    if(DeleteTool.inProgressDialogCode == 2) {
-                        binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersDeleteContainer.callOnClick()
-                    }
                 }
+
             }
         }
     }
@@ -279,22 +343,9 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
     override fun onResume() {
         super.onResume()
 
-        setAppBarTitle(activity, frContext.resources.getString(R.string.title_folders))
+        activity.supportActionBar?.title = frContext.resources.getString(R.string.title_folders)
 
         handleUserReturnFromAppSettings(activity)
-
-        updateAlbumCovers()
-    }
-
-    private fun updateAlbumCovers() {
-        if(this::viewModel.isInitialized && viewModel.librarySortOrder != PreferencesWrapper.getString(frContext, SortTool.KEY_SP_IMAGE_LIBRARY_SORT_ORDER, SortTool.SORT_ORDER_DATE_RECENT))
-            ApplicationLoader.ApplicationIOScope.launch {
-                viewModel.librarySortOrder = PreferencesWrapper.getString(frContext, SortTool.KEY_SP_IMAGE_LIBRARY_SORT_ORDER, SortTool.SORT_ORDER_DATE_RECENT)
-
-                shouldScrollToTop = false
-
-                viewModel.assignItemsLive(frContext, false)
-            }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -332,7 +383,7 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
                 }
 
                 if(this@ImageFoldersFragment::viewModel.isInitialized) {
-                    ApplicationLoader.transientStrings[UIManager.KEY_TRANSIENT_STRINGS_FOLDERS_SEARCH_TEXT].let {
+                    ApplicationLoader.transientStrings[UIManager.KEY_TRANSIENT_STRINGS_IMAGE_FOLDERS_SEARCH_TEXT].let {
                         if(it != null) {
                             viewModel.isSearchViewEnabled = true
                             viewModel.setSearchText(it)
@@ -341,8 +392,6 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
 
                             if(viewModel.currentSearchText.isNotEmpty())
                                 viewModel.IOScope.launch {
-                                    shouldScrollToTop = false
-
                                     viewModel.assignItemsLive(frContext, false)
                                 }
 
@@ -359,7 +408,7 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
 
                         }
 
-                        ApplicationLoader.transientStrings.remove(UIManager.KEY_TRANSIENT_STRINGS_FOLDERS_SEARCH_TEXT)
+                        ApplicationLoader.transientStrings.remove(UIManager.KEY_TRANSIENT_STRINGS_IMAGE_FOLDERS_SEARCH_TEXT)
                     }
                 }
 
@@ -393,28 +442,6 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
             true
         }
 
-        menu.findItem(R.id.mainToolbarMenuItemEdit).setOnMenuItemClickListener {
-            if(this@ImageFoldersFragment::viewModel.isInitialized && binding.fragmentImageFoldersList.adapter != null) {
-                menu.close()
-
-                viewModel.selectionTool.selectionMode = true
-
-                viewModel.selectionTool.unselectAll(binding.fragmentImageFoldersList.adapter!!)
-
-                initSelectionState(
-                        viewModel,
-                        activity,
-                        binding.fragmentImageFoldersList.adapter!!,
-                        binding.fragmentImageFoldersBottomToolBarInclude.layoutBottomToolBarFoldersRootLayout,
-                        binding.fragmentImageFoldersBottomTabsBarInclude.layoutBottomTabsBarRootLayout,
-                        binding.fragmentImageFoldersAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
-                        binding.fragmentImageFoldersAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb
-                )
-            }
-
-            true
-        }
-
     }
 
     override fun onPause() {
@@ -422,9 +449,11 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
 
         if(this::viewModel.isInitialized) {
             if(this::searchView.isInitialized)
-                if(viewModel.isSearchViewEnabled) ApplicationLoader.transientStrings[UIManager.KEY_TRANSIENT_STRINGS_FOLDERS_SEARCH_TEXT] = searchView.query.toString()
+                if(viewModel.isSearchViewEnabled) ApplicationLoader.transientStrings[UIManager.KEY_TRANSIENT_STRINGS_IMAGE_FOLDERS_SEARCH_TEXT] = searchView.query.toString()
 
-            ApplicationLoader.transientParcelables[UIManager.KEY_TRANSIENT_PARCELABLE_FOLDERS_MAIN_LIST_RV_STATE] = binding.fragmentImageFoldersList.layoutManager?.onSaveInstanceState()
+            ApplicationLoader.transientParcelables[UIManager.KEY_TRANSIENT_PARCELABLE_IMAGE_FOLDERS_MAIN_LIST_RV_STATE] = binding.fragmentImageFoldersList.layoutManager?.onSaveInstanceState()
         }
+
+        viewModelStore.clear()
     }
 }

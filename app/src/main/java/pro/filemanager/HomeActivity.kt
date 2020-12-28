@@ -1,11 +1,19 @@
 package pro.filemanager
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.ScaleGestureDetector
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import pro.filemanager.core.PermissionWrapper
+import pro.filemanager.core.wrappers.PermissionWrapper
 import pro.filemanager.core.tools.ShareTool
 import pro.filemanager.databinding.ActivityHomeBinding
 import pro.filemanager.files.FileCore
@@ -19,6 +27,8 @@ class HomeActivity : AppCompatActivity() {
 
     lateinit var externalStorageRequestSuccessAction: Runnable
 
+    lateinit var handler: Handler
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -29,6 +39,7 @@ class HomeActivity : AppCompatActivity() {
 
         binding.homeActivityMainNavView.setupWithNavController(navController)
 
+        handler = Handler(Looper.getMainLooper())
     }
 
     override fun onResume() {
@@ -60,5 +71,15 @@ class HomeActivity : AppCompatActivity() {
                 {
                     onBackPressed()
                 })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if(item.itemId == android.R.id.home) {
+            onBackPressed()
+
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
     }
 }

@@ -1,47 +1,49 @@
 package pro.filemanager
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import pro.filemanager.core.generics.BaseSectionFragment
 import pro.filemanager.databinding.FragmentHomeBinding
 import pro.filemanager.images.ImageCore
 
-class HomeFragment : Fragment() {
+class HomeFragment : BaseSectionFragment() {
 
     lateinit var binding: FragmentHomeBinding
-    lateinit var navController: NavController
-    lateinit var activity: HomeActivity
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        activity = requireActivity() as HomeActivity
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        binding.fragmentHomeRootLayout.visibility = View.INVISIBLE
+        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
-        binding.fragmentHomeAudiosBtn.layoutHomeTileRootLayoutContent.post {
+        return binding.root
+    }
 
-            binding.fragmentHomeAudiosBtn.layoutHomeTileRootLayoutContent.width.let {
-                val textSize = (it / 20).toFloat()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        try {
+            navController = Navigation.findNavController(binding.root)
 
-                binding.fragmentHomeAudiosBtn.layoutHomeTileTitle.textSize = textSize
-                binding.fragmentHomeAudiosBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_audio)
-                ImageCore.glideSimpleRequestBuilder
-                        .load(R.drawable.ic_audio)
-                        .into(binding.fragmentHomeAudiosBtn.layoutHomeTileIcon)
+            activity.setSupportActionBar(binding.fragmentHomeLayoutBaseToolbarInclude.layoutBaseToolBarInclude.layoutBaseToolbar)
+            activity.supportActionBar?.title = requireContext().resources.getString(R.string.title_multimedia)
+
+            binding.fragmentHomeRootLayout.visibility = View.INVISIBLE
+
+            binding.fragmentHomeAudiosBtn.layoutHomeTileRootLayoutContent.post {
+
+                binding.fragmentHomeAudiosBtn.layoutHomeTileRootLayoutContent.width.let {
+                    val textSize = (it / 22).toFloat()
+
+                    binding.fragmentHomeAudiosBtn.layoutHomeTileTitle.textSize = textSize
+                    binding.fragmentHomeAudiosBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_audio)
+                    ImageCore.glideSimpleRequestBuilder
+                            .load(R.drawable.ic_audio)
+                            .into(binding.fragmentHomeAudiosBtn.layoutHomeTileIcon)
 
 //                binding.fragmentHomeVideosBtn.layoutHomeTileTitle.textSize = textSize
 //                binding.fragmentHomeVideosBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_video)
@@ -52,8 +54,8 @@ class HomeFragment : Fragment() {
 //                binding.fragmentHomeAppsBtn.layoutHomeTileTitle.textSize = textSize
 //                binding.fragmentHomeAppsBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_apps)
 
-                binding.fragmentHomeImagesBtn.layoutHomeTileTitle.textSize = textSize
-                binding.fragmentHomeImagesBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_images)
+                    binding.fragmentHomeImagesBtn.layoutHomeTileTitle.textSize = textSize
+                    binding.fragmentHomeImagesBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_images)
 
 //                binding.fragmentHomeApksBtn.layoutHomeTileTitle.textSize = textSize
 //                binding.fragmentHomeApksBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_apks)
@@ -66,34 +68,25 @@ class HomeFragment : Fragment() {
 //
 //                binding.fragmentHomeTrashBtn.layoutHomeTileTitle.textSize = textSize
 //                binding.fragmentHomeTrashBtn.layoutHomeTileTitle.text = requireContext().resources.getString(R.string.title_trash)
+                }
+
             }
 
-        }
+            binding.fragmentHome1percentDeterminer.post {
+                binding.fragmentHome1percentDeterminer.width.let {
+                    binding.fragmentHomeAudiosBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
+                    binding.fragmentHomeVideosBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
+                    binding.fragmentHomeDocsBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
+                    binding.fragmentHomeAppsBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
+                    binding.fragmentHomeImagesBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
+                    binding.fragmentHomeApksBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
+                    binding.fragmentHomeCloudBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
+                    binding.fragmentHomeTransferPcBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
+                    binding.fragmentHomeTrashBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
+                }
 
-        binding.fragmentHome1percentDeterminer.post {
-            binding.fragmentHome1percentDeterminer.width.let {
-                binding.fragmentHomeAudiosBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
-                binding.fragmentHomeVideosBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
-                binding.fragmentHomeDocsBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
-                binding.fragmentHomeAppsBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
-                binding.fragmentHomeImagesBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
-                binding.fragmentHomeApksBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
-                binding.fragmentHomeCloudBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
-                binding.fragmentHomeTransferPcBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
-                binding.fragmentHomeTrashBtn.layoutHomeTileRootLayout.setPadding(0, it, 0, 0)
+                binding.fragmentHomeRootLayout.visibility = View.VISIBLE
             }
-
-            binding.fragmentHomeRootLayout.visibility = View.VISIBLE
-        }
-
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        navController = Navigation.findNavController(binding.root)
-
-        activity.setSupportActionBar(binding.fragmentHomeLayoutBaseToolbarInclude.layoutBaseToolBarInclude.layoutBaseToolbar)
-        activity.supportActionBar?.title = requireContext().resources.getString(R.string.title_multimedia)
 
 //            binding.fragmentHomeInternalBtn.setOnClickListener {
 //                navController.navigate(R.id.action_homeFragment_to_fileBrowserFragment, bundleOf(
@@ -109,9 +102,11 @@ class HomeFragment : Fragment() {
 //                ))
 //            }
 
-        binding.fragmentHomeImagesBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
-            navController.navigate(R.id.action_homeFragment_to_imageLibraryFragment)
+            binding.fragmentHomeImagesBtn.layoutHomeTileRootLayoutContent.setOnClickListener {
+                navController.navigate(R.id.action_homeFragment_to_imageLibraryFragment)
+            }
+        } catch(thr: Throwable) {
+
         }
     }
-
 }

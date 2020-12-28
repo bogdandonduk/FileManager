@@ -13,13 +13,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.Toast
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import pro.filemanager.ApplicationLoader
 import pro.filemanager.HomeActivity
 import pro.filemanager.R
-import pro.filemanager.core.base.BaseBottomSheetDialogFragment
+import pro.filemanager.core.generics.BaseBottomSheetDialogFragment
 import pro.filemanager.databinding.LayoutRenameBottomModalSheetBinding
 import java.io.File
 
@@ -92,10 +88,12 @@ class RenameBottomModalSheetFragment : BaseBottomSheetDialogFragment() {
             }
         }
 
-        binding.layoutRenameBottomModalSheetRenameEditText.requestFocus()
 
         binding.layoutRenameBottomModalSheetConfirmBtn.setOnClickListener {
             binding.layoutRenameBottomModalSheetRenameEditText.onEditorAction(EditorInfo.IME_ACTION_DONE)
         }
+
+        (frContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+
     }
 }

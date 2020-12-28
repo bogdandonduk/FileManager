@@ -1,53 +1,47 @@
 package pro.filemanager.images
 
 import android.content.Context
-import android.graphics.Color
-import android.text.Html
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
-import android.text.style.ForegroundColorSpan
-import android.util.Log
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.signature.MediaStoreSignature
+import kotlinx.android.synthetic.main.fragment_image_library.*
 import kotlinx.coroutines.launch
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.LayoutImageItemBinding
 import pro.filemanager.files.FileCore
 
-class ImageLibraryAdapter(val context: Context, var imageItems: MutableList<ImageItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageLibraryFragment) : RecyclerView.Adapter<ImageLibraryAdapter.ImageItemViewHolder>() {
+class ImageLibraryAdapter(val context: Context, val imageItems: MutableList<ImageItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageLibraryFragment) :
+    ListAdapter<ImageItem, ImageLibraryAdapter.ImageItemViewHolder>(object : DiffUtil.ItemCallback<ImageItem>() {
+        override fun areItemsTheSame(oldItem: ImageItem, newItem: ImageItem): Boolean {
+            return oldItem.data == newItem.data
+        }
+
+        override fun areContentsTheSame(oldItem: ImageItem, newItem: ImageItem): Boolean {
+            return oldItem.equals(newItem)
+        }
+    }) {
+
     var lastSelectionModeState: Boolean = false
 
-    class ImageBrowserAdapterDiffCallback(
-            val oldItems: MutableList<ImageItem>,
-            val newItems: MutableList<ImageItem>
-    ) : DiffUtil.Callback() {
-        override fun getOldListSize(): Int = oldItems.size
-
-        override fun getNewListSize(): Int = newItems.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                oldItems[oldItemPosition].data == newItems[newItemPosition].data
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = oldItems[oldItemPosition].equals(newItems[newItemPosition])
+    init {
+        submitList(imageItems)
     }
 
-    fun submitItems(newItems: MutableList<ImageItem>) {
-        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(ImageBrowserAdapterDiffCallback(imageItems, newItems), true)
+    override fun submitList(list: MutableList<ImageItem>?) {
+        super.submitList(list)
 
-        imageItems = newItems
-
-        diffResult.dispatchUpdatesTo(this)
+        repeat(itemCount) {
+            notifyItemChanged(it - 1)
+        }
     }
 
-    fun submitItemsWithoutDiff(newItems: MutableList<ImageItem>) {
-        imageItems = newItems
-
-        notifyDataSetChanged()
+    override fun getItemId(position: Int): Long {
+        return currentList[position].hashCode().toLong()
     }
 
     class ImageItemViewHolder(val context: Context, val binding: LayoutImageItemBinding, val hostFragment: ImageLibraryFragment, val adapter: ImageLibraryAdapter) : RecyclerView.ViewHolder(binding.root) {
@@ -61,12 +55,15 @@ class ImageLibraryAdapter(val context: Context, var imageItems: MutableList<Imag
                             @Suppress("UNCHECKED_CAST")
                             hostFragment.viewModel.selectionTool.handleClickInViewHolder(
                                     SelectionTool.CLICK_SHORT,
+                                    context,
                                     adapterPosition,
                                     item.data,
-                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>
+                                    adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
                             ) {
                                 FileCore.openFileOut(context, item.data)
                             }
+
+                            hostFragment.viewModel.selectionTool.initSelectionCheckBox(hostFragment.binding.fragmentImageLibraryAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb, adapter.itemCount)
                         }
                     }
                 }
@@ -77,6 +74,7 @@ class ImageLibraryAdapter(val context: Context, var imageItems: MutableList<Imag
                             @Suppress("UNCHECKED_CAST")
                             hostFragment.viewModel.selectionTool.handleClickInViewHolder(
                                     SelectionTool.CLICK_LONG,
+                                    context,
                                     adapterPosition,
                                     item.data,
                                     adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>,
@@ -93,8 +91,15 @@ class ImageLibraryAdapter(val context: Context, var imageItems: MutableList<Imag
                                         )
                                     }
                             )
+
+                            hostFragment.viewModel.selectionTool.initSelectionCheckBox(hostFragment.binding.fragmentImageLibraryAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb, adapter.itemCount)
+
+                            hostFragment.fragmentImageLibraryScrollBtn.visibility = View.VISIBLE
+                            hostFragment.binding.fragmentImageLibraryBottomToolBarInclude.layoutBottomToolBarRootLayout.animate().alpha(1f).setDuration(300).start()
+                            hostFragment.toolBarVisible = true
                         }
                     }
+
                     true
                 }
             }
@@ -103,25 +108,24 @@ class ImageLibraryAdapter(val context: Context, var imageItems: MutableList<Imag
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageItemViewHolder {
-
         return ImageItemViewHolder(context, LayoutImageItemBinding.inflate(layoutInflater, parent, false), hostFragment, this)
     }
 
     override fun onBindViewHolder(holder: ImageItemViewHolder, position: Int) {
-        holder.item = imageItems[position]
+        holder.item = currentList[position]
 
         hostFragment.viewModel.MainScope?.launch {
             if(!holder.item.data.endsWith(".gif", true)) {
                 ImageCore.glideBitmapRequestBuilder
                         .load(holder.item.data)
                         .override(holder.binding.layoutImageItemThumbnail.width, holder.binding.layoutImageItemThumbnail.height)
-                        .signature(MediaStoreSignature(ImageCore.MIME_TYPE, imageItems[position].dateModified, 0))
+                        .signature(MediaStoreSignature(ImageCore.MIME_TYPE, holder.item.dateModified, 0))
                         .into(holder.binding.layoutImageItemThumbnail)
             } else {
                 ImageCore.glideGifRequestBuilder
                         .load(holder.item.data)
                         .override(holder.binding.layoutImageItemThumbnail.width, holder.binding.layoutImageItemThumbnail.height)
-                        .signature(MediaStoreSignature(ImageCore.MIME_TYPE, imageItems[position].dateModified, 0))
+                        .signature(MediaStoreSignature(ImageCore.MIME_TYPE, holder.item.dateModified, 0))
                         .into(holder.binding.layoutImageItemThumbnail)
             }
 
@@ -147,7 +151,7 @@ class ImageLibraryAdapter(val context: Context, var imageItems: MutableList<Imag
             hostFragment.binding.fragmentImageLibraryAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb.text =
                     hostFragment.viewModel.selectionTool.selectedPaths.size.toString()
 
-        if(lastSelectionModeState != hostFragment.viewModel.selectionTool.selectionMode) {
+        if(lastSelectionModeState != hostFragment.viewModel.selectionTool.selectionMode && hostFragment.viewModel.selectionTool.selectedPaths.size == itemCount) {
             lastSelectionModeState = hostFragment.viewModel.selectionTool.selectionMode
 
             hostFragment.viewModel.MainScope?.launch {
@@ -164,8 +168,7 @@ class ImageLibraryAdapter(val context: Context, var imageItems: MutableList<Imag
                 )
             }
         }
-
     }
 
-    override fun getItemCount(): Int = imageItems.size
+    override fun getItemCount(): Int = currentList.size
 }

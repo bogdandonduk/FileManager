@@ -14,158 +14,87 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="8:1"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutBottomToolBarContentLayoutGl2pv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.02" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutBottomToolBarContentLayoutGl34pv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.34" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutBottomToolBarContentLayoutGl66pv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.66" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutBottomToolBarContentLayoutGl98pv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.98" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutBottomToolBarShareContainer"
+            android:id="@+id/layoutBottomToolBarOptionsContainer"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="?attr/selectableItemBackground"
+            android:background="@drawable/bg_bottom_bar_item"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1.2:1"
-            app:layout_constraintEnd_toStartOf="@+id/layoutBottomToolBarMoveContainer"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/layoutBottomToolBarContentLayoutGl34pv"
+            app:layout_constraintStart_toStartOf="@+id/layoutBottomToolBarContentLayoutGl2pv"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/layoutBottomToolBarShareIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/layoutBottomToolBarShareTitle"
+                android:id="@+id/layoutBottomToolBarOptionsIcon"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/layoutBottomToolBarOptionsContainerGl50ph"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_share_24" />
+                app:layout_constraintTop_toTopOf="@+id/layoutBottomToolBarOptionsContainerGl10ph"
+                app:srcCompat="@drawable/ic_baseline_menu_24" />
 
             <TextView
-                android:id="@+id/layoutBottomToolBarShareTitle"
+                android:id="@+id/layoutBottomToolBarOptionsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="middle"
-                android:text="@string/toolbar_share"
+                android:ellipsize="end"
+                android:text="@string/title_options"
                 android:textColor="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layoutBottomToolBarShareIcon" />
+                app:layout_constraintTop_toTopOf="@+id/layoutBottomToolBarOptionsContainerGl50ph" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutBottomToolBarMoveContainer"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="?attr/selectableItemBackground"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1.2:1"
-            app:layout_constraintEnd_toStartOf="@+id/layoutBottomToolBarCopyContainer"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/layoutBottomToolBarShareContainer"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/layoutBottomToolBarMoveIcon"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutBottomToolBarOptionsContainerGl10ph"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/layoutBottomToolBarMoveTitle"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_arrow_forward_24" />
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.1" />
 
-            <TextView
-                android:id="@+id/layoutBottomToolBarMoveTitle"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutBottomToolBarOptionsContainerGl50ph"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="middle"
-                android:text="@string/toolbar_move"
-                android:textColor="@android:color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layoutBottomToolBarMoveIcon" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutBottomToolBarCopyContainer"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="?attr/selectableItemBackground"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1.2:1"
-            app:layout_constraintEnd_toStartOf="@+id/layoutBottomToolBarRenameContainer"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/layoutBottomToolBarMoveContainer"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/layoutBottomToolBarCopyIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/layoutBottomToolBarCopyTitle"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_file_copy_24" />
-
-            <TextView
-                android:id="@+id/layoutBottomToolBarCopyTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="middle"
-                android:text="@string/toolbar_copy"
-                android:textColor="@android:color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layoutBottomToolBarCopyIcon" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutBottomToolBarRenameContainer"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="?attr/selectableItemBackground"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1.2:1"
-            app:layout_constraintEnd_toStartOf="@+id/layoutBottomToolBarInfoContainer"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/layoutBottomToolBarCopyContainer"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/layoutBottomToolBarRenameIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/layoutBottomToolBarRenameTitle"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_edit_24" />
-
-            <TextView
-                android:id="@+id/layoutBottomToolBarRenameTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="middle"
-                android:text="@string/toolbar_rename"
-                android:textColor="@android:color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layoutBottomToolBarRenameIcon" />
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.5" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -173,37 +102,50 @@
             android:id="@+id/layoutBottomToolBarInfoContainer"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="?attr/selectableItemBackground"
+            android:background="@drawable/bg_bottom_bar_item"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1.2:1"
-            app:layout_constraintEnd_toStartOf="@+id/layoutBottomToolBarDeleteContainer"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/layoutBottomToolBarRenameContainer"
+            app:layout_constraintEnd_toStartOf="@+id/layoutBottomToolBarContentLayoutGl66pv"
+            app:layout_constraintStart_toStartOf="@+id/layoutBottomToolBarContentLayoutGl34pv"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/layoutBottomToolBarInfoIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/layoutBottomToolBarInfoTitle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/layoutBottomToolBarInfoContainerGl50ph"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/layoutBottomToolBarInfoContainerGl10ph"
                 app:srcCompat="@drawable/ic_baseline_info_24" />
 
             <TextView
                 android:id="@+id/layoutBottomToolBarInfoTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="middle"
+                android:ellipsize="end"
                 android:text="@string/toolbar_info"
                 android:textColor="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layoutBottomToolBarInfoIcon" />
+                app:layout_constraintTop_toTopOf="@+id/layoutBottomToolBarInfoContainerGl50ph" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutBottomToolBarInfoContainerGl10ph"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.1" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutBottomToolBarInfoContainerGl50ph"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.5" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -211,36 +153,51 @@
             android:id="@+id/layoutBottomToolBarDeleteContainer"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="?attr/selectableItemBackground"
+            android:background="@drawable/bg_bottom_bar_item"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1.2:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/layoutBottomToolBarInfoContainer"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0">
+            app:layout_constraintEnd_toStartOf="@+id/layoutBottomToolBarContentLayoutGl98pv"
+            app:layout_constraintStart_toStartOf="@+id/layoutBottomToolBarContentLayoutGl66pv"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/layoutBottomToolBarDeleteIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/layoutBottomToolBarDeleteTitle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/layoutBottomToolBarDeleteContainerGl50ph"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/layoutBottomToolBarDeleteContainerGl10ph"
                 app:srcCompat="@drawable/ic_baseline_delete_forever_24" />
 
             <TextView
                 android:id="@+id/layoutBottomToolBarDeleteTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="middle"
+                android:ellipsize="end"
                 android:text="@string/toolbar_delete"
                 android:textColor="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layoutBottomToolBarDeleteIcon" />
+                app:layout_constraintTop_toTopOf="@+id/layoutBottomToolBarDeleteContainerGl50ph" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutBottomToolBarDeleteContainerGl10ph"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.1" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutBottomToolBarDeleteContainerGl50ph"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.5" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

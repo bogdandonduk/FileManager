@@ -5,6 +5,7 @@
     android:id="@+id/layoutImageItemRootLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:hapticFeedbackEnabled="true"
     android:paddingStart="1dp"
     android:paddingBottom="1dp">
 
@@ -118,7 +119,6 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:gravity="center"
-                android:maxLines="1"
                 android:singleLine="true"
                 android:textColor="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="parent"

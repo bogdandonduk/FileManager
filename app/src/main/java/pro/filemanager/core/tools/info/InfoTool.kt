@@ -1,8 +1,8 @@
 package pro.filemanager.core.tools.info
 
 import androidx.fragment.app.FragmentManager
-import pro.filemanager.core.base.BaseFolderItem
-import pro.filemanager.core.base.BaseItem
+import pro.filemanager.core.generics.BaseFolderItem
+import pro.filemanager.core.generics.BaseItem
 
 object InfoTool {
 
@@ -29,7 +29,7 @@ object InfoTool {
             lastAlbums.clear()
             lastAlbums.addAll(folderItems)
 
-            InfoAlbumBottomModalSheetFragment().show(fm, null)
+            InfoFolderBottomModalSheetFragment().show(fm, null)
         }
     }
 }
