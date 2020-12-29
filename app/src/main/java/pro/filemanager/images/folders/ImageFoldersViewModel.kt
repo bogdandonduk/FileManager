@@ -2,6 +2,7 @@ package pro.filemanager.images.folders
 
 import android.content.Context
 import android.os.Parcelable
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.android.parcel.Parcelize
@@ -195,6 +196,8 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
     }
 
     override suspend fun assignItemsLive(context: Context, forceLoad: Boolean) {
+        Log.d("TAG", "assignItemsLive: ")
+
         when(librarySortOrder) {
                 SortTool.SORT_ORDER_DATE_RECENT -> {
                     if(forceLoad) {

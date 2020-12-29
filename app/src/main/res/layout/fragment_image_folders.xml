@@ -11,7 +11,6 @@
         android:id="@+id/fragmentImageFoldersAppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <include
@@ -29,6 +28,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingEnd="1dp"
+        android:scrollbarSize="8dp"
+        android:scrollbars="vertical"
+        android:splitMotionEvents="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <include
@@ -51,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:elevation="3dp"
-        android:text="@string/title_no_folders"
+        android:text="@string/title_no_images"
         android:textColor="@android:color/white"
         android:textSize="16sp"
         android:textStyle="bold"

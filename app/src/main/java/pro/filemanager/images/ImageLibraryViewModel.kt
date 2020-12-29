@@ -1,6 +1,8 @@
 package pro.filemanager.images
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -30,7 +32,6 @@ class ImageLibraryViewModel(val context: @RawValue Context, val imageRepo: @RawV
         imageRepo.observe(this)
 
         currentSortOrder = PreferencesWrapper.getString(ApplicationLoader.appContext, SortTool.KEY_SP_IMAGE_LIBRARY_SORT_ORDER, SortTool.SORT_ORDER_DATE_RECENT)
-
     }
 
     private suspend fun initItemsLive(context: Context) {

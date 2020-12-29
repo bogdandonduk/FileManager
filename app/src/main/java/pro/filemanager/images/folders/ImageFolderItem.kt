@@ -10,7 +10,7 @@ import java.io.Serializable
 @Parcelize
 data class ImageFolderItem(
         override val data: String,
-        override val displayName: String = File(data).name,
+        override var displayName: String = File(data).name,
         var containedImages: MutableList<ImageItem> = mutableListOf(),
         override var totalSize: Long = 0
 ) : BaseFolderItem(

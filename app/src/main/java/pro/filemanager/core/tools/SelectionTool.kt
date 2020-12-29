@@ -76,8 +76,8 @@ class SelectionTool {
     }
 
     fun updateAll(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
-        repeat(adapter.itemCount) {
-            adapter.notifyItemChanged(it - 1)
+        for(i in 0 until adapter.itemCount) {
+            adapter.notifyItemChanged(i)
         }
     }
 

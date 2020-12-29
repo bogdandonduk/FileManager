@@ -3,6 +3,8 @@ package pro.filemanager.images
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Handler
+import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
@@ -23,6 +25,7 @@ import pro.filemanager.ApplicationLoader
 import pro.filemanager.R
 import pro.filemanager.core.wrappers.PreferencesWrapper
 import pro.filemanager.core.SimpleInjector
+import pro.filemanager.core.generics.BaseContentObserver
 import pro.filemanager.core.ui.UIManager
 import pro.filemanager.core.generics.BaseItem
 import pro.filemanager.core.generics.BaseSectionFragment
@@ -67,7 +70,17 @@ class ImageLibraryFragment : BaseSectionFragment(), Observer<MutableList<ImageIt
             viewModel.shouldScrollToTop = false
             viewModel.searchInProgress = false
 
-            notifyListEmpty(newItems!!.size, binding.fragmentImageLibraryNoImagesTitle)
+            notifyListEmpty(newItems!!.size, binding.fragmentImageLibraryNoImagesTitle, binding.fragmentImageLibraryScrollBtn)
+
+            initSelectionState(
+                    viewModel,
+                    activity,
+                    binding.fragmentImageLibraryList.adapter!!,
+                    binding.fragmentImageLibraryBottomToolBarInclude.layoutBottomToolBarRootLayout,
+                    binding.fragmentImageLibraryBottomTabsBarInclude.layoutBottomTabsBarRootLayout,
+                    binding.fragmentImageLibraryAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout,
+                    binding.fragmentImageLibraryAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb
+            )
         }
     }
 
@@ -80,7 +93,6 @@ class ImageLibraryFragment : BaseSectionFragment(), Observer<MutableList<ImageIt
 
         return binding.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         try {
@@ -201,7 +213,7 @@ class ImageLibraryFragment : BaseSectionFragment(), Observer<MutableList<ImageIt
                 if(dx > 0 || dy > 0) {
                     if(this@ImageLibraryFragment::viewModel.isInitialized) {
                         if(tabsBarVisible) {
-                            if (!viewModel.selectionTool.selectionMode) {
+                            if(!viewModel.selectionTool.selectionMode) {
                                 binding.fragmentImageLibraryBottomTabsBarInclude.layoutBottomTabsBarRootLayout.animate().alpha(0f).setDuration(300).start()
                                 activity.handler.postDelayed({
                                     binding.fragmentImageLibraryBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.GONE
@@ -218,14 +230,16 @@ class ImageLibraryFragment : BaseSectionFragment(), Observer<MutableList<ImageIt
                             toolBarVisible = false
                         }
 
-                        binding.fragmentImageLibraryScrollBtnIcon.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24)
+                        if(scrollBtnVisible) {
+                            binding.fragmentImageLibraryScrollBtnIcon.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24)
 
-                        binding.fragmentImageLibraryScrollBtn.setOnClickListener {
-                            binding.fragmentImageLibraryList.scrollToPosition(if(binding.fragmentImageLibraryList.adapter!!.itemCount > 0) binding.fragmentImageLibraryList.adapter!!.itemCount - 1 else 0)
+                            binding.fragmentImageLibraryScrollBtn.setOnClickListener {
+                                binding.fragmentImageLibraryList.scrollToPosition(if(binding.fragmentImageLibraryList.adapter!!.itemCount > 0) binding.fragmentImageLibraryList.adapter!!.itemCount - 1 else 0)
+                            }
                         }
                     }
                 } else {
-                    if (this@ImageLibraryFragment::viewModel.isInitialized) {
+                    if(this@ImageLibraryFragment::viewModel.isInitialized) {
                         if(!viewModel.selectionTool.selectionMode) binding.fragmentImageLibraryBottomTabsBarInclude.layoutBottomTabsBarRootLayout.visibility = View.VISIBLE
                         if(viewModel.selectionTool.selectionMode) binding.fragmentImageLibraryBottomToolBarInclude.layoutBottomToolBarRootLayout.visibility = View.VISIBLE
 
@@ -239,10 +253,12 @@ class ImageLibraryFragment : BaseSectionFragment(), Observer<MutableList<ImageIt
                             toolBarVisible = true
                         }
 
-                        binding.fragmentImageLibraryScrollBtnIcon.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24)
+                        if(scrollBtnVisible) {
+                            binding.fragmentImageLibraryScrollBtnIcon.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24)
 
-                        binding.fragmentImageLibraryScrollBtn.setOnClickListener {
-                            binding.fragmentImageLibraryList.scrollToPosition(0)
+                            binding.fragmentImageLibraryScrollBtn.setOnClickListener {
+                                binding.fragmentImageLibraryList.scrollToPosition(0)
+                            }
                         }
                     }
                 }
@@ -254,7 +270,7 @@ class ImageLibraryFragment : BaseSectionFragment(), Observer<MutableList<ImageIt
             false
         }
 
-        notifyListEmpty(imageItems.size, binding.fragmentImageLibraryNoImagesTitle)
+        notifyListEmpty(imageItems.size, binding.fragmentImageLibraryNoImagesTitle, binding.fragmentImageLibraryScrollBtn)
     }
 
     override fun launchCore() {
@@ -268,6 +284,9 @@ class ImageLibraryFragment : BaseSectionFragment(), Observer<MutableList<ImageIt
                     initList(viewModel.getItemsLive(frContext).value!!)
 
                     binding.fragmentImageLibraryListProgressBar.visibility = View.GONE
+
+                    if(viewModel.contentObserver == null) viewModel.contentObserver = BaseContentObserver(frContext, viewModel, activity.handler)
+                    frContext.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, true, viewModel.contentObserver!!)
 
                     initSelectionState(
                             viewModel,
@@ -340,14 +359,18 @@ class ImageLibraryFragment : BaseSectionFragment(), Observer<MutableList<ImageIt
                                 }
                             } else {
                                 {
-                                    navController.navigate(R.id.action_imageLibraryFragment_to_imageFoldersFragment,
-                                            null,
-                                            if(this@ImageLibraryFragment.folderItem != null)
-                                                NavOptions.Builder()
-                                                        .setEnterAnim(R.anim.fragment_close_enter)
-                                                        .build()
-                                            else null
-                                    )
+                                    try {
+                                        navController.navigate(R.id.action_imageLibraryFragment_to_imageFoldersFragment,
+                                                null,
+                                                if(this@ImageLibraryFragment.folderItem != null)
+                                                    NavOptions.Builder()
+                                                            .setEnterAnim(R.anim.fragment_close_enter)
+                                                            .build()
+                                                else null
+                                        )
+                                    } catch(thr: Throwable) {
+
+                                    }
                                 }
                             }
                     )
@@ -644,5 +667,11 @@ class ImageLibraryFragment : BaseSectionFragment(), Observer<MutableList<ImageIt
                 if(viewModel.isSearchViewEnabled) ApplicationLoader.transientStrings[UIManager.KEY_TRANSIENT_STRINGS_IMAGE_LIBRARY_SEARCH_TEXT] = searchView.query.toString()
             viewModel.mainListRvState = binding.fragmentImageLibraryList.layoutManager?.onSaveInstanceState()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        if(viewModel.contentObserver != null) frContext.contentResolver.unregisterContentObserver(viewModel.contentObserver!!)
     }
 }

@@ -21,15 +21,22 @@ open class BaseSectionFragment : BaseFragment() {
     var tabsBarVisible = false
     var toolBarVisible = false
 
+    var scrollBtnVisible = false
+
     open fun launchCore() {
 
     }
 
-    open fun notifyListEmpty(adapterItemCount: Int, text: TextView) {
-        if(adapterItemCount > 0)
+    open fun notifyListEmpty(adapterItemCount: Int, text: TextView, scrollBtnLayout: ViewGroup) {
+        return if(adapterItemCount > 0) {
             text.visibility = View.GONE
-        else
+            scrollBtnLayout.visibility = View.VISIBLE
+            scrollBtnVisible = true
+        } else {
             text.visibility = View.VISIBLE
+            scrollBtnLayout.visibility = View.GONE
+            scrollBtnVisible = false
+        }
     }
 
     open fun initTabsBar(

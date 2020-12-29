@@ -40,12 +40,12 @@
     <string name="title_rename_enter_valid">Enter valid file name</string>
     <string name="title_file_already_exists">File with given name already exists</string>
 
-    <string name="sort_option_date_recent">Date (Recent)</string>
-    <string name="sort_option_date_oldest">Date (Oldest)</string>
-    <string name="sort_option_size_largest">Size (Largest)</string>
-    <string name="sort_option_size_smallest">Size (Smallest)</string>
-    <string name="sort_option_name_alphabetic">Name (Alphabetic)</string>
-    <string name="sort_option_name_reversed">Name (Reversed)</string>
+    <string name="sort_option_date_recent">Date (recent)</string>
+    <string name="sort_option_date_oldest">Date (oldest)</string>
+    <string name="sort_option_size_largest">Size (largest)</string>
+    <string name="sort_option_size_smallest">Size (smallest)</string>
+    <string name="sort_option_name_alphabetic">Name (alphabetic)</string>
+    <string name="sort_option_name_reversed">Name (reversed)</string>
     <string name="toolbar_delete">Delete</string>
     <string name="toolbar_share">Share</string>
     <string name="toolbar_copy">Copy</string>

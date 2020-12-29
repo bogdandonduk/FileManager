@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import kotlinx.coroutines.launch
 import pro.filemanager.core.wrappers.PermissionWrapper
 import pro.filemanager.core.tools.ShareTool
 import pro.filemanager.databinding.ActivityHomeBinding

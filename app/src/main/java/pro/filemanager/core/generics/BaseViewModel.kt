@@ -26,6 +26,8 @@ open class BaseViewModel : ViewModel(), Parcelable {
 
     @Volatile open var shouldScrollToTop = false
 
+    var contentObserver: BaseContentObserver? = null
+
     @CallSuper
     open fun setSortOrder(context: Context, sortOrder: String, isPersistable: Boolean) {
         currentSortOrder = sortOrder

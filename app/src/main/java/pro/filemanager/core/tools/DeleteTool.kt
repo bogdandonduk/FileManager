@@ -58,8 +58,6 @@ object DeleteTool {
 
                 try {
                     paths.forEach {
-                        Log.d("TAG", "deleteItemsAndRefreshMediaStore: $it")
-
                         activity.contentResolver.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                                 MediaStore.Images.ImageColumns.DATA + "=?", arrayOf(it))
                     }

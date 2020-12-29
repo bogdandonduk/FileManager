@@ -3,6 +3,7 @@ package pro.filemanager.images.folders
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
@@ -22,6 +23,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.R
 import pro.filemanager.core.*
+import pro.filemanager.core.generics.BaseContentObserver
 import pro.filemanager.core.generics.BaseFolderItem
 import pro.filemanager.core.generics.BaseSectionFragment
 import pro.filemanager.core.tools.info.InfoTool
@@ -59,7 +61,7 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
             viewModel.shouldScrollToTop = false
             viewModel.searchInProgress = false
 
-            notifyListEmpty(newItems!!.size, binding.fragmentImageFoldersNoFoldersTitle)
+            notifyListEmpty(newItems!!.size, binding.fragmentImageFoldersNoFoldersTitle, binding.fragmentImageFoldersScrollBtn)
         }
     }
 
@@ -107,21 +109,21 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
                     if (detector != null) {
                         if (detector.scaleFactor > 1) {
                             if (activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                                if((binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount != 6) {
-                                    UIManager.setImageLibraryGridSpanNumberLandscape(activity, 6)
+                                if((binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount != 4) {
+                                    UIManager.setImageFoldersGridSpanNumberLandscape(activity, 4)
                                     viewModel.MainScope?.launch {
-                                        (binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount = 6
-                                        (binding.fragmentImageFoldersList.adapter as ImageLibraryAdapter).run {
+                                        (binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount = 4
+                                        (binding.fragmentImageFoldersList.adapter as ImageFoldersAdapter).run {
                                             submitList(currentList)
                                         }
                                     }
                                 }
                             } else {
-                                if((binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount != 4) {
-                                    UIManager.setImageLibraryGridSpanNumberPortrait(activity, 4)
+                                if((binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount != 2) {
+                                    UIManager.setImageFoldersGridSpanNumberPortrait(activity, 2)
                                     viewModel.MainScope?.launch {
-                                        (binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount = 4
-                                        (binding.fragmentImageFoldersList.adapter as ImageLibraryAdapter).run {
+                                        (binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount = 2
+                                        (binding.fragmentImageFoldersList.adapter as ImageFoldersAdapter).run {
                                             submitList(currentList)
                                         }
                                     }
@@ -129,21 +131,21 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
                             }
                         } else {
                             if (activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                                if((binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount != 10) {
-                                    UIManager.setImageLibraryGridSpanNumberLandscape(activity, 10)
+                                if((binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount != 5) {
+                                    UIManager.setImageFoldersGridSpanNumberLandscape(activity, 5)
                                     viewModel.MainScope?.launch {
-                                        (binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount = 10
-                                        (binding.fragmentImageFoldersList.adapter as ImageLibraryAdapter).run {
+                                        (binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount = 5
+                                        (binding.fragmentImageFoldersList.adapter as ImageFoldersAdapter).run {
                                             submitList(currentList)
                                         }
                                     }
                                 }
                             } else {
-                                if((binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount != 6) {
-                                    UIManager.setImageLibraryGridSpanNumberPortrait(activity, 6)
+                                if((binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount != 3) {
+                                    UIManager.setImageFoldersGridSpanNumberPortrait(activity, 3)
                                     viewModel.MainScope?.launch {
-                                        (binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount = 6
-                                        (binding.fragmentImageFoldersList.adapter as ImageLibraryAdapter).run {
+                                        (binding.fragmentImageFoldersList.layoutManager as GridLayoutManager).spanCount = 3
+                                        (binding.fragmentImageFoldersList.adapter as ImageFoldersAdapter).run {
                                             submitList(currentList)
                                         }
                                     }
@@ -206,10 +208,12 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
                             toolBarVisible = false
                         }
 
-                        binding.fragmentImageFoldersScrollBtnIcon.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24)
+                        if(scrollBtnVisible) {
+                            binding.fragmentImageFoldersScrollBtnIcon.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24)
 
-                        binding.fragmentImageFoldersScrollBtn.setOnClickListener {
-                            binding.fragmentImageFoldersList.scrollToPosition(if(binding.fragmentImageFoldersList.adapter!!.itemCount > 0) binding.fragmentImageFoldersList.adapter!!.itemCount - 1 else 0)
+                            binding.fragmentImageFoldersScrollBtn.setOnClickListener {
+                                binding.fragmentImageFoldersList.scrollToPosition(if(binding.fragmentImageFoldersList.adapter!!.itemCount > 0) binding.fragmentImageFoldersList.adapter!!.itemCount - 1 else 0)
+                            }
                         }
                     }
                 } else {
@@ -227,10 +231,12 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
                             toolBarVisible = true
                         }
 
-                        binding.fragmentImageFoldersScrollBtnIcon.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24)
+                        if(scrollBtnVisible) {
+                            binding.fragmentImageFoldersScrollBtnIcon.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24)
 
-                        binding.fragmentImageFoldersScrollBtn.setOnClickListener {
-                            binding.fragmentImageFoldersList.scrollToPosition(0)
+                            binding.fragmentImageFoldersScrollBtn.setOnClickListener {
+                                binding.fragmentImageFoldersList.scrollToPosition(0)
+                            }
                         }
                     }
                 }
@@ -242,7 +248,7 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
             false
         }
 
-        notifyListEmpty(imageFolderItems.size, binding.fragmentImageFoldersNoFoldersTitle)
+        notifyListEmpty(imageFolderItems.size, binding.fragmentImageFoldersNoFoldersTitle, binding.fragmentImageFoldersScrollBtn)
     }
 
     override fun launchCore() {
@@ -257,7 +263,9 @@ class ImageFoldersFragment : BaseSectionFragment(), Observer<MutableList<ImageFo
                     initList(viewModel.getItemsLive(frContext).value!!)
 
                     binding.fragmentImageFoldersListProgressBar.visibility = View.GONE
-                    viewModel.assignItemsLive(frContext, false)
+
+                    if(viewModel.contentObserver == null) viewModel.contentObserver = BaseContentObserver(frContext, viewModel, activity.handler)
+                    frContext.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, true, viewModel.contentObserver!!)
 
                     initSelectionState(
                             viewModel,

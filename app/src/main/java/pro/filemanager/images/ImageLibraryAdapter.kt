@@ -2,6 +2,7 @@ package pro.filemanager.images
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.signature.MediaStoreSignature
 import kotlinx.android.synthetic.main.fragment_image_library.*
 import kotlinx.coroutines.launch
+import pro.filemanager.ApplicationLoader
 import pro.filemanager.core.tools.SelectionTool
 import pro.filemanager.databinding.LayoutImageItemBinding
 import pro.filemanager.files.FileCore
@@ -35,8 +37,8 @@ class ImageLibraryAdapter(val context: Context, val imageItems: MutableList<Imag
     override fun submitList(list: MutableList<ImageItem>?) {
         super.submitList(list)
 
-        repeat(itemCount) {
-            notifyItemChanged(it - 1)
+        currentList.forEachIndexed { i: Int, _: ImageItem ->
+            notifyItemChanged(i)
         }
     }
 
@@ -129,27 +131,35 @@ class ImageLibraryAdapter(val context: Context, val imageItems: MutableList<Imag
                         .into(holder.binding.layoutImageItemThumbnail)
             }
 
-            holder.binding.layoutImageItemTitle.text = holder.item.displayName
-
-            holder.binding.layoutImageItemRootLayout.post {
-                holder.binding.layoutImageItemRootLayout.width.let {
-                    holder.binding.layoutImageItemTitle.textSize = (it / 22).toFloat()
-
-                    holder.binding.layoutImageItemTitleContainer.visibility = View.VISIBLE
-                }
-            }
-
             hostFragment.viewModel.selectionTool.differentiateItem(
                     holder.item.data,
                     holder.binding.layoutImageItemThumbnail,
                     holder.binding.layoutImageItemIconCheck,
                     holder.binding.layoutImageItemIconUnchecked
             )
+
+            FileCore.findExternalRoots(context).run {
+                if(!this.isNullOrEmpty()) {
+                    this.forEach {
+                        if(holder.item.data.contains(it)) {
+                            holder.binding.layoutImageItemSdCardIcon.visibility = View.VISIBLE
+                        } else {
+                            holder.binding.layoutImageItemSdCardIcon.visibility = View.INVISIBLE
+                        }
+                    }
+                }
+            }
         }
 
-        if(hostFragment.viewModel.selectionTool.selectionMode)
-            hostFragment.binding.fragmentImageLibraryAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb.text =
-                    hostFragment.viewModel.selectionTool.selectedPaths.size.toString()
+        holder.binding.layoutImageItemRootLayout.post {
+            holder.binding.layoutImageItemRootLayout.width.let {
+                holder.binding.layoutImageItemTitle.textSize = (it / 22).toFloat()
+
+                holder.binding.layoutImageItemTitleContainer.visibility = View.VISIBLE
+            }
+        }
+
+        holder.binding.layoutImageItemTitle.text = holder.item.displayName
 
         if(lastSelectionModeState != hostFragment.viewModel.selectionTool.selectionMode && hostFragment.viewModel.selectionTool.selectedPaths.size == itemCount) {
             lastSelectionModeState = hostFragment.viewModel.selectionTool.selectionMode
@@ -168,6 +178,11 @@ class ImageLibraryAdapter(val context: Context, val imageItems: MutableList<Imag
                 )
             }
         }
+
+        if(hostFragment.viewModel.selectionTool.selectionMode)
+            hostFragment.binding.fragmentImageLibraryAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb.text =
+                    hostFragment.viewModel.selectionTool.selectedPaths.size.toString()
+
     }
 
     override fun getItemCount(): Int = currentList.size

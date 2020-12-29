@@ -1420,20 +1420,20 @@ class ImageRepo private constructor() {
             }
         }
 
-        // initial collecting of album items
-        val albumItems = MutableList(parentPaths.size) {
+        // initial collecting of folder items
+        val folderItems = MutableList(parentPaths.size) {
             ImageFolderItem(parentPaths[it])
         }
 
         // loop for every AlbumItem to populate its contained ImageItems
-        albumItems.forEach { albumItem ->
+        folderItems.forEach { folderItem ->
             imageItems.forEach {
-                if(File(it.data).parent == albumItem.data) {
-                    albumItem.containedImages.add(it)
+                if(File(it.data).parent == folderItem.data) {
+                    folderItem.containedImages.add(it)
                 }
             }
         }
 
-        return albumItems
+        return folderItems
     }
 }

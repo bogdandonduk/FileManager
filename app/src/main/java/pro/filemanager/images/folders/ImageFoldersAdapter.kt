@@ -17,8 +17,10 @@ import pro.filemanager.databinding.LayoutImageFolderItemBinding
 import pro.filemanager.files.FileCore
 import pro.filemanager.images.ImageCore
 import pro.filemanager.images.ImageItem
+import java.io.File
 
 class ImageFoldersAdapter(val context: Context, var imageFolderItems: MutableList<ImageFolderItem>, val layoutInflater: LayoutInflater, val hostFragment: ImageFoldersFragment) : ListAdapter<ImageFolderItem, ImageFoldersAdapter.ImageFolderItemViewHolder>(object : DiffUtil.ItemCallback<ImageFolderItem>() {
+
     override fun areItemsTheSame(oldItem: ImageFolderItem, newItem: ImageFolderItem): Boolean {
         return oldItem.data == newItem.data
     }
@@ -36,8 +38,8 @@ class ImageFoldersAdapter(val context: Context, var imageFolderItems: MutableLis
     override fun submitList(list: MutableList<ImageFolderItem>?) {
         super.submitList(list)
 
-        repeat(itemCount) {
-            notifyItemChanged(it - 1)
+        currentList.forEachIndexed { i: Int, _: ImageFolderItem ->
+            notifyItemChanged(i)
         }
     }
 
@@ -114,23 +116,16 @@ class ImageFoldersAdapter(val context: Context, var imageFolderItems: MutableLis
         holder.item = currentList[position]
 
         hostFragment.viewModel.MainScope?.launch {
-            if (!holder.item.containedItems[0].data.endsWith(".gif", true)) {
+            if (!holder.item.containedItems.first().data.endsWith(".gif", true)) {
                 ImageCore.glideBitmapRequestBuilder
-                        .load(holder.item.containedItems[0].data)
+                        .load(holder.item.containedItems.first().data)
                         .override(holder.binding.layoutImageFolderItemContentLayout.width, holder.binding.layoutImageFolderItemThumbnail.height)
                         .into(holder.binding.layoutImageFolderItemThumbnail)
             } else {
                 ImageCore.glideGifRequestBuilder
-                        .load(holder.item.containedItems[0].data).signature(MediaStoreSignature(ImageCore.MIME_TYPE, holder.item.containedImages[0].dateModified, 0))
+                        .load(holder.item.containedItems.first().data).signature(MediaStoreSignature(ImageCore.MIME_TYPE, holder.item.containedImages.first().dateModified, 0))
                         .override(holder.binding.layoutImageFolderItemThumbnail.width, holder.binding.layoutImageFolderItemThumbnail.height)
                         .into(holder.binding.layoutImageFolderItemThumbnail)
-            }
-
-            holder.binding.layoutImageFolderItemCard.post {
-                holder.binding.layoutImageFolderItemTitle.text = holder.item.displayName
-                holder.binding.layoutImageFolderItemTitle.textSize = (holder.binding.layoutImageFolderItemCard.width / 30).toFloat()
-                holder.binding.layoutImageFolderItemCount.text = holder.item.containedItems.size.toString()
-                holder.binding.layoutImageFolderItemCount.textSize = (holder.binding.layoutImageFolderItemCard.width / 40).toFloat()
             }
 
             hostFragment.viewModel.selectionTool.differentiateItem(
@@ -139,12 +134,29 @@ class ImageFoldersAdapter(val context: Context, var imageFolderItems: MutableLis
                     holder.binding.layoutImageFolderItemIconCheck,
                     holder.binding.layoutImageFolderItemIconUnchecked
             )
+
+            FileCore.findExternalRoots(context).run {
+                if(!this.isNullOrEmpty()) {
+                    this.forEach {
+                        if(holder.item.data.contains(it)) {
+                            holder.binding.layoutImageFolderItemSdCardIcon.visibility = View.VISIBLE
+                        } else {
+                            holder.binding.layoutImageFolderItemSdCardIcon.visibility = View.INVISIBLE
+                        }
+                    }
+                }
+            }
         }
 
-        if(hostFragment.viewModel.selectionTool.selectionMode && hostFragment.binding.fragmentImageFoldersAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout.visibility == View.VISIBLE) {
-            hostFragment.binding.fragmentImageFoldersAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb.text =
-                    hostFragment.viewModel.selectionTool.selectedPaths.size.toString()
+        holder.binding.layoutImageFolderItemCard.post {
+            holder.binding.layoutImageFolderItemCard.width.let {
+                holder.binding.layoutImageFolderItemTitle.textSize = (it / 30).toFloat()
+                holder.binding.layoutImageFolderItemCount.textSize = (it / 40).toFloat()
+            }
         }
+
+        holder.binding.layoutImageFolderItemTitle.text = holder.item.displayName
+        holder.binding.layoutImageFolderItemCount.text = holder.item.containedItems.size.toString()
 
         if(lastSelectionModeState != hostFragment.viewModel.selectionTool.selectionMode && hostFragment.viewModel.selectionTool.selectedPaths.size == itemCount) {
             lastSelectionModeState = hostFragment.viewModel.selectionTool.selectionMode
@@ -162,6 +174,11 @@ class ImageFoldersAdapter(val context: Context, var imageFolderItems: MutableLis
                         hostFragment.viewModel.selectionTool.selectedPaths.size
                 )
             }
+        }
+
+        if(hostFragment.viewModel.selectionTool.selectionMode && hostFragment.binding.fragmentImageFoldersAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarRootLayout.visibility == View.VISIBLE) {
+            hostFragment.binding.fragmentImageFoldersAppBarInclude.layoutSelectionBarInclude.layoutSelectionBarContentLayoutSelectionCountCb.text =
+                    hostFragment.viewModel.selectionTool.selectedPaths.size.toString()
         }
     }
 
