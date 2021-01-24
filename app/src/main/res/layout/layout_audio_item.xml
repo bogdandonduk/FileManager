@@ -73,11 +73,30 @@
                 app:layout_constraintGuide_percent="0.75" />
 
             <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutAudioItemThumbnailLayoutGl25pv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.25" />
+
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/layoutAudioItemThumbnailLayoutGl25ph"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0.25" />
+
+            <ImageView
+                android:id="@+id/layoutAudioItemSdCardIcon"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:elevation="5dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toTopOf="@+id/layoutAudioItemThumbnailLayoutGl25ph"
+                app:layout_constraintEnd_toStartOf="@+id/layoutAudioItemThumbnailLayoutGl25pv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_sd_storage_24" />
 
             <ImageView
                 android:id="@+id/layoutAudioItemThumbnail"
@@ -101,7 +120,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/layoutAudioItemThumbnailLayoutGl75pv"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_check" />
+                app:srcCompat="@drawable/ic_baseline_check_circle_white_24" />
 
             <ImageView
                 android:id="@+id/layoutAudioItemIconUnchecked"
@@ -113,7 +132,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/layoutAudioItemThumbnailLayoutGl75pv"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_circle" />
+                app:srcCompat="@drawable/ic_baseline_check_circle_white_24" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

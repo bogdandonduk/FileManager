@@ -1,2 +1,4 @@
+include ':dialogWrapper'
+include ':permissionWrapper'
 include ':app'
 rootProject.name = "File Manager"

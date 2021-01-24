@@ -1,35 +1,37 @@
 package pro.filemanager.core.tools.info
 
 import androidx.fragment.app.FragmentManager
-import pro.filemanager.core.generics.BaseFolderItem
-import pro.filemanager.core.generics.BaseItem
+import pro.filemanager.core.base.BaseFolderItem
+import pro.filemanager.core.base.BaseLibraryItem
+import pro.filemanager.core.tools.info.folders.InfoFoldersFragment
+import pro.filemanager.core.tools.info.library.InfoLibraryFragment
 
 object InfoTool {
 
-    @Volatile var lastItems = mutableListOf<BaseItem>()
-    @Volatile var lastAlbums = mutableListOf<BaseFolderItem>()
+    @Volatile var lastLibraryItems = mutableListOf<BaseLibraryItem>()
+    @Volatile var lastFolderItems = mutableListOf<BaseFolderItem>()
 
-    @Volatile var showingDialogInProgress = false
+    @Volatile var sheetShown = false
 
-    fun showInfoItemBottomModalSheetFragment(fm: FragmentManager, items: MutableList<BaseItem>) {
-        if(!showingDialogInProgress) {
-            showingDialogInProgress = true
+    fun showInfoForLibraryItems(fm: FragmentManager, libraryItems: MutableList<BaseLibraryItem>) {
+        if(!sheetShown) {
+            sheetShown = true
 
-            lastItems.clear()
-            lastItems.addAll(items)
+            lastLibraryItems.clear()
+            lastLibraryItems.addAll(libraryItems)
 
-            InfoItemBottomModalSheetFragment().show(fm, null)
+            InfoLibraryFragment().show(fm, null)
         }
     }
 
-    fun showInfoAlbumBottomModalSheetFragment(fm: FragmentManager, folderItems: MutableList<BaseFolderItem>) {
-        if(!showingDialogInProgress) {
-            showingDialogInProgress = true
+    fun showInfoForFolderItems(fm: FragmentManager, folderItems: MutableList<BaseFolderItem>) {
+        if(!sheetShown) {
+            sheetShown = true
 
-            lastAlbums.clear()
-            lastAlbums.addAll(folderItems)
+            lastFolderItems.clear()
+            lastFolderItems.addAll(folderItems)
 
-            InfoFolderBottomModalSheetFragment().show(fm, null)
+            InfoFoldersFragment().show(fm, null)
         }
     }
 }

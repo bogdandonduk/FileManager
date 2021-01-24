@@ -1,8 +1,5 @@
 package pro.filemanager
 
-import android.content.Context
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
@@ -13,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import pro.filemanager.home.HomeActivity
 
 @RunWith(AndroidJUnit4::class)
 class HomeActivityInstrumentedTests {

@@ -4,96 +4,88 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutBottomTabsBarRootLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/bgDark">
+    android:layout_height="50dp"
+    android:background="@drawable/bg_bottom_bar"
+    android:elevation="3dp"
+    android:minHeight="50dp">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/layoutBottomTabsBarGl50pv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutBottomTabsBarContentLayout"
+        android:id="@+id/layoutBottomTabsBarLibraryTitleContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="?attr/selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="8:1"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/layoutBottomTabsBarGl50pv"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/layoutBottomTabsBarGl50pv"
+        <TextView
+            android:id="@+id/layoutBottomTabsBarLibraryTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutBottomTabsBarLibraryTitleContainer"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/bg_bottom_bar_item"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/layoutBottomTabsBarGl50pv"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/layoutBottomTabsBarLibraryTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@android:color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/title_gallery" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layoutBottomTabsBarLibraryTitleIndicator"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:background="@android:color/white"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutBottomTabsBarFoldersTitleContainer"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/bg_bottom_bar_item"
+            android:elevation="5sp"
+            android:gravity="center"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/layoutBottomTabsBarGl50pv"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/title_library" />
 
-            <TextView
-                android:id="@+id/layoutBottomTabsBarFoldersTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@android:color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/title_folders" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutBottomTabsBarLibraryTitleIndicator"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:background="@color/text"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layoutBottomTabsBarFoldersTitleIndicator"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:background="@android:color/white"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutBottomTabsBarFoldersTitleContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/layoutBottomTabsBarGl50pv"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/layoutBottomTabsBarFoldersTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="5sp"
+            android:gravity="center"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/title_folders" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutBottomTabsBarFoldersTitleIndicator"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:background="@color/text"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

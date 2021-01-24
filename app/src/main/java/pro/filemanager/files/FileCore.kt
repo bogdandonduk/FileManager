@@ -1,16 +1,14 @@
 package pro.filemanager.files
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.webkit.MimeTypeMap
-import android.widget.TextView
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.delay
 import pro.filemanager.databinding.LayoutFileItemBinding
@@ -31,11 +29,11 @@ object FileCore {
 
     @Volatile var externalRootPaths: MutableList<String>? = null
     @Volatile var findingExternalRootsInProgress = false
-    @Volatile var outerIntentInProgress = false
+    @Volatile var openingInProgress = false
 
     fun openFileOut(context: Context, path: String) {
-        if(!outerIntentInProgress) {
-            outerIntentInProgress = true
+        if(!openingInProgress) {
+            openingInProgress = true
 
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(
@@ -89,6 +87,7 @@ object FileCore {
         return downMostRootPath
     }
 
+    @SuppressLint("Recycle")
     suspend fun findExternalRoots(context: Context) : MutableList<String> {
         return if(externalRootPaths != null) {
             externalRootPaths!!

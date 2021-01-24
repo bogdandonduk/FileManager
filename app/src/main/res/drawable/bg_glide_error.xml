@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:opacity="opaque">
 
-    <item android:drawable="@drawable/placeholder_image_video_item" />
+    <item android:drawable="@drawable/placeholder_library_item" />
     <item android:drawable="@drawable/ic_baseline_broken_image_24" android:gravity="center" />
 
 </layer-list>

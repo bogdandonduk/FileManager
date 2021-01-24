@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_storage_permission">No storage permission</string>
+    <string name="denied_message_no_storage_permission">Please grant it to access your files</string>
+    <string name="do_not_ask_again_message_no_storage_permission">Please grant it to access your files (from app settings)</string>
+    <string name="button_grant">GRANT</string>
+    <string name="button_deny">GRANT</string>
+</resources>

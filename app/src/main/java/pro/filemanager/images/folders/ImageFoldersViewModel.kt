@@ -10,52 +10,45 @@ import kotlinx.android.parcel.RawValue
 import kotlinx.coroutines.*
 import pro.filemanager.ApplicationLoader
 import pro.filemanager.core.wrappers.PreferencesWrapper
-import pro.filemanager.core.generics.BaseViewModel
+import pro.filemanager.core.base.BaseViewModel
 import pro.filemanager.core.tools.SearchTool
 import pro.filemanager.core.tools.sort.SortTool
 import pro.filemanager.images.ImageRepo
 
 @Parcelize
-class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawValue ImageRepo) : BaseViewModel(), ImageRepo.AlbumObserver {
+class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawValue ImageRepo) : BaseViewModel() {
     private var itemsLive: MutableLiveData<MutableList<ImageFolderItem>>? = null
 
-    var searchInProgress = false
-
-    var mainListRvState: Parcelable? = null
-    var isSearchViewEnabled = false
-    var currentSearchText = ""
     var librarySortOrder: String
 
     init {
-        imageRepo.observe(this)
-
         librarySortOrder = PreferencesWrapper.getString(ApplicationLoader.appContext, SortTool.KEY_SP_IMAGE_LIBRARY_SORT_ORDER, SortTool.SORT_ORDER_DATE_RECENT)
         currentSortOrder = PreferencesWrapper.getString(ApplicationLoader.appContext, SortTool.KEY_SP_IMAGE_FOLDERS_SORT_ORDER, SortTool.SORT_ORDER_DATE_RECENT)
     }
 
-    private suspend fun initItemsLive(context: Context) {
+    override suspend fun initItemsLive(context: Context) {
         if(itemsLive == null) {
             itemsLive = MutableLiveData(
                     when(librarySortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
                             when (currentSortOrder) {
                                 SortTool.SORT_ORDER_DATE_RECENT -> {
-                                    imageRepo.splitAlbumsByDateRecentLoadAlbumsByDateRecent(context, false)
+                                    imageRepo.splitFoldersByDateRecentLoadFoldersByDateRecent(context, false)
                                 }
                                 SortTool.SORT_ORDER_DATE_OLDEST -> {
-                                    imageRepo.splitAlbumsByDateRecentLoadAlbumsByDateOldest(context)
+                                    imageRepo.splitFoldersByDateRecentLoadFoldersByDateOldest(context)
                                 }
                                 SortTool.SORT_ORDER_NAME_REVERSED -> {
-                                    imageRepo.splitAlbumsByDateRecentLoadAlbumsByNameReversed(context, false)
+                                    imageRepo.splitFoldersByDateRecentLoadFoldersByNameReversed(context, false)
                                 }
                                 SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
-                                    imageRepo.splitAlbumsByDateRecentLoadAlbumsByNameAlphabetic(context)
+                                    imageRepo.splitFoldersByDateRecentLoadFoldersByNameAlphabetic(context)
                                 }
                                 SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                                    imageRepo.splitAlbumsByDateRecentLoadAlbumsBySizeLargest(context, false)
+                                    imageRepo.splitFoldersByDateRecentLoadFoldersBySizeLargest(context, false)
                                 }
                                 SortTool.SORT_ORDER_SIZE_SMALLEST -> {
-                                    imageRepo.splitAlbumsByDateRecentLoadAlbumsBySizeSmallest(context)
+                                    imageRepo.splitFoldersByDateRecentLoadFoldersBySizeSmallest(context)
                                 }
                                 else -> {
                                     throw IllegalStateException("Invalid Sort Order")
@@ -65,22 +58,22 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
                         SortTool.SORT_ORDER_DATE_OLDEST -> {
                             when (currentSortOrder) {
                                 SortTool.SORT_ORDER_DATE_RECENT -> {
-                                    imageRepo.splitAlbumsByDateOldestLoadAlbumsByDateRecent(context, false)
+                                    imageRepo.splitFoldersByDateOldestLoadFoldersByDateRecent(context, false)
                                 }
                                 SortTool.SORT_ORDER_DATE_OLDEST -> {
-                                    imageRepo.splitAlbumsByDateOldestLoadAlbumsByDateOldest(context)
+                                    imageRepo.splitFoldersByDateOldestLoadFoldersByDateOldest(context)
                                 }
                                 SortTool.SORT_ORDER_NAME_REVERSED -> {
-                                    imageRepo.splitAlbumsByDateOldestLoadAlbumsByNameReversed(context, false)
+                                    imageRepo.splitFoldersByDateOldestLoadFoldersByNameReversed(context, false)
                                 }
                                 SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
-                                    imageRepo.splitAlbumsByDateOldestLoadAlbumsByNameAlphabetic(context)
+                                    imageRepo.splitFoldersByDateOldestLoadFoldersByNameAlphabetic(context)
                                 }
                                 SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                                    imageRepo.splitAlbumsByDateOldestLoadAlbumsBySizeLargest(context, false)
+                                    imageRepo.splitFoldersByDateOldestLoadFoldersBySizeLargest(context, false)
                                 }
                                 SortTool.SORT_ORDER_SIZE_SMALLEST -> {
-                                    imageRepo.splitAlbumsByDateOldestLoadAlbumsBySizeSmallest(context)
+                                    imageRepo.splitFoldersByDateOldestLoadFoldersBySizeSmallest(context)
                                 }
                                 else -> {
                                     throw IllegalStateException("Invalid Sort Order")
@@ -90,22 +83,22 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
                         SortTool.SORT_ORDER_SIZE_LARGEST -> {
                             when (currentSortOrder) {
                                 SortTool.SORT_ORDER_DATE_RECENT -> {
-                                    imageRepo.splitAlbumsBySizeLargestLoadAlbumsByDateRecent(context, false)
+                                    imageRepo.splitFoldersBySizeLargestLoadFoldersByDateRecent(context, false)
                                 }
                                 SortTool.SORT_ORDER_DATE_OLDEST -> {
-                                    imageRepo.splitAlbumsBySizeLargestLoadAlbumsByDateOldest(context)
+                                    imageRepo.splitFoldersBySizeLargestLoadFoldersByDateOldest(context)
                                 }
                                 SortTool.SORT_ORDER_NAME_REVERSED -> {
-                                    imageRepo.splitAlbumsBySizeLargestLoadAlbumsByNameReversed(context, false)
+                                    imageRepo.splitFoldersBySizeLargestLoadFoldersByNameReversed(context, false)
                                 }
                                 SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
-                                    imageRepo.splitAlbumsBySizeLargestLoadAlbumsByNameAlphabetic(context)
+                                    imageRepo.splitFoldersBySizeLargestLoadFoldersByNameAlphabetic(context)
                                 }
                                 SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                                    imageRepo.splitAlbumsBySizeLargestLoadAlbumsBySizeLargest(context, false)
+                                    imageRepo.splitFoldersBySizeLargestLoadFoldersBySizeLargest(context, false)
                                 }
                                 SortTool.SORT_ORDER_SIZE_SMALLEST -> {
-                                    imageRepo.splitAlbumsBySizeLargestLoadAlbumsBySizeSmallest(context)
+                                    imageRepo.splitFoldersBySizeLargestLoadFoldersBySizeSmallest(context)
                                 }
                                 else -> {
                                     throw IllegalStateException("Invalid Sort Order")
@@ -115,22 +108,22 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
                         SortTool.SORT_ORDER_SIZE_SMALLEST -> {
                             when (currentSortOrder) {
                                 SortTool.SORT_ORDER_DATE_RECENT -> {
-                                    imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByDateRecent(context, false)
+                                    imageRepo.splitFoldersBySizeSmallestLoadFoldersByDateRecent(context, false)
                                 }
                                 SortTool.SORT_ORDER_DATE_OLDEST -> {
-                                    imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByDateOldest(context)
+                                    imageRepo.splitFoldersBySizeSmallestLoadFoldersByDateOldest(context)
                                 }
                                 SortTool.SORT_ORDER_NAME_REVERSED -> {
-                                    imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByNameReversed(context, false)
+                                    imageRepo.splitFoldersBySizeSmallestLoadFoldersByNameReversed(context, false)
                                 }
                                 SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
-                                    imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByNameAlphabetic(context)
+                                    imageRepo.splitFoldersBySizeSmallestLoadFoldersByNameAlphabetic(context)
                                 }
                                 SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                                    imageRepo.splitAlbumsBySizeSmallestLoadAlbumsBySizeLargest(context, false)
+                                    imageRepo.splitFoldersBySizeSmallestLoadFoldersBySizeLargest(context, false)
                                 }
                                 SortTool.SORT_ORDER_SIZE_SMALLEST -> {
-                                    imageRepo.splitAlbumsBySizeSmallestLoadAlbumsBySizeSmallest(context)
+                                    imageRepo.splitFoldersBySizeSmallestLoadFoldersBySizeSmallest(context)
                                 }
                                 else -> {
                                     throw IllegalStateException("Invalid Sort Order")
@@ -140,22 +133,22 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
                         SortTool.SORT_ORDER_NAME_REVERSED -> {
                             when (currentSortOrder) {
                                 SortTool.SORT_ORDER_DATE_RECENT -> {
-                                    imageRepo.splitAlbumsByNameReversedLoadAlbumsByDateRecent(context, false)
+                                    imageRepo.splitFoldersByNameReversedLoadFoldersByDateRecent(context, false)
                                 }
                                 SortTool.SORT_ORDER_DATE_OLDEST -> {
-                                    imageRepo.splitAlbumsByNameReversedLoadAlbumsByDateOldest(context)
+                                    imageRepo.splitFoldersByNameReversedLoadFoldersByDateOldest(context)
                                 }
                                 SortTool.SORT_ORDER_NAME_REVERSED -> {
-                                    imageRepo.splitAlbumsByNameReversedLoadAlbumsByNameReversed(context, false)
+                                    imageRepo.splitFoldersByNameReversedLoadFoldersByNameReversed(context, false)
                                 }
                                 SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
-                                    imageRepo.splitAlbumsByNameReversedLoadAlbumsByNameAlphabetic(context)
+                                    imageRepo.splitFoldersByNameReversedLoadFoldersByNameAlphabetic(context)
                                 }
                                 SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                                    imageRepo.splitAlbumsByNameReversedLoadAlbumsBySizeLargest(context, false)
+                                    imageRepo.splitFoldersByNameReversedLoadFoldersBySizeLargest(context, false)
                                 }
                                 SortTool.SORT_ORDER_SIZE_SMALLEST -> {
-                                    imageRepo.splitAlbumsByNameReversedLoadAlbumsBySizeSmallest(context)
+                                    imageRepo.splitFoldersByNameReversedLoadFoldersBySizeSmallest(context)
                                 }
                                 else -> {
                                     throw IllegalStateException("Invalid Sort Order")
@@ -165,22 +158,22 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
                         SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
                             when (currentSortOrder) {
                                 SortTool.SORT_ORDER_DATE_RECENT -> {
-                                    imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByDateRecent(context, false)
+                                    imageRepo.splitFoldersByNameAlphabeticLoadFoldersByDateRecent(context, false)
                                 }
                                 SortTool.SORT_ORDER_DATE_OLDEST -> {
-                                    imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByDateOldest(context)
+                                    imageRepo.splitFoldersByNameAlphabeticLoadFoldersByDateOldest(context)
                                 }
                                 SortTool.SORT_ORDER_NAME_REVERSED -> {
-                                    imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByNameReversed(context, false)
+                                    imageRepo.splitFoldersByNameAlphabeticLoadFoldersByNameReversed(context, false)
                                 }
                                 SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
-                                    imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByNameAlphabetic(context)
+                                    imageRepo.splitFoldersByNameAlphabeticLoadFoldersByNameAlphabetic(context)
                                 }
                                 SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                                    imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsBySizeLargest(context, false)
+                                    imageRepo.splitFoldersByNameAlphabeticLoadFoldersBySizeLargest(context, false)
                                 }
                                 SortTool.SORT_ORDER_SIZE_SMALLEST -> {
-                                    imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsBySizeSmallest(context)
+                                    imageRepo.splitFoldersByNameAlphabeticLoadFoldersBySizeSmallest(context)
                                 }
                                 else -> {
                                     throw IllegalStateException("Invalid Sort Order")
@@ -196,33 +189,31 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
     }
 
     override suspend fun assignItemsLive(context: Context, forceLoad: Boolean) {
-        Log.d("TAG", "assignItemsLive: ")
-
         when(librarySortOrder) {
                 SortTool.SORT_ORDER_DATE_RECENT -> {
                     if(forceLoad) {
                         imageRepo.loadItemsByDateRecent(context, true)
-                        imageRepo.splitAlbumsByDateRecent(context, true)
+                        imageRepo.splitFoldersByDateRecent(context, true)
                     }
 
                     when(currentSortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
-                            search(imageRepo.splitAlbumsByDateRecentLoadAlbumsByDateRecent(context, forceLoad))
+                            search(imageRepo.splitFoldersByDateRecentLoadFoldersByDateRecent(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_DATE_OLDEST -> {
-                            search(imageRepo.splitAlbumsByDateRecentLoadAlbumsByDateOldest(context))
+                            search(imageRepo.splitFoldersByDateRecentLoadFoldersByDateOldest(context))
                         }
                         SortTool.SORT_ORDER_NAME_REVERSED -> {
-                            search(imageRepo.splitAlbumsByDateRecentLoadAlbumsByNameReversed(context, forceLoad))
+                            search(imageRepo.splitFoldersByDateRecentLoadFoldersByNameReversed(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
-                            search(imageRepo.splitAlbumsByDateRecentLoadAlbumsByNameAlphabetic(context))
+                            search(imageRepo.splitFoldersByDateRecentLoadFoldersByNameAlphabetic(context))
                         }
                         SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                            search(imageRepo.splitAlbumsByDateRecentLoadAlbumsBySizeLargest(context, forceLoad))
+                            search(imageRepo.splitFoldersByDateRecentLoadFoldersBySizeLargest(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_SIZE_SMALLEST -> {
-                            search(imageRepo.splitAlbumsByDateRecentLoadAlbumsBySizeSmallest(context))
+                            search(imageRepo.splitFoldersByDateRecentLoadFoldersBySizeSmallest(context))
                         }
                         else -> {
                             throw IllegalStateException("Invalid Sort Order")
@@ -232,27 +223,27 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
                 SortTool.SORT_ORDER_DATE_OLDEST -> {
                     if(forceLoad) {
                         imageRepo.loadItemsByDateRecent(context, true)
-                        imageRepo.splitAlbumsByDateOldest(context, true)
+                        imageRepo.splitFoldersByDateOldest(context, true)
                     }
 
                     when(currentSortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
-                            search(imageRepo.splitAlbumsByDateOldestLoadAlbumsByDateRecent(context, forceLoad))
+                            search(imageRepo.splitFoldersByDateOldestLoadFoldersByDateRecent(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_DATE_OLDEST -> {
-                            search(imageRepo.splitAlbumsByDateOldestLoadAlbumsByDateOldest(context))
+                            search(imageRepo.splitFoldersByDateOldestLoadFoldersByDateOldest(context))
                         }
                         SortTool.SORT_ORDER_NAME_REVERSED -> {
-                            search(imageRepo.splitAlbumsByDateOldestLoadAlbumsByNameReversed(context, forceLoad))
+                            search(imageRepo.splitFoldersByDateOldestLoadFoldersByNameReversed(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
-                            search(imageRepo.splitAlbumsByDateOldestLoadAlbumsByNameAlphabetic(context))
+                            search(imageRepo.splitFoldersByDateOldestLoadFoldersByNameAlphabetic(context))
                         }
                         SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                            search(imageRepo.splitAlbumsByDateOldestLoadAlbumsBySizeLargest(context, forceLoad))
+                            search(imageRepo.splitFoldersByDateOldestLoadFoldersBySizeLargest(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_SIZE_SMALLEST -> {
-                            search(imageRepo.splitAlbumsByDateOldestLoadAlbumsBySizeSmallest(context))
+                            search(imageRepo.splitFoldersByDateOldestLoadFoldersBySizeSmallest(context))
                         }
                         else -> {
                             throw IllegalStateException("Invalid Sort Order")
@@ -262,27 +253,27 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
                 SortTool.SORT_ORDER_SIZE_LARGEST -> {
                     if(forceLoad) {
                         imageRepo.loadItemsBySizeLargest(context, true)
-                        imageRepo.splitAlbumsBySizeLargest(context, true)
+                        imageRepo.splitFoldersBySizeLargest(context, true)
                     }
 
                     when(currentSortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
-                            search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsByDateRecent(context, forceLoad))
+                            search(imageRepo.splitFoldersBySizeLargestLoadFoldersByDateRecent(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_DATE_OLDEST -> {
-                            search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsByDateOldest(context))
+                            search(imageRepo.splitFoldersBySizeLargestLoadFoldersByDateOldest(context))
                         }
                         SortTool.SORT_ORDER_NAME_REVERSED -> {
-                            search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsByNameReversed(context, forceLoad))
+                            search(imageRepo.splitFoldersBySizeLargestLoadFoldersByNameReversed(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
-                            search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsByNameAlphabetic(context))
+                            search(imageRepo.splitFoldersBySizeLargestLoadFoldersByNameAlphabetic(context))
                         }
                         SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                            search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsBySizeLargest(context, forceLoad))
+                            search(imageRepo.splitFoldersBySizeLargestLoadFoldersBySizeLargest(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_SIZE_SMALLEST -> {
-                            search(imageRepo.splitAlbumsBySizeLargestLoadAlbumsBySizeSmallest(context))
+                            search(imageRepo.splitFoldersBySizeLargestLoadFoldersBySizeSmallest(context))
                         }
                         else -> {
                             throw IllegalStateException("Invalid Sort Order")
@@ -292,27 +283,27 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
                 SortTool.SORT_ORDER_SIZE_SMALLEST -> {
                     if(forceLoad) {
                         imageRepo.loadItemsBySizeLargest(context, true)
-                        imageRepo.splitAlbumsBySizeSmallest(context, true)
+                        imageRepo.splitFoldersBySizeSmallest(context, true)
                     }
 
                     when(currentSortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
-                            search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByDateRecent(context, forceLoad))
+                            search(imageRepo.splitFoldersBySizeSmallestLoadFoldersByDateRecent(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_DATE_OLDEST -> {
-                            search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByDateOldest(context))
+                            search(imageRepo.splitFoldersBySizeSmallestLoadFoldersByDateOldest(context))
                         }
                         SortTool.SORT_ORDER_NAME_REVERSED -> {
-                            search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByNameReversed(context, forceLoad))
+                            search(imageRepo.splitFoldersBySizeSmallestLoadFoldersByNameReversed(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
-                            search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsByNameAlphabetic(context))
+                            search(imageRepo.splitFoldersBySizeSmallestLoadFoldersByNameAlphabetic(context))
                         }
                         SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                            search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsBySizeLargest(context, forceLoad))
+                            search(imageRepo.splitFoldersBySizeSmallestLoadFoldersBySizeLargest(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_SIZE_SMALLEST -> {
-                            search(imageRepo.splitAlbumsBySizeSmallestLoadAlbumsBySizeSmallest(context))
+                            search(imageRepo.splitFoldersBySizeSmallestLoadFoldersBySizeSmallest(context))
                         }
                         else -> {
                             throw IllegalStateException("Invalid Sort Order")
@@ -322,27 +313,27 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
                 SortTool.SORT_ORDER_NAME_REVERSED -> {
                     if (forceLoad) {
                         imageRepo.loadItemsByNameReversed(context, true)
-                        imageRepo.splitAlbumsByNameReversed(context, true)
+                        imageRepo.splitFoldersByNameReversed(context, true)
                     }
 
                     when(currentSortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
-                            search(imageRepo.splitAlbumsByNameReversedLoadAlbumsByDateRecent(context, forceLoad))
+                            search(imageRepo.splitFoldersByNameReversedLoadFoldersByDateRecent(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_DATE_OLDEST -> {
-                            search(imageRepo.splitAlbumsByNameReversedLoadAlbumsByDateOldest(context))
+                            search(imageRepo.splitFoldersByNameReversedLoadFoldersByDateOldest(context))
                         }
                         SortTool.SORT_ORDER_NAME_REVERSED -> {
-                            search(imageRepo.splitAlbumsByNameReversedLoadAlbumsByNameReversed(context, forceLoad))
+                            search(imageRepo.splitFoldersByNameReversedLoadFoldersByNameReversed(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
-                            search(imageRepo.splitAlbumsByNameReversedLoadAlbumsByNameAlphabetic(context))
+                            search(imageRepo.splitFoldersByNameReversedLoadFoldersByNameAlphabetic(context))
                         }
                         SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                            search(imageRepo.splitAlbumsByNameReversedLoadAlbumsBySizeLargest(context, forceLoad))
+                            search(imageRepo.splitFoldersByNameReversedLoadFoldersBySizeLargest(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_SIZE_SMALLEST -> {
-                            search(imageRepo.splitAlbumsByNameReversedLoadAlbumsBySizeSmallest(context))
+                            search(imageRepo.splitFoldersByNameReversedLoadFoldersBySizeSmallest(context))
                         }
                         else -> {
                             throw IllegalStateException("Invalid Sort Order")
@@ -352,27 +343,27 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
                 SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
                     if(forceLoad) {
                         imageRepo.loadItemsByNameReversed(context, true)
-                        imageRepo.splitAlbumsByNameAlphabetic(context, true)
+                        imageRepo.splitFoldersByNameAlphabetic(context, true)
                     }
 
                     when(currentSortOrder) {
                         SortTool.SORT_ORDER_DATE_RECENT -> {
-                            search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByDateRecent(context, forceLoad))
+                            search(imageRepo.splitFoldersByNameAlphabeticLoadFoldersByDateRecent(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_DATE_OLDEST -> {
-                            search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByDateOldest(context))
+                            search(imageRepo.splitFoldersByNameAlphabeticLoadFoldersByDateOldest(context))
                         }
                         SortTool.SORT_ORDER_NAME_REVERSED -> {
-                            search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByNameReversed(context, forceLoad))
+                            search(imageRepo.splitFoldersByNameAlphabeticLoadFoldersByNameReversed(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_NAME_ALPHABETIC -> {
-                            search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsByNameAlphabetic(context))
+                            search(imageRepo.splitFoldersByNameAlphabeticLoadFoldersByNameAlphabetic(context))
                         }
                         SortTool.SORT_ORDER_SIZE_LARGEST -> {
-                            search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsBySizeLargest(context, forceLoad))
+                            search(imageRepo.splitFoldersByNameAlphabeticLoadFoldersBySizeLargest(context, forceLoad))
                         }
                         SortTool.SORT_ORDER_SIZE_SMALLEST -> {
-                            search(imageRepo.splitAlbumsByNameAlphabeticLoadAlbumsBySizeSmallest(context))
+                            search(imageRepo.splitFoldersByNameAlphabeticLoadFoldersBySizeSmallest(context))
                         }
                         else -> {
                             throw IllegalStateException("Invalid Sort Order")
@@ -391,22 +382,13 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
         return itemsLive!!
     }
 
-    override fun onUpdate() {
-        if(itemsLive != null) {
-            IOScope.launch {
-                assignItemsLive(ApplicationLoader.appContext, false)
-            }
-        }
-    }
-
     override fun onCleared() {
         super.onCleared()
 
-        imageRepo.stopObserving(this)
-
         try {
-            IOScope.cancel()
-            MainScope?.cancel()
+            iOScope.cancel()
+            mainScope.cancel()
+            mainImmediateScope.cancel()
         } catch (thr: Throwable) {
 
         }
@@ -419,7 +401,7 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
     }
 
     fun setSearchText(text: String?) {
-        currentSearchText = text ?: ""
+        currentSearchQuery = text ?: ""
     }
 
     suspend fun search(items: MutableList<ImageFolderItem>) {
@@ -429,8 +411,8 @@ class ImageFoldersViewModel(val context: @RawValue Context, var imageRepo: @RawV
 
         searchInProgress = true
 
-        if(currentSearchText.isNotEmpty()) {
-            itemsLive?.postValue(SearchTool.searchImageAlbumItems(currentSearchText, items))
+        if(currentSearchQuery.isNotEmpty()) {
+            itemsLive?.postValue(SearchTool.search(currentSearchQuery, items))
         } else {
             itemsLive?.postValue(items)
         }

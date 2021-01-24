@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutToolBarBottomModalSheetItemRootLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="50dp"
+    android:background="?attr/selectableItemBackground"
+    android:paddingStart="18dp"
+    android:paddingTop="5dp"
+    android:paddingEnd="18dp"
+    android:paddingBottom="5dp">
+
+    <ImageView
+        android:id="@+id/layoutToolBarBottomModalSheetItemIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/layoutToolBarBottomModalSheetItemTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutToolBarBottomModalSheetItemIcon"
+        tools:text="@string/toolbar_rename" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

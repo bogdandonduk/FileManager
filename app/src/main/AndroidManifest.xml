@@ -31,11 +31,11 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".HomeActivity" />
+        <activity android:name=".home.HomeActivity" />
 
         <activity-alias
             android:name="LauncherActivity"
-            android:targetActivity=".HomeActivity">
+            android:targetActivity=".home.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

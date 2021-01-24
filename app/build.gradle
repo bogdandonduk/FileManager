@@ -46,22 +46,25 @@ android {
 }
 
 dependencies {
-    implementation files('libs/commons-io-2.8.0.jar')
     def coroutines_version = "1.4.0"
-    def navigation_version = "2.3.2"
     def glide_version = "4.11.0"
     def lifecycle_version = "2.2.0"
 
-    implementation 'com.otaliastudios:zoomlayout:1.8.0'
+    implementation("com.github.bumptech.glide:recyclerview-integration:4.11.0") {
+        transitive = false
+    }
+
+    implementation project(':dialogWrapper')
+    implementation project(':permissionWrapper')
+
+    implementation files('libs/commons-io-2.8.0.jar')
+
     implementation "androidx.fragment:fragment-ktx:1.2.5"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
 
     implementation "com.github.bumptech.glide:glide:$glide_version"
     annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
     kapt "com.github.bumptech.glide:compiler:$glide_version"
-
-    implementation "androidx.navigation:navigation-fragment-ktx:$navigation_version"
-    implementation "androidx.navigation:navigation-ui-ktx:$navigation_version"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"

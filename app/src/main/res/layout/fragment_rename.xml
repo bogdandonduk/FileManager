@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragmentRenameRootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_modal_sheet"
+    android:paddingStart="30dp"
+    android:paddingTop="25dp"
+    android:paddingEnd="30dp"
+    android:paddingBottom="20dp">
+
+    <TextView
+        android:id="@+id/fragmentRenameRootLayoutTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_rename_to"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/fragmentRenameRenameEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@android:color/holo_blue_bright"
+        android:ellipsize="start"
+        android:inputType="textPersonName"
+        android:padding="12dp"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:textColor="@color/text"
+        android:textColorHighlight="@android:color/holo_blue_light"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragmentRenameRootLayoutTitle" />
+
+    <TextView
+        android:id="@+id/fragmentRenameRootLayoutCancelBtn"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:text="@android:string/cancel"
+        android:textColor="@android:color/holo_blue_light"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/fragmentRenameRootLayoutGl50pv"
+        app:layout_constraintStart_toStartOf="@+id/fragmentRenameRenameEditText"
+        app:layout_constraintTop_toBottomOf="@+id/fragmentRenameRenameEditText" />
+
+    <TextView
+        android:id="@+id/fragmentRenameRootLayoutOkayBtn"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:text="@string/toolbar_rename"
+        android:textColor="@android:color/holo_blue_light"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/fragmentRenameRenameEditText"
+        app:layout_constraintStart_toStartOf="@+id/fragmentRenameRootLayoutGl50pv"
+        app:layout_constraintTop_toBottomOf="@+id/fragmentRenameRenameEditText" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/fragmentRenameRootLayoutGl50pv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

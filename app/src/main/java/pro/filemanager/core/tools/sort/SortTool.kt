@@ -7,22 +7,28 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.commons.io.comparator.NameFileComparator
 import org.apache.commons.io.comparator.SizeFileComparator
-import pro.filemanager.ApplicationLoader
 import pro.filemanager.R
-import pro.filemanager.core.generics.BaseViewModel
+import pro.filemanager.core.base.BaseViewModel
+import pro.filemanager.core.wrappers.CoroutineWrapper
 import java.io.File
 import java.util.*
 
 object SortTool {
 
-    const val KEY_SP_IMAGE_LIBRARY_SORT_ORDER = "imageBrowserSortOrder"
-    const val KEY_SP_IMAGE_FOLDERS_SORT_ORDER = "imageAlbumsSortOrder"
+    const val KEY_SP_IMAGE_LIBRARY_SORT_ORDER = "imageLibrarySortOrder"
+    const val KEY_SP_IMAGE_FOLDERS_SORT_ORDER = "imageFoldersSortOrder"
 
-    const val KEY_SP_AUDIO_BROWSER_SORT_ORDER = "audioBrowserSortOrder"
-    const val KEY_SP_AUDIO_ALBUMS_SORT_ORDER = "audioAlbumsSortOrder"
+    const val KEY_SP_AUDIO_LIBRARY_SORT_ORDER = "audioLibrarySortOrder"
+    const val KEY_SP_AUDIO_FOLDERS_SORT_ORDER = "audioFoldersSortOrder"
 
-    const val KEY_SP_VIDEO_BROWSER_SORT_ORDER = "videoBrowserSortOrder"
-    const val KEY_SP_VIDEO_ALBUMS_SORT_ORDER = "videoAlbumsSortOrder"
+    const val KEY_SP_VIDEO_LIBRARY_SORT_ORDER = "videoLibrarySortOrder"
+    const val KEY_SP_VIDEO_FOLDERS_SORT_ORDER = "videoFoldersSortOrder"
+
+    const val KEY_SP_DOC_LIBRARY_SORT_ORDER = "docsLibrarySortOrder"
+    const val KEY_SP_DOC_FOLDERS_SORT_ORDER = "docsFoldersSortOrder"
+
+    const val KEY_SP_APK_LIBRARY_SORT_ORDER = "apkLibrarySortOrder"
+    const val KEY_SP_APK_FOLDERS_SORT_ORDER = "apkFoldersSortOrder"
 
     const val SORT_ORDER_DATE_RECENT = "dateRecent"
     const val SORT_ORDER_DATE_OLDEST = "dateOldest"
@@ -33,26 +39,25 @@ object SortTool {
     const val SORT_ORDER_SIZE_LARGEST = "sizeLargest"
     const val SORT_ORDER_SIZE_SMALLEST = "sizeSmallest"
 
-    @Volatile var showingDialogInProgress = false
+    @Volatile var sheetShown = false
 
-    @Volatile var sortingViewModel: BaseViewModel? = null
+    @Volatile var lastViewModel: BaseViewModel? = null
 
-    fun getSortOptions(context: Context, bottomModalSheetFragment: SortBottomModalSheetFragment) : MutableList<SortOptionItem> {
+    fun getImageLibrarySortOptions(context: Context, fragment: SortFragment) : MutableList<SortOptionItem> {
         return mutableListOf<SortOptionItem>().apply {
             add(
                     SortOptionItem(
                             context.resources.getString(R.string.sort_option_date_recent),
                             SORT_ORDER_DATE_RECENT
                     ) {
-                        ApplicationLoader.ApplicationIOScope.launch {
-
-                            sortingViewModel?.shouldScrollToTop = true
-                            sortingViewModel?.setSortOrder(context, SORT_ORDER_DATE_RECENT, true)
-                            sortingViewModel?.assignItemsLive(context, false)
+                        CoroutineWrapper.globalIOScope.launch {
+                            lastViewModel?.shouldScrollToTop = true
+                            lastViewModel?.setSortOrder(context, SORT_ORDER_DATE_RECENT, true)
+                            lastViewModel?.assignItemsLive(context, false)
 
                             withContext(Dispatchers.Main) {
-                                if(bottomModalSheetFragment.showsDialog)
-                                    bottomModalSheetFragment.dismiss()
+                                if(fragment.showsDialog)
+                                    fragment.dismiss()
                             }
                         }
                     }
@@ -62,15 +67,15 @@ object SortTool {
                             context.resources.getString(R.string.sort_option_date_oldest),
                             SORT_ORDER_DATE_OLDEST
                     ) {
-                        ApplicationLoader.ApplicationIOScope.launch {
+                        CoroutineWrapper.globalIOScope.launch {
 
-                            sortingViewModel?.shouldScrollToTop = true
-                            sortingViewModel?.setSortOrder(context, SORT_ORDER_DATE_OLDEST, true)
-                            sortingViewModel?.assignItemsLive(context, false)
+                            lastViewModel?.shouldScrollToTop = true
+                            lastViewModel?.setSortOrder(context, SORT_ORDER_DATE_OLDEST, true)
+                            lastViewModel?.assignItemsLive(context, false)
 
                             withContext(Dispatchers.Main) {
-                                if(bottomModalSheetFragment.showsDialog)
-                                    bottomModalSheetFragment.dismiss()
+                                if(fragment.showsDialog)
+                                    fragment.dismiss()
                             }
                         }
                     }
@@ -80,15 +85,15 @@ object SortTool {
                             context.resources.getString(R.string.sort_option_name_alphabetic),
                             SORT_ORDER_NAME_ALPHABETIC
                     ) {
-                        ApplicationLoader.ApplicationIOScope.launch {
+                        CoroutineWrapper.globalIOScope.launch {
 
-                            sortingViewModel?.shouldScrollToTop = true
-                            sortingViewModel?.setSortOrder(context, SORT_ORDER_NAME_ALPHABETIC, true)
-                            sortingViewModel?.assignItemsLive(context, false)
+                            lastViewModel?.shouldScrollToTop = true
+                            lastViewModel?.setSortOrder(context, SORT_ORDER_NAME_ALPHABETIC, true)
+                            lastViewModel?.assignItemsLive(context, false)
 
                             withContext(Dispatchers.Main) {
-                                if (bottomModalSheetFragment.showsDialog)
-                                    bottomModalSheetFragment.dismiss()
+                                if (fragment.showsDialog)
+                                    fragment.dismiss()
                             }
                         }
                     }
@@ -98,15 +103,15 @@ object SortTool {
                             context.resources.getString(R.string.sort_option_name_reversed),
                             SORT_ORDER_NAME_REVERSED
                     ) {
-                        ApplicationLoader.ApplicationIOScope.launch {
+                        CoroutineWrapper.globalIOScope.launch {
 
-                            sortingViewModel?.shouldScrollToTop = true
-                            sortingViewModel?.setSortOrder(context, SORT_ORDER_NAME_REVERSED, true)
-                            sortingViewModel?.assignItemsLive(context, false)
+                            lastViewModel?.shouldScrollToTop = true
+                            lastViewModel?.setSortOrder(context, SORT_ORDER_NAME_REVERSED, true)
+                            lastViewModel?.assignItemsLive(context, false)
 
                             withContext(Dispatchers.Main) {
-                                if(bottomModalSheetFragment.showsDialog)
-                                    bottomModalSheetFragment.dismiss()
+                                if(fragment.showsDialog)
+                                    fragment.dismiss()
                             }
                         }
                     }
@@ -116,14 +121,14 @@ object SortTool {
                             context.resources.getString(R.string.sort_option_size_largest),
                             SORT_ORDER_SIZE_LARGEST
                     ) {
-                        ApplicationLoader.ApplicationIOScope.launch {
-                            sortingViewModel?.shouldScrollToTop = true
-                            sortingViewModel?.setSortOrder(context, SORT_ORDER_SIZE_LARGEST, true)
-                            sortingViewModel?.assignItemsLive(context, false)
+                        CoroutineWrapper.globalIOScope.launch {
+                            lastViewModel?.shouldScrollToTop = true
+                            lastViewModel?.setSortOrder(context, SORT_ORDER_SIZE_LARGEST, true)
+                            lastViewModel?.assignItemsLive(context, false)
 
                             withContext(Dispatchers.Main) {
-                                if(bottomModalSheetFragment.showsDialog)
-                                    bottomModalSheetFragment.dismiss()
+                                if(fragment.showsDialog)
+                                    fragment.dismiss()
                             }
                         }
                     }
@@ -133,15 +138,15 @@ object SortTool {
                             context.resources.getString(R.string.sort_option_size_smallest),
                             SORT_ORDER_SIZE_SMALLEST
                     ) {
-                        ApplicationLoader.ApplicationIOScope.launch {
+                        CoroutineWrapper.globalIOScope.launch {
 
-                            sortingViewModel?.shouldScrollToTop = true
-                            sortingViewModel?.setSortOrder(context, SORT_ORDER_SIZE_SMALLEST, true)
-                            sortingViewModel?.assignItemsLive(context, false)
+                            lastViewModel?.shouldScrollToTop = true
+                            lastViewModel?.setSortOrder(context, SORT_ORDER_SIZE_SMALLEST, true)
+                            lastViewModel?.assignItemsLive(context, false)
 
                             withContext(Dispatchers.Main) {
-                                if(bottomModalSheetFragment.showsDialog)
-                                    bottomModalSheetFragment.dismiss()
+                                if(fragment.showsDialog)
+                                    fragment.dismiss()
                             }
                         }
                     }
@@ -151,12 +156,12 @@ object SortTool {
     }
 
     fun showSortBottomModalSheetFragment(fm: FragmentManager, viewModel: BaseViewModel) {
-        if(!showingDialogInProgress) {
-            showingDialogInProgress = true
+        if(!sheetShown) {
+            sheetShown = true
 
-            sortingViewModel = viewModel
+            lastViewModel = viewModel
 
-            SortBottomModalSheetFragment().show(fm, null)
+            SortFragment().show(fm, null)
         }
     }
 

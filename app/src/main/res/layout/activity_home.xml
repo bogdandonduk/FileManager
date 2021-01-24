@@ -2,30 +2,32 @@
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/homeActivityRootDrawerLayout"
+    android:id="@+id/activityHomeRootDrawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_home"
-    tools:context=".HomeActivity"
-    tools:openDrawer="start">
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/homeActivityContentNavHost"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/home_content_nav_graph" />
+    tools:context=".home.HomeActivity">
 
     <com.google.android.material.navigation.NavigationView
-        android:id="@+id/homeActivityMainNavView"
+        android:id="@+id/activityHomeMainNavView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@drawable/bg_home"
         android:fitsSystemWindows="false"
         app:itemTextAppearance="@style/TextAppearance.AppCompat.Medium"
         app:itemTextColor="@android:color/white"
-        app:menu="@menu/nav_drawer_main_menu" />
+        app:menu="@menu/nav_drawer_main_menu">
+
+    </com.google.android.material.navigation.NavigationView>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/activityHomeSettingsNavView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:fitsSystemWindows="false"
+        app:itemTextAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:itemTextColor="@android:color/white">
+
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>

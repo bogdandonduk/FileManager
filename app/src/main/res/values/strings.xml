@@ -55,7 +55,7 @@
     <string name="toolbar_rename">Rename</string>
     <string name="title_are_you_sure">Are you sure?</string>
     <string name="title_confirm">Confirm</string>
-    <string name="title_go_back">Go Back</string>
+    <string name="go_back">Go back</string>
     <string name="title_cancel">Cancel</string>
     <string name="title_deletion_prompt_multiple_items">%1$s items will be deleted forever</string>
     <string name="title_deletion_prompt_single_item">%1$s item will be deleted forever</string>
@@ -69,13 +69,30 @@
     <string name="info_name">Name:</string>
     <string name="info_date_added">Date added:</string>
     <string name="info_total_quantity">Total:</string>
-    <string name="info_total_quantity_content">%1$s items</string>
+    <string name="info_total_quantity_files_single">%1$s file</string>
+    <string name="info_total_quantity_files_multiple">%1$s files</string>
+    <string name="info_total_quantity_folders_single">(%1$s folder)</string>
+    <string name="info_total_quantity_folders_multiple">(%1$s folders)</string>
     <string name="title_no_images">No Images</string>
     <string name="title_no_folders">No Folders</string>
     <string name="title_no_audio">No Audio</string>
-    <string name="title_no_video">No Audio</string>
+    <string name="title_no_video">No Video</string>
+    <string name="title_no_docs">No Documents</string>
+    <string name="title_no_apks">No Apks</string>
 
     <string name="title_search_hint">Search …</string>
     <string name="title_toolbar_options">Options</string>
     <string name="title_options">Options</string>
+    <string name="change_list">Change List</string>
+    <string name="about_app">About app</string>
+
+    <string name="search_folders">Search folders</string>
+    <string name="search_files">Search files</string>
+    <string name="search_images">Search images</string>
+    <string name="clear">Clear query</string>
+
+    <string name="more">More</string>
+    <string name="clear_selection">Clear selection</string>
+    <string name="menu">Menu</string>
+    <string name="this_will_clear_your_selection">This will clear your selection</string>
 </resources>

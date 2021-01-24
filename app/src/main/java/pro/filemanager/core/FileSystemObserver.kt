@@ -92,7 +92,6 @@ class FileSystemObserver : FileObserver {
         } else {
             File(mPath, path)
         }
-        Log.d("TAG", "onEvent: SMTH")
         notify(event, file)
     }
 

@@ -4,17 +4,204 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutDocItemRootLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="20dp">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/layoutDocItemFilename"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/layoutDocItemRootLayoutGl10ph"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@{DocItem.displayName}"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutDocItemContentLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Filename" />
+        app:layout_constraintTop_toTopOf="@+id/layoutDocItemRootLayoutGl10ph">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutDocItemContentLayoutGl10pv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.1" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutDocItemContentLayoutGl90pv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.9" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/layoutDocItemContentLayoutGl80ph"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.8" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutDocItemThumbnailLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/layoutDocItemContentLayoutGl80ph"
+            app:layout_constraintEnd_toStartOf="@+id/layoutDocItemContentLayoutGl90pv"
+            app:layout_constraintStart_toStartOf="@+id/layoutDocItemContentLayoutGl10pv"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutDocItemThumbnailLayoutBgRippleHolder"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="?attr/selectableItemBackground"
+                android:elevation="3dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutDocItemThumbnailLayoutGl75pv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.75" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutDocItemThumbnailLayoutGl25pv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.25" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutDocItemThumbnailLayoutGl25ph"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.25" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutDocItemThumbnailLayoutGl75ph"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.75" />
+
+            <ImageView
+                android:id="@+id/layoutDocItemThumbnailIcon"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/layoutDocItemThumbnailLayoutGl75ph"
+                app:layout_constraintEnd_toStartOf="@+id/layoutDocItemThumbnailLayoutGl75pv"
+                app:layout_constraintStart_toStartOf="@+id/layoutDocItemThumbnailLayoutGl25pv"
+                app:layout_constraintTop_toTopOf="@+id/layoutDocItemThumbnailLayoutGl25ph"
+                app:srcCompat="@drawable/ic_baseline_insert_drive_file_24" />
+
+            <ImageView
+                android:id="@+id/layoutDocItemSdCardIcon"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:elevation="5dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toTopOf="@+id/layoutDocItemThumbnailLayoutGl25ph"
+                app:layout_constraintEnd_toStartOf="@+id/layoutDocItemThumbnailLayoutGl25pv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_sd_storage_24" />
+
+            <ImageView
+                android:id="@+id/layoutDocItemThumbnail"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:contentDescription="@string/title_thumbnail"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_doc" />
+
+            <ImageView
+                android:id="@+id/layoutDocItemIconCheck"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toTopOf="@+id/layoutDocItemThumbnailLayoutGl25ph"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/layoutDocItemThumbnailLayoutGl75pv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_check_circle_white_24" />
+
+            <ImageView
+                android:id="@+id/layoutDocItemIconUnchecked"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:padding="2dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toTopOf="@+id/layoutDocItemThumbnailLayoutGl25ph"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/layoutDocItemThumbnailLayoutGl75pv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_circle_outline_white_24" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutDocItemTitleContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/layoutDocItemContentLayoutGl90pv"
+            app:layout_constraintStart_toStartOf="@+id/layoutDocItemContentLayoutGl10pv"
+            app:layout_constraintTop_toBottomOf="@+id/layoutDocItemThumbnailLayout">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutDocItemTitleContainerGl10pv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.1" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/layoutDocItemTitleContainerGl90pv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.9" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutDocItemTitleMidContainer"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/layoutDocItemTitleContainerGl90pv"
+                app:layout_constraintStart_toStartOf="@+id/layoutDocItemTitleContainerGl10pv"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/layoutDocItemTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Filename" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

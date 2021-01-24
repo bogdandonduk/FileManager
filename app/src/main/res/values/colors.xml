@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="appBar">#008fba</color>
+    <color name="bg_main">#fafafa</color>
+    <color name="bg_main_transparent">#ccfafafa</color>
 
-    <color name="tileBtn">#4fff</color>
-    <color name="itemTitle">#9000</color>
+    <color name="text">#303030</color>
+    <color name="text_transparent">#cc303030</color>
 
-    <color name="homeBgGradStart">#87c0bb</color>
-
-    <color name="tabIndicator">#cfff</color>
-    <color name="hintTextColor">#8fff</color>
-
-    <color name="bgDark">#303030</color>
-
-    <color name="bgDarkSemiTransparent">#aa303030</color>
-
+    <color name="dark_transparent_strong">#cc303030</color>
+    <color name="dark_transparent_faint">#88303030</color>
+    <color name="dark_gray_transparent">#caaa</color>
 </resources>

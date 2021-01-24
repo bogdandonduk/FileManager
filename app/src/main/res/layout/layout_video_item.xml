@@ -36,32 +36,32 @@
         app:layout_constraintGuide_percent="0.75" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutVideoItemRootLayoutGl32pv"
+        android:id="@+id/layoutVideoItemRootLayoutGl35pv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.32" />
+        app:layout_constraintGuide_percent="0.35" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutVideoItemRootLayoutGl68pv"
+        android:id="@+id/layoutVideoItemRootLayoutGl65pv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.68" />
+        app:layout_constraintGuide_percent="0.65" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutVideoItemRootLayoutGl32ph"
+        android:id="@+id/layoutVideoItemRootLayoutGl35ph"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.32" />
+        app:layout_constraintGuide_percent="0.35" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/layoutVideoItemRootLayoutGl68ph"
+        android:id="@+id/layoutVideoItemRootLayoutGl65ph"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.68" />
+        app:layout_constraintGuide_percent="0.65" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/layoutVideoItemRootLayoutGl85ph"
@@ -69,6 +69,32 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.8" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/layoutVideoItemRootLayoutGl20pv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.2" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/layoutVideoItemRootLayoutGl20ph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.2" />
+
+    <ImageView
+        android:id="@+id/layoutVideoItemSdCardIcon"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:elevation="5dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/layoutVideoItemRootLayoutGl20ph"
+        app:layout_constraintEnd_toStartOf="@+id/layoutVideoItemRootLayoutGl20pv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_sd_storage_24" />
 
     <ImageView
         android:id="@+id/layoutVideoItemThumbnail"
@@ -86,11 +112,11 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/layoutVideoItemRootLayoutGl68ph"
-        app:layout_constraintEnd_toStartOf="@+id/layoutVideoItemRootLayoutGl68pv"
-        app:layout_constraintStart_toStartOf="@+id/layoutVideoItemRootLayoutGl32pv"
-        app:layout_constraintTop_toTopOf="@+id/layoutVideoItemRootLayoutGl32ph"
-        app:srcCompat="@drawable/ic_play" />
+        app:layout_constraintBottom_toTopOf="@+id/layoutVideoItemRootLayoutGl65ph"
+        app:layout_constraintEnd_toStartOf="@+id/layoutVideoItemRootLayoutGl65pv"
+        app:layout_constraintStart_toStartOf="@+id/layoutVideoItemRootLayoutGl35pv"
+        app:layout_constraintTop_toTopOf="@+id/layoutVideoItemRootLayoutGl35ph"
+        app:srcCompat="@drawable/ic_baseline_play_circle_24" />
 
     <ImageView
         android:id="@+id/layoutVideoItemIconCheck"
@@ -102,7 +128,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/layoutVideoItemRootLayoutGl75pv"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_check" />
+        app:srcCompat="@drawable/ic_baseline_check_circle_white_24" />
 
     <ImageView
         android:id="@+id/layoutVideoItemIconUnchecked"
@@ -114,13 +140,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/layoutVideoItemRootLayoutGl75pv"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_circle" />
+        app:srcCompat="@drawable/ic_baseline_circle_outline_white_24" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutVideoItemTitleContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/itemTitle"
+        android:background="@color/dark_transparent_strong"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

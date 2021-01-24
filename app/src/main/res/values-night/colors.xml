@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_main">#303030</color>
+    <color name="bg_main_transparent">#cc303030</color>
+
+    <color name="text">#fafafa</color>
+    <color name="text_transparent">#ccfafafa</color>
+
+    <color name="dark_transparent_strong">#cc303030</color>
+    <color name="dark_transparent_faint">#88303030</color>
+    <color name="dark_gray_transparent">#caaa</color>
+</resources>

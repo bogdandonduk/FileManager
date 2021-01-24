@@ -3,17 +3,16 @@ package pro.filemanager.core.tools
 import android.content.Context
 import android.graphics.Color
 import android.os.Vibrator
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import androidx.annotation.IntDef
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import pro.filemanager.ApplicationLoader
-import pro.filemanager.HomeActivity
+import elytrondesign.lib.android.dialogwrapper.DialogWrapper
+import pro.filemanager.R
+import pro.filemanager.home.HomeActivity
 
 class SelectionTool {
     companion object {
@@ -23,6 +22,8 @@ class SelectionTool {
         @IntDef(CLICK_SHORT, CLICK_LONG)
         @Retention(AnnotationRetention.SOURCE)
         annotation class ClickType
+
+        var clearWithConfirmation = true
     }
 
     var selectionMode = false
@@ -36,12 +37,12 @@ class SelectionTool {
             position: Int,
             path: String,
             adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
-            refreshAction: Runnable = Runnable {},
-            offAction: Runnable = Runnable {}
+            refreshAction: (() -> Unit)? = null,
+            offAction: (() -> Unit)? = null
     ) {
         if(clickType == CLICK_SHORT) {
             if(!selectionMode)
-                offAction.run()
+                offAction?.invoke()
             else {
                 if(!selectedPaths.contains(path)) {
                     selectedPaths.add(path)
@@ -58,11 +59,7 @@ class SelectionTool {
                 selectionMode = true
                 selectedPaths.add(path)
 
-                refreshAction.run()
-
-                for (i in 0 until adapter.itemCount) {
-                   adapter.notifyItemChanged(i)
-                }
+                updateAll(adapter)
             } else {
                 if(!selectedPaths.contains(path)) {
                     selectedPaths.add(path)
@@ -73,6 +70,8 @@ class SelectionTool {
                 adapter.notifyItemChanged(position)
             }
         }
+
+        refreshAction?.invoke()
     }
 
     fun updateAll(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
@@ -96,36 +95,81 @@ class SelectionTool {
 
     fun initOnBackCallback(
             activity: HomeActivity,
+            parentLayout: ViewGroup,
             adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
             selectionCheckBox: CheckBox,
             selectionCheckBoxLayout: ViewGroup,
             toolbarLayout: ViewGroup,
+            toolbar: Toolbar,
             tabsBarLayout: ViewGroup
     ) {
          activity.currentOnBackBehavior = if(selectionMode)
-             Runnable {
-                 selectionMode = false
+             {
+                 {
+                     if(clearWithConfirmation) {
+                         DialogWrapper.buildAlertDialog(
+                                 activity,
+                                 parentLayout,
+                                 activity.resources.getString(R.string.title_are_you_sure),
+                                 activity.resources.getString(R.string.this_will_clear_your_selection),
+                                 true,
+                                 activity.resources.getString(R.string.title_confirm),
+                                 {
+                                     selectionMode = false
 
-                 unselectAll(adapter)
+                                     unselectAll(adapter)
 
-                 if(selectionCheckBox.isChecked)
-                     selectionCheckBox.toggle()
+                                     if(selectionCheckBox.isChecked)
+                                         selectionCheckBox.toggle()
 
-                 selectionCheckBoxLayout.visibility = View.GONE
-                 activity.supportActionBar?.show()
+                                     selectionCheckBoxLayout.visibility = View.GONE
 
-                 toolbarLayout.visibility = View.GONE
-                 tabsBarLayout.visibility = View.VISIBLE
+                                     toolbarLayout.visibility = View.GONE
+                                     tabsBarLayout.visibility = View.VISIBLE
 
-                 activity.currentOnBackBehavior = null
+                                     toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+                                     toolbar.setNavigationContentDescription(R.string.go_back)
+
+                                     activity.currentOnBackBehavior = null
+                                 },
+                                 activity.resources.getString(R.string.go_back),
+                                 {
+
+
+                                 },
+                                {
+
+                                }
+                         ).show()
+                     } else {
+                         selectionMode = false
+
+                         unselectAll(adapter)
+
+                         if(selectionCheckBox.isChecked)
+                             selectionCheckBox.toggle()
+
+                         selectionCheckBoxLayout.visibility = View.GONE
+
+                         toolbarLayout.visibility = View.GONE
+                         tabsBarLayout.visibility = View.VISIBLE
+
+                         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+                         toolbar.setNavigationContentDescription(R.string.go_back)
+
+                         activity.currentOnBackBehavior = null
+
+                         clearWithConfirmation = true
+                     }
+                 }
              }
-
          else null
     }
 
     fun differentiateItem(
+            context: Context,
             path: String,
-            thumbnail: ImageView,
+            thumbnailLayout: ViewGroup,
             checkMark: ImageView,
             uncheckedMark: ImageView,
     ) {
@@ -134,7 +178,7 @@ class SelectionTool {
                 checkMark.visibility = View.VISIBLE
                 uncheckedMark.visibility = View.INVISIBLE
 
-                thumbnail.setColorFilter(Color.argb(100, 0, 0, 0))
+                thumbnailLayout.setBackgroundColor(context.resources.getColor(R.color.dark_transparent_faint))
 
                 checkMark.scaleX = 0f
                 checkMark.scaleY = 0f
@@ -143,13 +187,13 @@ class SelectionTool {
                 checkMark.animate().scaleX(1f).setDuration(150).start()
                 checkMark.animate().scaleY(1f).setDuration(150).start()
             } else {
-                thumbnail.colorFilter = null
+                thumbnailLayout.setBackgroundColor(Color.TRANSPARENT)
 
                 checkMark.visibility = View.INVISIBLE
                 uncheckedMark.visibility = View.VISIBLE
             }
         } else {
-            thumbnail.colorFilter = null
+            thumbnailLayout.setBackgroundColor(Color.TRANSPARENT)
 
             checkMark.visibility = View.INVISIBLE
             uncheckedMark.visibility = View.INVISIBLE
@@ -158,8 +202,10 @@ class SelectionTool {
 
     fun initSelectionState(
             activity: HomeActivity,
+            parentLayout: ViewGroup,
             adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
             toolbarLayout: ViewGroup,
+            toolbar: Toolbar,
             tabsBarLayout: ViewGroup,
             selectionCheckBoxLayout: ViewGroup,
             selectionCheckBox: CheckBox,
@@ -167,9 +213,7 @@ class SelectionTool {
             selectedItemCount: Int
     ) {
         if(selectionMode) {
-            initOnBackCallback(activity, adapter, selectionCheckBox, selectionCheckBoxLayout, toolbarLayout, tabsBarLayout)
-
-            activity.supportActionBar!!.hide()
+            initOnBackCallback(activity, parentLayout, adapter, selectionCheckBox, selectionCheckBoxLayout, toolbarLayout, toolbar, tabsBarLayout)
 
             selectionCheckBoxLayout.visibility = View.VISIBLE
 
@@ -178,28 +222,34 @@ class SelectionTool {
             tabsBarLayout.visibility = View.GONE
             toolbarLayout.visibility = View.VISIBLE
 
-            updateAll(adapter)
+            toolbar.setNavigationIcon(R.drawable.ic_baseline_clear_24)
+            toolbar.setNavigationContentDescription(R.string.clear_selection)
         } else {
-            activity.supportActionBar!!.show()
-
             selectionCheckBoxLayout.visibility = View.GONE
 
             tabsBarLayout.visibility = View.VISIBLE
             toolbarLayout.visibility = View.GONE
 
-            updateAll(adapter)
+            toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+            toolbar.setNavigationContentDescription(R.string.go_back)
         }
     }
 
     fun initSelectionCheckBox(selectionCheckBox: CheckBox, totalItemCount: Int) {
-        if(selectedPaths.size == totalItemCount && totalItemCount > 0 && !selectionCheckBox.isChecked) {
-            selectionCheckBoxSticky = true
-            selectionCheckBox.toggle()
-            selectionCheckBoxSticky = false
-        } else if(selectedPaths.size != totalItemCount && totalItemCount > 0 && totalItemCount > 0 && selectionCheckBox.isChecked) {
-            selectionCheckBoxSticky = true
-            selectionCheckBox.toggle()
-            selectionCheckBoxSticky = false
+        if(totalItemCount > 0) {
+            if(selectedPaths.size == totalItemCount && !selectionCheckBox.isChecked) {
+                selectionCheckBoxSticky = true
+
+                selectionCheckBox.toggle()
+
+                selectionCheckBoxSticky = false
+            } else if(selectedPaths.size != totalItemCount && selectionCheckBox.isChecked) {
+                selectionCheckBoxSticky = true
+
+                selectionCheckBox.toggle()
+
+                selectionCheckBoxSticky = false
+            }
         }
     }
 }

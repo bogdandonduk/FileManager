@@ -130,7 +130,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/layoutImageFolderItemCardGl80pv"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_check" />
+                app:srcCompat="@drawable/ic_baseline_check_circle_white_24" />
 
             <ImageView
                 android:id="@+id/layoutImageFolderItemIconUnchecked"
@@ -142,13 +142,13 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/layoutImageFolderItemCardGl80pv"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_circle" />
+                app:srcCompat="@drawable/ic_baseline_circle_outline_white_24" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layoutImageFolderItemTitleContainer"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="@color/itemTitle"
+                android:background="@color/dark_transparent_strong"
                 android:textColor="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

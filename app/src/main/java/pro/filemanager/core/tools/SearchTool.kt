@@ -1,106 +1,20 @@
 package pro.filemanager.core.tools
 
-import pro.filemanager.images.ImageItem
-import pro.filemanager.images.folders.ImageFolderItem
+import pro.filemanager.core.base.BaseItem
 
 object SearchTool {
-    fun searchImageItems(text: String, dataSet: MutableList<ImageItem>) : MutableList<ImageItem> =
-            mutableListOf<ImageItem>().apply {
+    fun <T : BaseItem> search(query: String, dataSet: MutableList<T>) : MutableList<T> =
+            mutableListOf<T>().apply {
                 dataSet.forEach {
-                    if(it.displayName.startsWith(text, true)) {
+                    if(it.displayName.startsWith(query, true)) {
                         add(it)
                     }
                 }
 
                 dataSet.forEach {
-                    if(it.displayName.contains(text, true)  && !contains(it)) {
+                    if(it.displayName.contains(query, true)  && !contains(it)) {
                         add(it)
                     }
                 }
             }
-
-    fun searchImageAlbumItems(text: String, dataSet: MutableList<ImageFolderItem>) : MutableList<ImageFolderItem> {
-        val newDataSet: MutableList<ImageFolderItem> = mutableListOf()
-
-        dataSet.forEach {
-            if(it.displayName.startsWith(text, true)) {
-                newDataSet.add(it)
-            }
-        }
-
-        dataSet.forEach {
-            if(it.displayName.contains(text, true) && !newDataSet.contains(it)) {
-                newDataSet.add(it)
-            }
-        }
-
-        return newDataSet
-    }
-
-//    fun searchAudioItems(text: String, dataSet: MutableList<AudioItem>) : MutableList<AudioItem> =
-//            mutableListOf<AudioItem>().apply {
-//                dataSet.forEach {
-//                    if(it.displayName.startsWith(text, true)) {
-//                        add(it)
-//                    }
-//                }
-//
-//                dataSet.forEach {
-//                    if(it.displayName.contains(text, true)  && !contains(it)) {
-//                        add(it)
-//                    }
-//                }
-//            }
-//
-//    fun searchAudioAlbumItems(text: String, dataSet: MutableList<AudioAlbumItem>) : MutableList<AudioAlbumItem> {
-//        val newDataSet: MutableList<AudioAlbumItem> = mutableListOf()
-//
-//        dataSet.forEach {
-//            if(it.displayName.startsWith(text, true)) {
-//                newDataSet.add(it)
-//            }
-//        }
-//
-//        dataSet.forEach {
-//            if(it.displayName.contains(text, true) && !newDataSet.contains(it)) {
-//                newDataSet.add(it)
-//            }
-//        }
-//
-//        return newDataSet
-//    }
-//
-//    fun searchVideoItems(text: String, dataSet: MutableList<VideoItem>) : MutableList<VideoItem> =
-//            mutableListOf<VideoItem>().apply {
-//                dataSet.forEach {
-//                    if(it.displayName.startsWith(text, true)) {
-//                        add(it)
-//                    }
-//                }
-//
-//                dataSet.forEach {
-//                    if(it.displayName.contains(text, true)  && !contains(it)) {
-//                        add(it)
-//                    }
-//                }
-//            }
-//
-//    fun searchVideoAlbumItems(text: String, dataSet: MutableList<VideoAlbumItem>) : MutableList<VideoAlbumItem> {
-//        val newDataSet: MutableList<VideoAlbumItem> = mutableListOf()
-//
-//        dataSet.forEach {
-//            if(it.displayName.startsWith(text, true)) {
-//                newDataSet.add(it)
-//            }
-//        }
-//
-//        dataSet.forEach {
-//            if(it.displayName.contains(text, true) && !newDataSet.contains(it)) {
-//                newDataSet.add(it)
-//            }
-//        }
-//
-//        return newDataSet
-//    }
-
 }
